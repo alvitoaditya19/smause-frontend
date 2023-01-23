@@ -1,0 +1,51 @@
+
+
+.title-home-page {
+  background: linear-gradient(
+    270deg,
+    #f11edc -3.99%,
+    #cf1cde 41.2%,
+    #4d17e2 73.68%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.sub-title-home-page {
+  color: #0d1458;
+  font-size: 16px;
+  margin-bottom: 30px;
+}
+
+.btn-get-started{
+  padding: 8px 32px;
+  color: #fff;
+  border-radius: 100px;
+  background-color: #4e1be0;
+  font-size: 16px;
+  text-decoration: none; 
+}
+
+.btn-get-started:hover {
+  color: #fff;
+
+}
+
+@media (min-width: 992px) {
+  .title-home-page {
+    font-size: 36px;
+    margin-bottom: 18px;
+  }
+  .sub-title-home-page {
+    font-size: 24px;
+    margin-bottom: 32px;
+  }
+  .btn-get-started {
+    padding: 12px 48px;
+    font-size: 20px;
+  }
+}
