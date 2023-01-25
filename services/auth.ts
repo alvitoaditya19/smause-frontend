@@ -15,7 +15,7 @@ export async function setSignUp(data: FormData) {
 }
 
 export async function setLogin(data: LoginTypes) {
-  const url = `${ROOT_API}/${API_VERSION}/auth/signin`;
+  const url = `${ROOT_API}/${API_VERSION}/users/signin`;
 
   return callAPI({
     url,

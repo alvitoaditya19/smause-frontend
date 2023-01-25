@@ -20,7 +20,7 @@ table {
 
 #gradient-chart{
   background: rgb(77,23,226);
-background: linear-gradient(180deg, rgba(77,23,226,1) 6%, rgba(255,255,255,1) 96%);
+  background: linear-gradient(180deg, rgba(77,23,226,1) 6%, rgba(255,255,255,1) 96%);
 }
 .dashboard {
   background: #F9F9FF;
@@ -219,40 +219,33 @@ background: linear-gradient(180deg, rgba(77,23,226,1) 6%, rgba(255,255,255,1) 96
   background-image: url("/Icon/sidebar/ic-water-act.svg");
 }
 
-.ic-msg {
-  background-image: url("/Icon/ic_messages_inact.svg");
+/* Pilihan */
+
+.ic-setting {
+  background-image: url("/Icon/sidebar/ic-setting-inact.svg");
 }
 
-.item-menu.active .ic-msg,
-.item-menu:hover .ic-msg {
-  background-image: url("/Icon/ic_messages_act.svg");
-}
-
-.ic-account {
-  background-image: url("/Icon/ic_account_inact.svg");
-}
-
-.item-menu.active .ic-account,
-.item-menu:hover .ic-account {
-  background-image: url("/Icon/ic_account_act.svg");
-}
-
-.ic-settings {
-  background-image: url("/Icon/ic_settings_inact.svg");
-}
-
-.item-menu.active .ic-settings,
-.item-menu:hover .ic-settings {
-  background-image: url("/Icon/ic_settings_act.svg");
+.item-menu.active .ic-setting,
+.item-menu:hover .ic-setting {
+  background-image: url("/Icon/sidebar/ic-setting-act.svg");
 }
 
 .ic-help {
-  background-image: url("/Icon/ic_help_inact.svg");
+  background-image: url("/Icon/sidebar/ic-help-inact.svg");
 }
 
 .item-menu.active .ic-help,
 .item-menu:hover .ic-help {
-  background-image: url("/Icon/ic_help_act.svg");
+  background-image: url("/Icon/sidebar/ic-help-act.svg");
+}
+
+.ic-out {
+  background-image: url("/Icon/sidebar/ic-out-inact.svg");
+}
+
+.item-menu.active .ic-out,
+.item-menu:hover .ic-out {
+  background-image: url("/Icon/sidebar/ic-out-act.svg");
 }
 
 .ic-logout {
@@ -427,14 +420,32 @@ button.btn-search:focus-within{
   }
 }
 
-/* Edit User */
+/* Add User + Edit User */
 .form-data-user{
   border-radius:16px;
   padding:30px;
   background-color:#F9F9FF;
 }
 
-.form-user-control{
-  border-width:3;
-  border-color :#0D1458;
+.form-data-user .form-control{
+  border: none;
+  padding: 0.75rem 1.625rem;
+  color: #1A1640;
+  background-color:#E7EAF5 !important;
+  border-radius: 1000px;
+  -webkit-border-radius: 1000px;
+  -moz-border-radius: 1000px;
+  -ms-border-radius: 1000px;
+  -o-border-radius: 1000px;
+}
+
+.form-data-user .form-control:focus-within{
+  color: #1A1640;
+  background-color: #E7EAF5 !important;
+  border: 0;
+  box-shadow: none;
+}
+
+.form-data-user .form-control::placeholder{
+  color: #0D1458;
 }

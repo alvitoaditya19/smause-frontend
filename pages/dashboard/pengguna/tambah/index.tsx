@@ -10,6 +10,8 @@ export default function AddUser() {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [phoneNumber, setphoneNumber] = useState("");
+
 
   const [toggleViewMode, setToggleViewMode] = useState(false);
   const toggleNavbar = () => {
@@ -23,6 +25,7 @@ export default function AddUser() {
       email: email,
       username: username,
       password: password,
+      phoneNumber:phoneNumber,
     };
 
     const response = await SetAddUser(data);
@@ -38,7 +41,7 @@ export default function AddUser() {
   return (
     <>
       {/* Navbar */}
-      <div className="dashboard d-flex">
+      <div className="dashboard flex">
         <Sidebar
           toggleViewMode={toggleViewMode}
           toggleNavbar={toggleNavbar}
@@ -47,48 +50,48 @@ export default function AddUser() {
         {/* Main Content */}
         <div className="content">
           <Header toggleNavbar={toggleNavbar} />
-          {/* <input id="search-box" onChange={filterBySearch} /> */}
-          <section className="p-3">
+          <section className="px-3">
             <div className="header">
-              <h3>Add User</h3>
-              <p>Manage data for growth</p>
+              <h3 className="text-3xl text-black font-bold">Tambah Pengguna</h3>
+              <p className=" text-base text-grey2 mt-1">Kelola data tanaman sebaik mungkin</p>
             </div>
           </section>
-          <div className="form-data-user">
+    
+          <div className="form-data-user mt-8 mb-4">
             <div className="form-label-input">
               <label
                 htmlFor="name"
-                className="form-label text-lg fw-medium color-palette-1 mb-10"
+                className="form-label text-lg font-medium text-black mb-3"
               >
-                Name
+                Nama
               </label>
               <input
                 type="text"
                 className="form-control text-lg form-user-control"
                 value={name}
-                placeholder="Enter user name"
+                placeholder="Masukkan nama kamu"
                 onChange={(event) => setName(event.target.value)}
               />
             </div>
-            <div className="form-label-input mt-30">
+            <div className="form-label-input mt-8">
               <label
                 htmlFor="email"
-                className="form-label text-lg fw-medium color-palette-1 mb-10"
+                className="form-label text-lg font-medium text-black mb-4"
               >
-                Email Address
+                Alamat Email
               </label>
               <input
                 type="email"
                 className="form-control text-lg form-user-control"
                 value={email}
-                placeholder="Enter user email address"
+                placeholder="Masukkan alamat email kamu"
                 onChange={(event) => setEmail(event.target.value)}
               />
             </div>
-            <div className="form-label-input  mt-30">
+            <div className="form-label-input  mt-8">
               <label
                 htmlFor="username"
-                className="form-label text-lg fw-medium color-palette-1 mb-10"
+                className="form-label text-lg font-medium text-black mb-4"
               >
                 Username
               </label>
@@ -96,14 +99,14 @@ export default function AddUser() {
                 type="text"
                 className="form-control text-lg form-user-control"
                 value={username}
-                placeholder="Enter username"
+                placeholder="Masukkan username kamu"
                 onChange={(event) => setUsername(event.target.value)}
               />
             </div>
-            <div className="form-label-input  mt-30">
+            <div className="form-label-input  mt-8">
               <label
                 htmlFor="password"
-                className="form-label text-lg fw-medium color-palette-1 mb-10"
+                className="form-label text-lg font-medium text-black mb-4"
               >
                 Password
               </label>
@@ -111,18 +114,34 @@ export default function AddUser() {
                 type="password"
                 className="form-control text-lg form-user-control"
                 value={password}
-                placeholder="Enter user password"
+                placeholder="Masukkan password kamu"
                 onChange={(event) => setPassword(event.target.value)}
               />
             </div>
 
-            <div className="mt-30 d-flex flex-row-reverse">
+            <div className="form-label-input  mt-8">
+              <label
+                htmlFor="Nomor Handphone"
+                className="form-label text-lg font-medium text-black mb-4"
+              >
+                Nomor Handphone
+              </label>
+              <input
+                type="number"
+                className="form-control text-lg form-user-control"
+                value={phoneNumber}
+                placeholder="Masukkan nomor handphone kamu"
+                onChange={(event) => setphoneNumber(event.target.value)}
+              />
+            </div>
+
+            <div className="mt-8 d-flex flex-row-reverse">
               <button
                 type="button"
-                className="btn fw-medium text-lg color-pallete-1 text-white"
+                className="btn font-medium text-lg text-white bg-primary1 rounded-full px-5"
                 onClick={onSubmit}
               >
-                Add User
+                Tambah Pengguna
               </button>
             </div>
           </div>

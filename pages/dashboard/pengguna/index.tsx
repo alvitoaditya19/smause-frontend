@@ -1,13 +1,22 @@
 import axios from "axios";
 import Link from "next/link";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { SetStateAction, useEffect, useState } from "react";
 import ReactLoading from "react-loading";
 import ReactPaginate from "react-paginate";
+import Cookies from "js-cookie";
+
 import { Header, Sidebar } from "../../../components";
-import { DestroyUser, getDataUser } from "../../../services/dashboard";
+import { DestroyUser, getAllDataUser, getDataUser } from "../../../services/dashboard";
 
 interface UserStateTypes{
-
+  _id: string;
+  name: string;
+  email: string;
+  username:string;
+  status:string;
+  avatar: any;
 }
 
 export default function User() {
@@ -27,22 +36,37 @@ export default function User() {
   let statusUser = "admin";
 
   useEffect(() => {
-    const getComments = async () => {
+    const token = Cookies.get("token");
+
+    const jwtToken = atob(token);
+    const getDataUser = async () => {
       setIsLoading(true);
-      axios
-        .get(`https://randomuser.me/api/`)
-        .then((res) => {
-          setIsLoading(false);
-          let data = res.data;
-          console.log(data);
-          // setItems(data.data);
-        })
-        .catch((err) => {
-          console.log("err get in progress: ", err);
-        });
+      // axios
+      //   .get(`http://localhost:4000/api/v1/users`,
+      //   { headers: { Authorization: `Bearer ${jwtToken}` } })
+      //   .then((res) => {
+      //     setIsLoading(false);
+      //     let dataUser = res.data.data;
+      //     console.log(dataUser);
+      //     setItems(dataUser);
+      //   })
+      //   .catch((err) => {
+      //     console.log("err get in progress: ", err);
+      //   });
+      const data = await getAllDataUser();
+      console.log("sasoajoisj", data)
+
+      if (data.error) {
+        toast.error(data.message);
+      } else {
+        toast.success('Register Berhasil');
+        console.log("sss",data)
+        setIsLoading(false);
+        setItems(data.data);
+      }
     };
 
-    getComments();
+    getDataUser();
   }, [limit]);
   const fetchComments = async (currentPage:any) => {
     const res = await fetch(
@@ -105,21 +129,21 @@ export default function User() {
           {/* <input id="search-box" onChange={filterBySearch} /> */}
           <section className="px-3">
             <div className="header">
-           <h3 className="text-3xl text-black font-bold">Pengguna</h3>
+              <h3 className="text-3xl text-black font-bold">Pengguna</h3>
               <p className=" text-base text-grey2 mt-1">Kelola data tanaman sebaik mungkin</p>
             </div>
           </section>
           <section className="mt-8 mb-10">
             <div className="container-fluid lg:flex lg:justify-between flex-none justify-start">
               
-              <Link href="/dashboard/user/add-user">
+              <Link href="/dashboard/pengguna/tambah" legacyBehavior>
                 <div className="btn bg-primary1 border-0 text-white rounded-full lg:inline block px-5">Tambah Pengguna</div>
               </Link>
               <div className="lg:flex">
-                <Link href="/dashboard/user/add-user">
+                <Link href="/dashboard/pengguna/add-user" legacyBehavior>
                   <div className="btn bg-primary1 border-0 text-white lg:mr-4 mr-0 lg:my-0 my-3 rounded-full px-5 lg:inline block">File CSV (Data Enkripsi)</div>
                 </Link>
-                <Link href="/dashboard/user/add-user">
+                <Link href="/dashboard/pengguna/add-user" legacyBehavior>
                   <div className="btn bg-primary1 border-0 text-white rounded-full px-5 lg:inline block">File CSV (Data Asli)</div>
                 </Link>
               </div>
@@ -128,13 +152,14 @@ export default function User() {
 
           <div className="m-2">
             {isLoading ? (
+              <div className="justify-center mx-auto flex">
               <ReactLoading
                 type="spinningBubbles"
                 color="#4D17E2"
                 height={667}
                 width={375}
-                // className="justify-content-center text-center"
               />
+              </div>
             ) : (
               <div className="table-responsive-lg">
                 <table className="table table-borderless table-data">
@@ -150,8 +175,8 @@ export default function User() {
                   </thead>
 
                   <tbody>
-                    {items.map((item:UserStateTypes) => {
-                      return (
+                    {items.map((item:UserStateTypes) => (
+                    
                         <tr key={item._id} className="align-items-center">
                           <td>{(no = no + 1)}</td>
                           <td>{item.email}</td>
@@ -169,7 +194,7 @@ export default function User() {
                             )}
                           </td>
                           <td>
-                            <Link href={`/dashboard/user/edit/${item._id}`}>
+                            <Link href={`/dashboard/pengguna/edit/${item._id}`} legacyBehavior  >
                               <a className="btn-edit-user">Edit</a>
                             </Link>
 
@@ -181,27 +206,12 @@ export default function User() {
                             </button>
                           </td>
                         </tr>
-                      );
-                    })}
+                  
+                    ))}
                   </tbody>
                 </table>
               </div>
             )}
-            {/* {items.map((item) => {
-          return (
-            <div key={item.id} className="col-sm-6 col-md-4 v my-2">
-              <div className="card shadow-sm w-100" style={{ minHeight: 225 }}>
-                <div className="card-body">
-                  <h5 className="card-title text-center h2">Id :{item.id} </h5>
-                  <h6 className="card-subtitle mb-2 text-muted text-center">
-                    {item.email}
-                  </h6>
-                  <p className="card-text">{item.body}</p>
-                </div>
-              </div>
-            </div>
-          );
-        })} */}
           </div>
 
           <ReactPaginate

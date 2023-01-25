@@ -22,22 +22,24 @@ export default function SignInForm() {
       toast.error("Email dan Password wajib diisi!!!!!");
     } else {
       const response = await setLogin(data);
+
       if (response.error) {
         toast.error(response.message);
-        console.log(response.message);
       } else {
-        const response = await setLogin(data);
-        if (response.error) {
-          toast.error(response.message);
-        } else {
-          toast.success("Login Berhasil");
-          const { token } = response.data;
+        const { token } = response.data;
+        let decodedHeader: any = jwt_decode(token);
+        let statusUser = decodedHeader.user.status;
+        console.log("statusku : ", statusUser)
+  
+        if (statusUser == "user") {
+          toast.error('Anda tidak diizinkan untuk mengakses sistem dashboard ini');
+  
+          router.push('/not-found');
+        } else if(statusUser == "admin"){
+          toast.success('Login Berhasil');
+          // const { token } = response.data;
           const tokenBase64 = btoa(token);
-
-          const decodedHeader = jwt_decode(token);
-          console.log(decodedHeader.user);
-
-          Cookies.set("token", tokenBase64, { expires: 1 });
+          Cookies.set('token', tokenBase64, { expires: 1 });
           router.push('/dashboard');
         }
       }
@@ -60,7 +62,7 @@ export default function SignInForm() {
           <input
             type="email"
             className="form-control rounded-full text-lg bg-background4"
-            placeholder="Enter your email address"
+            placeholder="Masukkan alamat email anda"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
           />
@@ -75,7 +77,7 @@ export default function SignInForm() {
           <input
             type="password"
             className="form-control rounded-full text-lg bg-background4"
-            placeholder="Your password"
+            placeholder="Masukkan password anda"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
           />
@@ -88,17 +90,16 @@ export default function SignInForm() {
           >
             Continue to Sign In
           </button> */}
-          <Link href="/dashboard" legacyBehavior>
-            <a
-              className="btn btn-sign-in font-medium text-lg text-white rounded-full mb-4"
-              role="button"
-            >
-              Continue to Sign In
-            </a>
-          </Link>
+          <button
+            type="button"
+            className="btn btn-sign-in font-medium text-lg text-white rounded-full mb-4"
+            onClick={onSubmit}
+          >
+            Continue to Sign In
+          </button>
           <Link href="/" legacyBehavior>
             <a
-              className="btn btn-sign-up font-medium text-lg text-black rounded-full"
+              className="btn btn-go-home font-medium text-lg text-black rounded-full"
               role="button"
             >
               Go To Home Page

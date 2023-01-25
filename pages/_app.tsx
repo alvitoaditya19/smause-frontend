@@ -3,8 +3,7 @@ import '../styles/home-page.css';
 import '../styles/sign-in.css';
 import '../styles/utilities.css';
 import '../styles/dashboard.css';
-
-
+import '../styles/edit-profile.css';
 
 import type { AppProps } from 'next/app'
 import { ToastContainer } from "react-toastify";

@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { CSVLink } from "react-csv";
 import jwtDecode from "jwt-decode";
+import Link from "next/link";
 
 import ReactLoading from "react-loading";
 import ReactPaginate from "react-paginate";
@@ -26,70 +27,61 @@ export default function Air() {
   const [pageCount, setpageCount] = useState(0);
 
   let limit = 10;
+  let no = 0;
+  let statusUser = "admin";
 
   useEffect(() => {
     const getComments = async () => {
       setIsLoading(true);
-      const token = Cookies.get("token");
-
-      const jwtToken = atob(token);
-
       axios
-        .get(
-          `http://localhost:3000/api/v1/temperatures?page=1&limit=${limit}`,
-          { headers: { Authorization: `Bearer ${jwtToken}` } }
-        )
+        .get(`https://randomuser.me/api/`)
         .then((res) => {
           setIsLoading(false);
-          let dataTemperature = res.data;
-
-          setpageCount(Math.ceil(dataTemperature.total / limit));
-          setTotalData(dataTemperature.total);
-          setItems(dataTemperature.data);
+          let data = res.data;
+          console.log(data);
+          // setItems(data.data);
         })
         .catch((err) => {
           console.log("err get in progress: ", err);
         });
     };
-    const getAllData = async () => {
-      const token = Cookies.get("token");
-
-      const allDataSuhu = await GetAllDataTemperature(token);
-      setAllItems(allDataSuhu.data.data);
-    };
-
-    getAllData();
 
     getComments();
-  }, []);
-  const fetchComments = async (currentPage) => {
-    const token = Cookies.get('token');
-
-    const allDataSuhu = await GetCustomDataTemperature(token,limit,currentPage);
-
-    return allDataSuhu.data.data;
+  }, [limit]);
+  const fetchComments = async (currentPage:any) => {
+    const res = await fetch(
+      // `http://localhost:3004/comments?_page=${currentPage}&_limit=${limit}`
+      `http://localhost:3000/api/v1/users/?limit=${limit}`
+    );
+    const data = await res.json();
+    return data;
   };
 
-  const handlePageClick = async (data) => {
+  const handlePageClick = async (data:string) => {
+    // console.log(data.selected);
+
     let currentPage = data.selected + 1;
+
     const commentsFormServer = await fetchComments(currentPage);
+
     setItems(commentsFormServer);
+    // scroll to the top
+    //window.scrollTo(0, 0)
   };
 
-  const filterBySearch =async (event) => {
+  const filterBySearch = (event:React.ChangeEvent<HTMLInputElement>) => {
+    // Access input value
     const query = event.target.value;
-    const token = Cookies.get("token");
-
-    const jwtToken = atob(token);
+    // Create copy of item list
     axios
-      .get(`http://localhost:3000/api/v1/temperatures` , { headers: { Authorization: `Bearer ${jwtToken}`}})
+      .get(`http://localhost:3000/api/v1/users/?limit=${limit}`)
       .then((res) => {
+        console.log("DATAAA: ", res.data.data);
         let updatedList = [...res.data.data];
-
         // Include all elements which includes the search query
         updatedList = updatedList.filter((item) => {
           return (
-            item.date.toString().toLowerCase().indexOf(query.toLowerCase()) !==
+            item.name.toString().toLowerCase().indexOf(query.toLowerCase()) !==
             -1
           );
         });
@@ -97,7 +89,6 @@ export default function Air() {
       });
   };
   const notifyDownload = () => toast.success("Berhasil download data Suhu");
-
   return (
     <>
       {/* Navbar */}
@@ -105,7 +96,7 @@ export default function Air() {
         <Sidebar
           toggleViewMode={toggleViewMode}
           toggleNavbar={toggleNavbar}
-          activeMenu="temperature"
+          activeMenu="Air"
         />
         {/* Main Content */}
         <div className="content">
@@ -116,30 +107,35 @@ export default function Air() {
           />
           {/* <input id="search-box" onChange={filterBySearch} /> */}
           <section className="p-3">
-            <div className="header">
-              <div className="d-flex justify-content-between align-items-center">
-                <div>
-                  <h3>Air</h3>
-                  <p>Manage data for growth</p>
-                </div>
-                <h3>Total : {totalData}</h3>
+            <div className="header justify-between flex-row items-center">
+              <div className="">
+                <h3 className="text-3xl text-black font-bold">Air</h3>
+                <p className=" text-base text-grey2 mt-1">Kelola data tanaman sebaik mungkin</p>
               </div>
+              <h3 className="text-base text-grey2 mt-1">Total : {totalData}</h3>
             </div>
           </section>
-          <section className=" mb-20">
-            <div className="container-fluid gap-2">
+          <section className="mt-4 mb-10">
+            <div className="container-fluid lg:flex flex-none justify-start">
               <CSVLink
-                data={allItems}
-                className="btn color-pallete-1 border-0 text-white"
-                filename={"Temperature-data.csv"}
-                onClick={notifyDownload}
-              >
-                Download Data CSV
-              </CSVLink>
+                  data={allItems}
+                  className="btn bg-primary1 border-0 text-white rounded-full px-5 lg:inline block lg:mr-4 mr-0"
+                  filename={"Temperature-data.csv"}
+                  onClick={notifyDownload}
+                >
+                  File CSV (Data Asli)
+                </CSVLink>
+                <CSVLink
+                  data={allItems}
+                  className="btn bg-primary1 border-0 text-white rounded-full px-5 lg:inline block lg:mt-0 mt-3"
+                  filename={"Temperature-data.csv"}
+                  onClick={notifyDownload}
+                >
+                  File CSV (Data Enkripsi)
+                </CSVLink>
             </div>
           </section>
-
-          <div className="row m-2 justify-content-center">
+          <div className="m-2 ">
             {isLoading ? (
               <ReactLoading
                 type="spinningBubbles"

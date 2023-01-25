@@ -1,6 +1,7 @@
 import React, { ChangeEventHandler, MouseEventHandler, useState } from "react";
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/router';
+import Link from "next/link";
 
 export interface  HeaderProps {
   toggleNavbar: MouseEventHandler<HTMLButtonElement>;
@@ -8,7 +9,7 @@ export interface  HeaderProps {
   isFilter: boolean;
 }
 
-export default function Header({ toggleNavbar, filterBySearch, isFilter }:HeaderProps) {
+export default function Header({ toggleNavbar, filterBySearch, isFilter }:Partial<HeaderProps>) {
   const [filter, setFilter] = useState(false);
   const router = useRouter();
 
@@ -90,16 +91,16 @@ export default function Header({ toggleNavbar, filterBySearch, isFilter }:Header
                 className="dropdown-menu dropdown-menu-center"
                 aria-labelledby="dropdownProfile1"
               >
-                <li>
+                <Link href="/dashboard" legacyBehavior>
                   <a className="dropdown-item text-black" href="#">
                     Dashboard
                   </a>
-                </li>
-                <li>
+                </Link>
+                <Link  href="/dashboard/edit-profile" legacyBehavior>
                   <a className="dropdown-item text-black" href="#">
-                    Settings
+                    Edit Profile
                   </a>
-                </li>
+                </Link>
                 <li>
                   <a className="dropdown-item text-black" href="#">
                     Help

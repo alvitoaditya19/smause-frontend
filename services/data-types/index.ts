@@ -47,7 +47,7 @@ export interface UserTypes {
 }
 
 export interface JWTPayloadTypes{
-  player:UserTypes,
+  user:UserTypes,
   iat: number,
 }
 

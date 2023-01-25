@@ -2,7 +2,18 @@ import React from 'react';
 import cx from "classnames";
 import Link from "next/link";
 
-export default function SidebarItem({icon, title, href, active}:any) {
+interface SidebarItemProps{
+  icon:string;
+  title:string;
+  href: string;
+  active:boolean;
+  onClick?: () => void;
+
+}
+
+export default function SidebarItem(props:Partial<SidebarItemProps>) {
+  const { icon, title, href = '/', active } = props;
+
   const classItem = cx({
     "item-menu": true,
     // "mb-30": true,

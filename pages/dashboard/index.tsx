@@ -23,7 +23,6 @@ export default function Dashboard() {
   const [data, setdata] = useState();
 
 
-
   const toggleNavbar = () => {
     setToggleViewMode(!toggleViewMode);
   };

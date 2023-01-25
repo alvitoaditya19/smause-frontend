@@ -1,4 +1,6 @@
 import { SidebarItem } from "../../atoms";
+import Cookies from 'js-cookie';
+import { useRouter } from 'next/router';
 
 export interface  SidebarProps {
   toggleViewMode: boolean;
@@ -6,6 +8,11 @@ export interface  SidebarProps {
   toggleNavbar: any;
 }
 export default function Sidebar({ toggleViewMode, activeMenu,toggleNavbar }:SidebarProps) {
+  const router = useRouter();
+  const onLogOut = () => {
+    Cookies.remove('token');
+    router.push('/');
+  };
   return (
     <>
       <div className={toggleViewMode ? "sidebar active" : "sidebar"}>
@@ -43,19 +50,24 @@ export default function Sidebar({ toggleViewMode, activeMenu,toggleNavbar }:Side
           <div className="menu">
             <p>Others</p>
             <SidebarItem
-              icon="icon ic-temp"
-              title="Settings"
-              href="/dashboard/setting"
-              active={activeMenu == "setting"}
+              icon="icon ic-setting"
+              title="Pengaturan"
+              href="/dashboard/pengaturan"
+              active={activeMenu == "Pengaturan"}
             />
-            <a href="#" className="item-menu">
-              <i className="icon ic-help"></i>
-              Help
-            </a>
-            <a href="#" className="item-menu">
-              <i className="icon ic-logout"></i>
-              Logout
-            </a>
+            <SidebarItem
+              icon="icon ic-help"
+              title="Bantuan"
+              href="/dashboard/bantuan"
+              active={activeMenu == "Bantuan"}
+            />
+            <SidebarItem
+              icon="icon ic-out"
+              title="Keluar"
+
+              active={activeMenu == "Keluar"}
+              onClick={onLogOut}
+            />
           </div>
         </div>
       </div>

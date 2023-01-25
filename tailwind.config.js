@@ -28,7 +28,9 @@ module.exports = {
       background4: "#E7EAF5",
       grey1:"#E7EAF5",
       grey2:"#808DBC",
-      grey3:"#CACAF4C",
+      grey3:"#CACAF4",
+      grey4:"#D3D5DD",
+
 
       white: colors.white,
       slate: colors.slate,
