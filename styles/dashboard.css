@@ -1,15 +1,61 @@
-table {
-  border-spacing: 4px;
-  border-collapse:separate;
+/* Selected */
+.css-13cymwt-control {
+  background-color: #E7EAF5 !important;
+  border: none !important;
+  border-radius: 1000px !important;
+  -webkit-border-radius: 1000px !important;
+  -moz-border-radius: 1000px !important;
+  -ms-border-radius: 1000px !important;
+  -o-border-radius: 1000px !important;
+}
+
+.css-t3ipsp-control {
+  background-color: #E7EAF5 !important;
+  border-radius: 1000px !important;
+  border: 0px !important;
+  box-shadow: none !important;
+}
+
+.css-t3ipsp-control:hover {
+  background-color: #E7EAF5 !important;
+  border-radius: 1000px !important;
+
+  border: 0px !important;
+}
+
+.css-1fdsijx-ValueContainer {
+  padding: 0.75rem 1.625rem !important;
+}
+
+.css-tj5bde-Svg {
+  fill: #0D1458 !important;
 }
 
 
-.table thead th{
+/* Table */
+table {
+  border-spacing: 4px;
+  border-collapse: separate;
+}
+
+.table thead th {
   border-bottom: none !important;
   border-top: none #dee2e6 !important;
 }
 
+.table th,
+.table td {
+  border-top: none;
+
+}
+
 /* pagination */
+.page-item.active .page-link {
+  background-color: #4D17E2;
+  border-color: #4D17E2;
+  color: #ffffff !important;
+}
+
 .page-item.disabled .page-link {
   color: #808DBC !important;
 }
@@ -18,30 +64,32 @@ table {
   color: #4D17E2 !important;
 }
 
-#gradient-chart{
-  background: rgb(77,23,226);
-  background: linear-gradient(180deg, rgba(77,23,226,1) 6%, rgba(255,255,255,1) 96%);
+#gradient-chart {
+  background: rgb(77, 23, 226);
+  background: linear-gradient(180deg, rgba(77, 23, 226, 1) 6%, rgba(255, 255, 255, 1) 96%);
 }
+
 .dashboard {
   background: #F9F9FF;
   margin: 0;
 }
 
-.dashboard .summary-card{
+.dashboard .summary-card {
   background-color: #F4F7FF;
   padding: 1.875rem;
   border-radius: 1rem;
 }
 
-.table-data{
-  background-color:#F9F9FF;
-  border-radius:16px;
+.table-data {
+  background-color: #F9F9FF;
+  border-radius: 16px;
   padding: 20px 30px;
 }
 
 .navbar-toggler-icon {
   background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(13,20,88,1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E");
 }
+
 .sidebar {
   width: 320px;
   color: #fff;
@@ -57,7 +105,7 @@ table {
   padding: 0;
 }
 
-.menu > p {
+.menu>p {
   color: #808DBC;
   font-size: 14px;
   padding-left: 40px;
@@ -136,7 +184,7 @@ table {
   background-color: #F9F9FF;
 }
 
-.search::placeholder{
+.search::placeholder {
   color: #808DBC;
 
 }
@@ -274,73 +322,76 @@ table {
   border: 0px;
 }
 
-.card-body{
+.card-body {
   padding: 0px;
 }
 
-.header .card-monitoring{
-  background-color:#F4F7FF;
-  padding:20px;
-  border-radius:16px;
-  margin-top:16px;
+.header .card-monitoring {
+  background-color: #F4F7FF;
+  padding: 20px;
+  border-radius: 16px;
+  margin-top: 16px;
 }
 
-.header .card-monitoring .card-body h1{
+.header .card-monitoring .card-body h1 {
   font-size: 18px;
-  color:#0D1458;
-  margin-bottom:6px;
+  color: #0D1458;
+  margin-bottom: 6px;
   font-weight: 500;
 }
 
 @media (max-width: 1024px) {
-  .header .card-monitoring .card-body h1{
+  .header .card-monitoring .card-body h1 {
     font-size: 16px;
   }
 }
 
-.header .card-monitoring .card-body .data-value{
+.header .card-monitoring .card-body .data-value {
   font-size: 24px;
-  color:#ffffff;
-  margin-bottom:3px;
-  font-weight:600px;
- 
+  color: #ffffff;
+  margin-bottom: 3px;
+  font-weight: 600px;
+
 }
 
-.header .card-monitoring .card-body .data-unit{
+.header .card-monitoring .card-body .data-unit {
   font-size: 16px;
-  color:#ffffff;
- 
+  color: #ffffff;
+
 }
-button.btn-control { background: unset !important;
+
+button.btn-control {
+  background: unset !important;
   border: unset !important;
-  outline: unset !important; }
-
-.card-control{
-  background-color:#4D17E2;
-  border-radius:16px;
-
-  margin-top:16px;
+  outline: unset !important;
 }
 
- .card-control .card-body h1{
-  color:#ffffff;
-  margin-top:4px;
+.card-control {
+  background-color: #4D17E2;
+  border-radius: 16px;
+
+  margin-top: 16px;
 }
 
-.card-control-off{
-  background-color:#F4F7FF;
-  border-radius:16px;
-  margin-top:16px;
+.card-control .card-body h1 {
+  color: #ffffff;
+  margin-top: 4px;
 }
 
- .card-control-off .card-body h1{
-  color:#4D17E2;
-  margin-top:4px;
+.card-control-off {
+  background-color: #F4F7FF;
+  border-radius: 16px;
+  margin-top: 16px;
+}
+
+.card-control-off .card-body h1 {
+  color: #4D17E2;
+  margin-top: 4px;
 }
 
 
 /* USER DASHBOARD */
-button.btn-search:focus-within{
+button.btn-search:focus-within {
   border: 1px solid white;
 }
 
@@ -348,90 +399,93 @@ button.btn-search:focus-within{
   vertical-align: middle;
 }
 
-.user-card{
-  padding:6px 8px;
+.user-card {
+  padding: 6px 8px;
   background: #4D17E2;
-  color:#fff;
-  border-radius:100px;
-}
-.user-card h1{
-  font-size: 16px;
-  text-align: center;
-  margin:0px;
+  color: #fff;
+  border-radius: 100px;
 }
 
-.admin-card{
-  padding:6px 8px;
+.user-card h1 {
+  font-size: 16px;
+  text-align: center;
+  margin: 0px;
+}
+
+.admin-card {
+  padding: 6px 8px;
 
   background: #32E04D;
-  color:#fff;
-  border-radius:100px;
+  color: #fff;
+  border-radius: 100px;
 }
 
-.admin-card h1{
+.admin-card h1 {
   font-size: 16px;
   text-align: center;
-  margin:0px;
+  margin: 0px;
 }
 
 .btn-edit-user {
-  padding:6px 24px;
+  padding: 6px 24px;
   font-size: 16px;
-  text-decoration:none;
+  text-decoration: none;
   background: #ECE31A;
-  color:#fff;
-  border-radius:100px;
-  margin-right:12px;
+  color: #fff;
+  border-radius: 100px;
+  margin-right: 12px;
 }
 
 .btn-edit-user:hover {
-  color:#fff;
+  color: #fff;
 }
 
 .btn-delete-user {
-  padding:6px 24px;
+  padding: 6px 24px;
   font-size: 16px;
-  text-decoration:none;
+  text-decoration: none;
   background: #EA2F15;
-  border:0px;
-  color:#fff;
-  border-radius:100px;
+  border: 0px;
+  color: #fff;
+  border-radius: 100px;
 }
 
 .btn-delete-user:hover {
-  color:#fff;
+  color: #fff;
 }
 
 
 @media (max-width: 1024px) {
-  .admin-card h1{
+  .admin-card h1 {
     font-size: 14px;
   }
 
-  .user-card h1{
+  .user-card h1 {
     font-size: 14px;
   }
+
   .btn-edit-user {
     font-size: 14px;
   }
+
   .btn-delete-user {
     font-size: 14px;
-    margin-top:10px;
+    margin-top: 10px;
   }
 }
 
 /* Add User + Edit User */
-.form-data-user{
-  border-radius:16px;
-  padding:30px;
-  background-color:#F9F9FF;
+.form-data-user {
+  border-radius: 16px;
+  padding: 30px;
+  background-color: #F9F9FF;
 }
 
-.form-data-user .form-control{
+.form-data-user .form-control {
   border: none;
   padding: 0.75rem 1.625rem;
   color: #1A1640;
-  background-color:#E7EAF5 !important;
+  background-color: #E7EAF5 !important;
   border-radius: 1000px;
   -webkit-border-radius: 1000px;
   -moz-border-radius: 1000px;
@@ -439,13 +493,21 @@ button.btn-search:focus-within{
   -o-border-radius: 1000px;
 }
 
-.form-data-user .form-control:focus-within{
+.form-data-user .email {
+  background-color: #D3D5DD !important;
+  border: none;
+  padding: 0.75rem 1.625rem;
+  color: #1A1640;
+  border-radius: 1000px;
+}
+
+.form-data-user .form-control:focus-within {
   color: #1A1640;
   background-color: #E7EAF5 !important;
   border: 0;
   box-shadow: none;
 }
 
-.form-data-user .form-control::placeholder{
+.form-data-user .form-control::placeholder {
   color: #0D1458;
 }

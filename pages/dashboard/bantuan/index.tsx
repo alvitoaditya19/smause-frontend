@@ -27,7 +27,7 @@ export default function Help() {
                     <div className="container">
                         <div className=" flex h-screen">
                             <div className="m-auto text-center justify-center">                       
-                                <Image src="/images/img-robot.png" className="img-fluid inline" height={300} width={400} alt='robot' />
+                                <Image src="/images/not-found.png" className="img-fluid inline" height={200} width={320} alt='robot' />
                                 <h1 className="title-home-page font-semibold mt-3">
                                     Kamu perlu bantuan???
                                 </h1>

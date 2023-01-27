@@ -10,6 +10,7 @@ import "react-toastify/dist/ReactToastify.css";
 import jwtDecode from 'jwt-decode';
 import { PieChart, Pie, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import Chart from "../../components/atoms/Chart";
+import { GetLamp, SetLamp } from "../../services/dashboard";
 
 
 export default function Dashboard() {
@@ -17,10 +18,10 @@ export default function Dashboard() {
 
   const [toggleViewMode, setToggleViewMode] = useState(false);
   const [lamp1, setDataLamp1] = useState(false);
-  const [dataLamp2, setDataLamp2] = useState(false);
+  const [lamp2, setDataLamp2] = useState(false);
 
   const [temperature, setTemperature] = useState([]);
-  const [data, setdata] = useState();
+  const [dataSuhu, setdataSuhu] = useState([]);
 
 
   const toggleNavbar = () => {
@@ -29,39 +30,116 @@ export default function Dashboard() {
 
   const dataku = [
     {
-      name:"senin",
-      priceUsd:300,
+      name: "senin",
+      priceUsd: 300,
     },
     {
-      name:"selasa",
-      priceUsd:100,
+      name: "selasa",
+      priceUsd: 100,
     },
     {
-      name:"rabu",
-      priceUsd:300,
+      name: "rabu",
+      priceUsd: 300,
     },
     {
-      name:"kamis",
-      priceUsd:50,
+      name: "kamis",
+      priceUsd: 50,
     },
     {
-      name:"jumat",
-      priceUsd:500,
+      name: "jumat",
+      priceUsd: 500,
     },
     {
-      name:"sabtu",
-      priceUsd:50,
+      name: "sabtu",
+      priceUsd: 50,
     }
   ]
 
+  var lampuStatus = lamp1;
+  var lampuStatus2 = lamp2;
+
+  const WAIT_TIME = 5000;
+
+  const submitLamp1 = async () => {
+    const data = {
+      lamp1: lampuStatus,
+      // lamp2: dataLamp2 === "ON" ? "OFF" : "ON",
+    };
+
+    const dataValue = {
+      lamp1: data.lamp1 === true ? "OFF" : "ON",
+    };
+
+    const response = await SetLamp(dataValue);
+
+    if (response.error) {
+      toast.error(response.message);
+    } else {
+      console.log("ya allah", response.data.lamp1);
+      if (response.data.lamp1 == "ON") {
+        setDataLamp1(true);
+      } else {
+        setDataLamp1(false);
+      }
+      lampuStatus = !lampuStatus;
+    }
+  };
+  const getStatusLamp1 = useCallback(async () => {
+    const data = await GetLamp();
+
+    if (data.data.lamp1 == "ON") {
+      setDataLamp1(true);
+    } else {
+      setDataLamp1(false);
+    }
+  }, [GetLamp]);
+
+  const submitLamp2 = async () => {
+    const data = {
+      lamp2: lampuStatus2,
+      // lamp2: dataLamp2 === "ON" ? "OFF" : "ON",
+    };
+
+    const dataValue = {
+      lamp2: data.lamp2 === true ? "OFF" : "ON",
+    };
+
+    const response = await SetLamp(dataValue);
+
+    if (response.error) {
+      toast.error(response.message);
+    } else {
+      console.log("ya allah", response.data.lamp1);
+      if (response.data.lamp2 == "ON") {
+        setDataLamp2(true);
+      } else {
+        setDataLamp2(false);
+      }
+      lampuStatus2 = !lampuStatus2;
+    }
+  };
+  const getStatusLamp2 = useCallback(async () => {
+    const data = await GetLamp();
+
+    if (data.data.lamp2 == "ON") {
+      setDataLamp2(true);
+    } else {
+      setDataLamp2(false);
+    }
+  }, [GetLamp]);
+
   useEffect(() => {
+    getStatusLamp1();
+    getStatusLamp2();
+
+
     const fetchDatas = async () => {
       const res = await fetch("https://api.coincap.io/v2/assets/?limit=10");
       const data = await res.json();
       // console.log(data);
       // setdata(data?.data);
       console.log(dataku);
-      setdata(dataku);
+      setdataSuhu(dataku);
     };
     fetchDatas();
   }, []);
@@ -108,6 +186,7 @@ export default function Dashboard() {
                   <div className="flex flex-wrap justify-start items-center -mx-2">
                     <button
                       className="lg:w-1/3 w-1/2 btn-control px-2"
+                      onClick={submitLamp1}
 
                       type="button"
                     >
@@ -128,19 +207,20 @@ export default function Dashboard() {
                     </button>
                     <button
                       className="lg:w-1/3 w-1/2 btn-control px-2"
+                      onClick={submitLamp2}
 
                       type="button"
                     >
                       {/* <div className="col-md-12 card-control"> */}
                       <div
                         className={
-                          lamp1
+                          lamp2
                             ? "w-full card-control p-3 justify-center lg:mr-4 mr-2"
                             : "w-full card-control-off p-3 justify-center lg:mr-4 mr-10"
                         }
                       >
                         <div className="card-body text-center inline-block">
-                          {lamp1 ? <IcLampInact /> : <IcLampAct />}
+                          {lamp2 ? <IcLampInact /> : <IcLampAct />}
 
                           <h1 className="lg:text-xl text-lg">Lamp 1</h1>
                         </div>
@@ -155,10 +235,10 @@ export default function Dashboard() {
             <h1 className="text-2xl font-semibold text-black lg:mb-2 mb-0">Pemantauan Data</h1>
             <div className="flex flex-wrap justify-start items-center -mx-2">
               <div className="w-full md:w-1/2 px-3 lg:mb-0 mb-4">
-                <Chart data={data} title="Suhu" />
+                <Chart data={dataSuhu} title="Suhu" />
               </div>
               <div className="w-full md:w-1/2 px-3 lg:mb-0 mb-4">
-                <Chart data={data} title="Kelembapan Udara"/>
+                <Chart data={dataSuhu} title="Kelembapan Udara" />
               </div>
             </div>
 

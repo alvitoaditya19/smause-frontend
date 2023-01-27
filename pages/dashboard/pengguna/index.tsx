@@ -8,20 +8,21 @@ import ReactPaginate from "react-paginate";
 import Cookies from "js-cookie";
 
 import { Header, Sidebar } from "../../../components";
-import { DestroyUser, getAllDataUser, getDataUser } from "../../../services/dashboard";
+import { DestroyUser, getAllDataUser, getCustomDataUser, getDataForUser, getDataUser, getDetailUser, getLimitDataUser } from "../../../services/dashboard";
 
-interface UserStateTypes{
+interface UserStateTypes {
   _id: string;
   name: string;
   email: string;
-  username:string;
-  status:string;
+  username: string;
+  status: string;
   avatar: any;
+  no: number;
 }
 
 export default function User() {
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const [toggleViewMode, setToggleViewMode] = useState(false);
   const toggleNavbar = () => {
     setToggleViewMode(!toggleViewMode);
@@ -29,76 +30,82 @@ export default function User() {
   const [items, setItems] = useState([]);
 
   const [pageCount, setpageCount] = useState(0);
-  
 
-  let limit = 10;
+  const [allItems, setAllItems] = useState([]);
+
+  const [totalData, setTotalData] = useState(0);
+
+
+
+  let limit = 2;
+  let testing = [0,1,2,3,4,5,6];
+
   let no = 0;
   let statusUser = "admin";
 
+
   useEffect(() => {
-    const token = Cookies.get("token");
 
-    const jwtToken = atob(token);
     const getDataUser = async () => {
-      setIsLoading(true);
-      // axios
-      //   .get(`http://localhost:4000/api/v1/users`,
-      //   { headers: { Authorization: `Bearer ${jwtToken}` } })
-      //   .then((res) => {
-      //     setIsLoading(false);
-      //     let dataUser = res.data.data;
-      //     console.log(dataUser);
-      //     setItems(dataUser);
-      //   })
-      //   .catch((err) => {
-      //     console.log("err get in progress: ", err);
-      //   });
-      const data = await getAllDataUser();
-      console.log("sasoajoisj", data)
+      const token = Cookies.get("token");
 
-      if (data.error) {
-        toast.error(data.message);
-      } else {
-        toast.success('Register Berhasil');
-        console.log("sss",data)
-        setIsLoading(false);
-        setItems(data.data);
-      }
+      const jwtToken = atob(token);
+      console.log("my token asli", token)
+
+      console.log("my token", jwtToken)
+      setIsLoading(true);
+      axios
+        .get(`http://localhost:4000/api/v1/users?page=1&limit=${limit}`,
+          { headers: { Authorization: `Bearer ${jwtToken}` } })
+        .then((res) => {
+          setIsLoading(false);
+          let dataUser = res.data;
+
+          console.log("plilsss", dataUser)
+
+          setpageCount(Math.ceil(dataUser.total / limit));
+          setTotalData(dataUser.total);
+          setItems(dataUser.data);
+        })
+        .catch((err) => {
+          console.log("err get in progress: ", err);
+        });
+      // const data = await getAllDataUser();
+
+      // if (data.error) {
+      //   toast.error(data.message);
+      // } else {
+      //   console.log("sss", data)
+      //   setIsLoading(false);
+      //   setItems(data.data);
+      // }
     };
 
     getDataUser();
   }, [limit]);
-  const fetchComments = async (currentPage:any) => {
-    const res = await fetch(
-      // `http://localhost:3004/comments?_page=${currentPage}&_limit=${limit}`
-      `http://localhost:3000/api/v1/users/?limit=${limit}`
-    );
-    const data = await res.json();
-    return data;
+  const fetchComments = async (currentPage: any) => {
+    const token = Cookies.get('token');
+
+    const allDataUser = await getCustomDataUser(token, limit, currentPage);
+    return allDataUser.data.data;
   };
 
-  const handlePageClick = async (data:string) => {
-    // console.log(data.selected);
-
+  const handlePageClick = async (data: any) => {
     let currentPage = data.selected + 1;
-
     const commentsFormServer = await fetchComments(currentPage);
-
     setItems(commentsFormServer);
-    // scroll to the top
-    //window.scrollTo(0, 0)
   };
 
-  const filterBySearch = (event:React.ChangeEvent<HTMLInputElement>) => {
-    // Access input value
+  const filterBySearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value;
-    // Create copy of item list
+    const token = Cookies.get("token");
+
+    const jwtToken = atob(token);
     axios
-      .get(`http://localhost:3000/api/v1/users/?limit=${limit}`)
+      .get(`http://localhost:4000/api/v1/users`,
+        { headers: { Authorization: `Bearer ${jwtToken}` } })
       .then((res) => {
-        console.log("DATAAA: ", res.data.data);
         let updatedList = [...res.data.data];
-        // Include all elements which includes the search query
         updatedList = updatedList.filter((item) => {
           return (
             item.name.toString().toLowerCase().indexOf(query.toLowerCase()) !==
@@ -109,9 +116,10 @@ export default function User() {
       });
   };
 
-  const deleteUser = async (id:string) => {
+  const deleteUser = async (id: string) => {
     DestroyUser(id);
-    const user = await getDataUser();
+    const user = await getDataForUser();
+    
     setItems(user);
   };
   return (
@@ -125,17 +133,21 @@ export default function User() {
         />
         {/* Main Content */}
         <div className="content">
-          <Header toggleNavbar={toggleNavbar} filterBySearch={filterBySearch} isFilter/>
+          <Header toggleNavbar={toggleNavbar} filterBySearch={filterBySearch} isFilter />
           {/* <input id="search-box" onChange={filterBySearch} /> */}
           <section className="px-3">
-            <div className="header">
-              <h3 className="text-3xl text-black font-bold">Pengguna</h3>
-              <p className=" text-base text-grey2 mt-1">Kelola data tanaman sebaik mungkin</p>
+            <div className="header justify-between flex-row items-center">
+              <div className="">
+                <h3 className="text-3xl text-black font-bold">Pengguna</h3>
+                <p className=" text-base text-grey2 mt-1">Kelola data tanaman sebaik mungkin</p>
+              </div>
+              <h3 className="text-base text-grey2 mt-1">Total : {totalData}</h3>
             </div>
+           
           </section>
           <section className="mt-8 mb-10">
             <div className="container-fluid lg:flex lg:justify-between flex-none justify-start">
-              
+
               <Link href="/dashboard/pengguna/tambah" legacyBehavior>
                 <div className="btn bg-primary1 border-0 text-white rounded-full lg:inline block px-5">Tambah Pengguna</div>
               </Link>
@@ -153,19 +165,19 @@ export default function User() {
           <div className="m-2">
             {isLoading ? (
               <div className="justify-center mx-auto flex">
-              <ReactLoading
-                type="spinningBubbles"
-                color="#4D17E2"
-                height={667}
-                width={375}
-              />
+                <ReactLoading
+                  type="spinningBubbles"
+                  color="#4D17E2"
+                  height={667}
+                  width={375}
+                />
               </div>
             ) : (
               <div className="table-responsive-lg">
                 <table className="table table-borderless table-data">
                   <thead>
                     <tr>
-                      <th scope="col">No</th>
+                      <th scope="col">Id</th>
                       <th scope="col">Email</th>
                       <th scope="col">Name</th>
                       <th scope="col">Username</th>
@@ -175,38 +187,38 @@ export default function User() {
                   </thead>
 
                   <tbody>
-                    {items.map((item:UserStateTypes) => (
-                    
-                        <tr key={item._id} className="align-items-center">
-                          <td>{(no = no + 1)}</td>
-                          <td>{item.email}</td>
-                          <td>{item.name}</td>
-                          <td>{item.username}</td>
-                          <td>
-                            {item.status === "admin" ? (
-                              <div className="admin-card">
-                                <h1>Admin</h1>
-                              </div>
-                            ) : (
-                              <div className="user-card">
-                                <h1>User</h1>
-                              </div>
-                            )}
-                          </td>
-                          <td>
-                            <Link href={`/dashboard/pengguna/edit/${item._id}`} legacyBehavior  >
-                              <a className="btn-edit-user">Edit</a>
-                            </Link>
+                    {items.map((item: UserStateTypes) => (
 
-                            <button
-                              onClick={() => deleteUser(item._id)}
-                              className="btn-delete-user"
-                            >
-                              Delete
-                            </button>
-                          </td>
-                        </tr>
-                  
+                      <tr key={item._id} className="align-items-center">
+                        <td>{item._id} </td>
+                        <td>{item.email}</td>
+                        <td>{item.name}</td>
+                        <td>{item.username}</td>
+                        <td>
+                          {item.status === "admin" ? (
+                            <div className="admin-card">
+                              <h1>Admin</h1>
+                            </div>
+                          ) : (
+                            <div className="user-card">
+                              <h1>User</h1>
+                            </div>
+                          )}
+                        </td>
+                        <td>
+                          <Link href={`/dashboard/pengguna/edit/${item._id}`} legacyBehavior  >
+                            <a className="btn-edit-user">Edit</a>
+                          </Link>
+
+                          <button
+                            onClick={() => deleteUser(item._id)}
+                            className="btn-delete-user"
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+
                     ))}
                   </tbody>
                 </table>
@@ -216,7 +228,7 @@ export default function User() {
 
           <ReactPaginate
             previousLabel={"previous"}
-            
+
             nextLabel={"next"}
             breakLabel={"..."}
             pageCount={pageCount}

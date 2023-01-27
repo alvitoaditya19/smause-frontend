@@ -10,7 +10,7 @@ export default function AddUser() {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [phoneNumber, setphoneNumber] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
 
 
   const [toggleViewMode, setToggleViewMode] = useState(false);
@@ -34,7 +34,7 @@ export default function AddUser() {
     } else {
       toast.success("Berhasil Menambahkan Data User");
 
-      router.push("/dashboard/user");
+      router.push("/dashboard/pengguna");
     }
   };
 
@@ -131,7 +131,7 @@ export default function AddUser() {
                 className="form-control text-lg form-user-control"
                 value={phoneNumber}
                 placeholder="Masukkan nomor handphone kamu"
-                onChange={(event) => setphoneNumber(event.target.value)}
+                onChange={(event) => setPhoneNumber(event.target.value)}
               />
             </div>
 

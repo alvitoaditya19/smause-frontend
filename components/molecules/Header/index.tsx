@@ -101,11 +101,11 @@ export default function Header({ toggleNavbar, filterBySearch, isFilter }:Partia
                     Edit Profile
                   </a>
                 </Link>
-                <li>
+                <Link  href="/dashboard/bantuan" legacyBehavior>
                   <a className="dropdown-item text-black" href="#">
-                    Help
+                    Bantuan
                   </a>
-                </li>
+                </Link>
                 <li>
                   <div  className="divider"></div>
                 </li>

@@ -1,23 +1,40 @@
 // alt + shift + O
 
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Select from "react-select";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
 import { sentenceCase } from "sentence-case";
 import { Header, Sidebar } from "../../../../components";
-import {
-  getDataUser,
-  getDetailUser,
-  SetEditUser,
-} from "../../../../services/dashboard";
+import { getAllDataUser, getDataForUser, getDataUser, getDetailUser } from "../../../../services/dashboard";
+import Cookies from "js-cookie";
+import axios from "axios";
 
-export default function DetailEdit({ dataUser }) {
-  const [name, setName] = useState(dataUser.name);
-  const [email, setEmail] = useState(dataUser.email);
-  const [username, setUsername] = useState(dataUser.username);
-  const [status, setStatus] = useState(dataUser.status);
+export interface UserStateTypes{
+  _id: string;
+  name: string;
+  email: string;
+  username: string;
+  status: string;
+  avatar: any;
+  no: number;
+}
+
+// alt + shift + O
+
+
+export default function DetailEdit() {
+  const router = useRouter();
+  const { id }  = router.query;
+ 
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [status, setStatus] = useState("");
+  const [numberPhone, setNumberPhone] = useState("");
+
 
   const [toggleViewMode, setToggleViewMode] = useState(false);
   const toggleNavbar = () => {
@@ -29,10 +46,9 @@ export default function DetailEdit({ dataUser }) {
     { value: "user", label: "User" },
   ];
 
-  const handleChange = (selectedOption) => {
+  const handleChange = (selectedOption:any) => {
     setStatus(selectedOption.value);
   };
-  const router = useRouter();
 
   const onSubmit = async () => {
     const data = {
@@ -52,20 +68,37 @@ export default function DetailEdit({ dataUser }) {
     }
   };
   const colourStyles = {
-    menuList: (styles) => ({
+    menuList: (styles:any) => ({
       ...styles,
-      background: "#ffffff",
+      background: "#E7EAF5",
     }),
-    option: (styles, { isFocused, isSelected }) => ({
+    option: (styles :any, { isFocused, isSelected }:any) => ({
       ...styles,
       background: isSelected ? "#4D17E2" : undefined,
       zIndex: 1,
     }),
-    menu: (base) => ({
+    menu: (base :any) => ({
       ...base,
       zIndex: 100,
     }),
   };
+
+  const fetchData = async () => {
+    const data = await getDetailUser(id)
+    console.log("datakuuu", data)
+    setName(data.name)
+    setEmail(data.email)
+    setUsername(data.username)
+    setNumberPhone(data.phoneNumber)
+    setStatus(data.status)
+  }
+  
+  useEffect( () => {
+    if (!id) {
+      return;  
+    }
+    fetchData()
+  }, [id]);
 
   return (
     <>
@@ -82,15 +115,15 @@ export default function DetailEdit({ dataUser }) {
           {/* <input id="search-box" onChange={filterBySearch} /> */}
           <section className="p-3">
             <div className="header">
-              <h3>Edit User</h3>
-              <p>Manage data for growth</p>
+            <h3 className="text-3xl text-black font-bold">Edit User</h3>
+                <p className=" text-base text-grey2 mt-1">Kelola data tanaman sebaik mungkin</p>
             </div>
           </section>
           <div className="form-data-user">
             <div className="form-label-input">
               <label
                 htmlFor="name"
-                className="form-label text-lg fw-medium color-palette-1 mb-10"
+                className="form-label text-lg font-medium text-black mb-3"
               >
                 Name
               </label>
@@ -101,24 +134,24 @@ export default function DetailEdit({ dataUser }) {
                 onChange={(event) => setName(event.target.value)}
               />
             </div>
-            <div className="form-label-input mt-30">
+            <div className="form-label-input mt-8">
               <label
                 htmlFor="email"
-                className="form-label text-lg fw-medium color-palette-1 mb-10"
+                className="form-label text-lg font-medium text-black mb-3 "
               >
                 Email Address
               </label>
               <input
                 type="email"
-                className="form-control text-lg form-user-control"
-                value={dataUser.email}
+                className="form-control text-lg form-user-control email"
+                value={email}
                 disabled
               />
             </div>
-            <div className="form-label-input  mt-30">
+            <div className="form-label-input  mt-8">
               <label
                 htmlFor="username"
-                className="form-label text-lg fw-medium color-palette-1 mb-10"
+                className="form-label text-lg font-medium text-black mb-3"
               >
                 Username
               </label>
@@ -129,10 +162,24 @@ export default function DetailEdit({ dataUser }) {
                 onChange={(event) => setUsername(event.target.value)}
               />
             </div>
-            <div className="form-label-input  mt-30">
+            <div className="form-label-input  mt-8">
+              <label
+                htmlFor="username"
+                className="form-label text-lg font-medium text-black mb-3"
+              >
+                Nomor Handphone
+              </label>
+              <input
+                type="text"
+                className="form-control text-lg form-user-control"
+                value={numberPhone}
+                onChange={(event) => setUsername(event.target.value)}
+              />
+            </div>
+            <div className="form-label-input  mt-8">
               <label
                 htmlFor="status"
-                className="form-label text-lg fw-medium color-palette-1 mb-10"
+                className="form-label text-lg font-medium text-black mb-3"
               >
                 Status
               </label>
@@ -147,10 +194,10 @@ export default function DetailEdit({ dataUser }) {
                 className="form-user-control"
               />
             </div>
-            <div className="mt-30 d-flex flex-row-reverse">
+            <div className="mt-8 d-flex flex-row-reverse">
               <button
                 type="button"
-                className="btn fw-medium text-lg color-pallete-1 text-white"
+                className="btn font-medium text-lg bg-primary1 text-white"
                 onClick={onSubmit}
               >
                 Edit User
@@ -163,25 +210,25 @@ export default function DetailEdit({ dataUser }) {
   );
 }
 
-export async function getStaticPaths() {
-  const data = await getDataUser();
-  const paths = data.map((item) => ({
-    params: {
-      id: item._id,
-    },
-  }));
-  return {
-    paths,
-    fallback: false,
-  };
-}
 
-export async function getStaticProps({ params }) {
-  const { id } = params;
-  const data = await getDetailUser(id);
-  return {
-    props: {
-      dataUser: data,
-    },
-  };
-}
+
+// export default function DetailUser () {
+//   const router = useRouter();
+//   const { id } = router.query;
+
+
+//   useEffect(() => {
+//     if (!id) {
+//       return;  // NOTE: router.query might be empty during initial render
+//     }
+//     console.log("id aku", id)
+
+//   }, [id]);
+ 
+
+
+//   return (
+ 
+//     <div>ss</div>
+//   )
+// }

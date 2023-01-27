@@ -48,7 +48,7 @@ export default function Air() {
 
     getComments();
   }, [limit]);
-  const fetchComments = async (currentPage:any) => {
+  const fetchComments = async (currentPage: any) => {
     const res = await fetch(
       // `http://localhost:3004/comments?_page=${currentPage}&_limit=${limit}`
       `http://localhost:3000/api/v1/users/?limit=${limit}`
@@ -57,7 +57,7 @@ export default function Air() {
     return data;
   };
 
-  const handlePageClick = async (data:string) => {
+  const handlePageClick = async (data: string) => {
     // console.log(data.selected);
 
     let currentPage = data.selected + 1;
@@ -69,7 +69,7 @@ export default function Air() {
     //window.scrollTo(0, 0)
   };
 
-  const filterBySearch = (event:React.ChangeEvent<HTMLInputElement>) => {
+  const filterBySearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     // Access input value
     const query = event.target.value;
     // Create copy of item list
@@ -118,32 +118,33 @@ export default function Air() {
           <section className="mt-4 mb-10">
             <div className="container-fluid lg:flex flex-none justify-start">
               <CSVLink
-                  data={allItems}
-                  className="btn bg-primary1 border-0 text-white rounded-full px-5 lg:inline block lg:mr-4 mr-0"
-                  filename={"Temperature-data.csv"}
-                  onClick={notifyDownload}
-                >
-                  File CSV (Data Asli)
-                </CSVLink>
-                <CSVLink
-                  data={allItems}
-                  className="btn bg-primary1 border-0 text-white rounded-full px-5 lg:inline block lg:mt-0 mt-3"
-                  filename={"Temperature-data.csv"}
-                  onClick={notifyDownload}
-                >
-                  File CSV (Data Enkripsi)
-                </CSVLink>
+                data={allItems}
+                className="btn bg-primary1 border-0 text-white rounded-full px-5 lg:inline block lg:mr-4 mr-0"
+                filename={"Temperature-data.csv"}
+                onClick={notifyDownload}
+              >
+                File CSV (Data Asli)
+              </CSVLink>
+              <CSVLink
+                data={allItems}
+                className="btn bg-primary1 border-0 text-white rounded-full px-5 lg:inline block lg:mt-0 mt-3"
+                filename={"Temperature-data.csv"}
+                onClick={notifyDownload}
+              >
+                File CSV (Data Enkripsi)
+              </CSVLink>
             </div>
           </section>
           <div className="m-2 ">
             {isLoading ? (
-              <ReactLoading
-                type="spinningBubbles"
-                color="#4D17E2"
-                height={667}
-                width={375}
-                // className="justify-content-center text-center"
-              />
+              <div className="justify-center mx-auto flex">
+                <ReactLoading
+                  type="spinningBubbles"
+                  color="#4D17E2"
+                  height={667}
+                  width={375}
+                />
+              </div>
             ) : (
               <div className="table-responsive-lg">
                 <table className="table table-borderless table-data">

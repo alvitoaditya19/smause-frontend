@@ -29,7 +29,6 @@ export default function SignInForm() {
         const { token } = response.data;
         let decodedHeader: any = jwt_decode(token);
         let statusUser = decodedHeader.user.status;
-        console.log("statusku : ", statusUser)
   
         if (statusUser == "user") {
           toast.error('Anda tidak diizinkan untuk mengakses sistem dashboard ini');
@@ -40,6 +39,8 @@ export default function SignInForm() {
           // const { token } = response.data;
           const tokenBase64 = btoa(token);
           Cookies.set('token', tokenBase64, { expires: 1 });
+    localStorage.setItem('tokenAdmin', JSON.stringify(tokenBase64));
+
           router.push('/dashboard');
         }
       }

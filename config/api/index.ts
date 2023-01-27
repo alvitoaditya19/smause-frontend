@@ -30,6 +30,19 @@ export default async function callAPI({
     headers,
   }).catch((err) => err.response);
 
+  console.log("kunaoan ieu", response)
+
+  if (response == undefined) {
+
+    const res = {
+      error: true,
+      message: "Data Tidak Ditemukan",
+      data: null,
+    };
+    return res
+  }
+
+
   if (response.status > 300) {
     const res = {
       error: true,
