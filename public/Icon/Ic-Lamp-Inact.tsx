@@ -3,8 +3,8 @@ import React from "react";
 export default function IcLampInact() {
   return (
     <svg
-      width="76"
-      height="74"
+      width="81"
+      height="82"
       viewBox="0 0 81 82"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

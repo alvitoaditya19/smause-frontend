@@ -1,14 +1,13 @@
 import axios from "axios";
+import Cookies from "js-cookie";
 import Link from "next/link";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { SetStateAction, useEffect, useState } from "react";
 import ReactLoading from "react-loading";
 import ReactPaginate from "react-paginate";
-import Cookies from "js-cookie";
+import "react-toastify/dist/ReactToastify.css";
 
 import { Header, Sidebar } from "../../../components";
-import { DestroyUser, getAllDataUser, getCustomDataUser, getDataForUser, getDataUser, getDetailUser, getLimitDataUser } from "../../../services/dashboard";
+import { DestroyUser, getCustomDataUser, getDataForUser } from "../../../services/dashboard";
 
 interface UserStateTypes {
   _id: string;
@@ -22,27 +21,15 @@ interface UserStateTypes {
 
 export default function User() {
   const [isLoading, setIsLoading] = useState(false);
-
   const [toggleViewMode, setToggleViewMode] = useState(false);
   const toggleNavbar = () => {
     setToggleViewMode(!toggleViewMode);
   };
   const [items, setItems] = useState([]);
-
   const [pageCount, setpageCount] = useState(0);
-
-  const [allItems, setAllItems] = useState([]);
-
   const [totalData, setTotalData] = useState(0);
 
-
-
-  let limit = 2;
-  let testing = [0,1,2,3,4,5,6];
-
-  let no = 0;
-  let statusUser = "admin";
-
+  let limit = 5;
 
   useEffect(() => {
 
@@ -70,15 +57,6 @@ export default function User() {
         .catch((err) => {
           console.log("err get in progress: ", err);
         });
-      // const data = await getAllDataUser();
-
-      // if (data.error) {
-      //   toast.error(data.message);
-      // } else {
-      //   console.log("sss", data)
-      //   setIsLoading(false);
-      //   setItems(data.data);
-      // }
     };
 
     getDataUser();
@@ -105,8 +83,8 @@ export default function User() {
       .get(`http://localhost:4000/api/v1/users`,
         { headers: { Authorization: `Bearer ${jwtToken}` } })
       .then((res) => {
-        let updatedList = [...res.data.data];
-        updatedList = updatedList.filter((item) => {
+        let updatedList : any = [...res.data.data];
+        updatedList = updatedList.filter((item : any) => {
           return (
             item.name.toString().toLowerCase().indexOf(query.toLowerCase()) !==
             -1
@@ -177,7 +155,7 @@ export default function User() {
                 <table className="table table-borderless table-data">
                   <thead>
                     <tr>
-                      <th scope="col">Id</th>
+                      <th scope="col">No</th>
                       <th scope="col">Email</th>
                       <th scope="col">Name</th>
                       <th scope="col">Username</th>
@@ -190,7 +168,7 @@ export default function User() {
                     {items.map((item: UserStateTypes) => (
 
                       <tr key={item._id} className="align-items-center">
-                        <td>{item._id} </td>
+                        <td>{item.no} </td>
                         <td>{item.email}</td>
                         <td>{item.name}</td>
                         <td>{item.username}</td>

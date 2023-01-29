@@ -1,6 +1,7 @@
 // alt + shift + O
 
 import { useRouter } from "next/router";
+import { ParsedUrlQuery } from "querystring";
 import { useEffect, useState } from "react";
 import Select from "react-select";
 import { toast } from "react-toastify";
@@ -8,9 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 import { sentenceCase } from "sentence-case";
 import { Header, Sidebar } from "../../../../components";
-import { getAllDataUser, getDataForUser, getDataUser, getDetailUser } from "../../../../services/dashboard";
-import Cookies from "js-cookie";
-import axios from "axios";
+import { getDetailUser, SetEditUser } from "../../../../services/dashboard";
 
 export interface UserStateTypes{
   _id: string;
@@ -22,12 +21,9 @@ export interface UserStateTypes{
   no: number;
 }
 
-// alt + shift + O
-
-
 export default function DetailEdit() {
   const router = useRouter();
-  const { id }  = router.query;
+  const { id } : ParsedUrlQuery  = router.query;
  
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -58,13 +54,13 @@ export default function DetailEdit() {
       status: status,
     };
 
-    const response = await SetEditUser(data, dataUser._id);
+    const response = await SetEditUser(data, id);
     if (response.error) {
       toast.error(response.message);
     } else {
       toast.success("Berhasil Edit Data User");
 
-      router.push("/dashboard/user");
+      router.push("/dashboard/pengguna");
     }
   };
   const colourStyles = {
@@ -85,7 +81,6 @@ export default function DetailEdit() {
 
   const fetchData = async () => {
     const data = await getDetailUser(id)
-    console.log("datakuuu", data)
     setName(data.name)
     setEmail(data.email)
     setUsername(data.username)
@@ -102,17 +97,14 @@ export default function DetailEdit() {
 
   return (
     <>
-      {/* Navbar */}
       <div className="dashboard d-flex">
         <Sidebar
           toggleViewMode={toggleViewMode}
           toggleNavbar={toggleNavbar}
           activeMenu="user"
         />
-        {/* Main Content */}
         <div className="content">
           <Header toggleNavbar={toggleNavbar} />
-          {/* <input id="search-box" onChange={filterBySearch} /> */}
           <section className="p-3">
             <div className="header">
             <h3 className="text-3xl text-black font-bold">Edit User</h3>
@@ -188,7 +180,7 @@ export default function DetailEdit() {
                 value={{
                   value: status,
                   label: sentenceCase(status),
-                }} // default value must be like this./You forgot pass this  parameter
+                }}
                 onChange={handleChange}
                 options={options}
                 className="form-user-control"
@@ -197,7 +189,7 @@ export default function DetailEdit() {
             <div className="mt-8 d-flex flex-row-reverse">
               <button
                 type="button"
-                className="btn font-medium text-lg bg-primary1 text-white"
+                className="btn font-medium text-lg text-white bg-primary1 rounded-full px-5"
                 onClick={onSubmit}
               >
                 Edit User
@@ -209,26 +201,3 @@ export default function DetailEdit() {
     </>
   );
 }
-
-
-
-// export default function DetailUser () {
-//   const router = useRouter();
-//   const { id } = router.query;
-
-
-//   useEffect(() => {
-//     if (!id) {
-//       return;  // NOTE: router.query might be empty during initial render
-//     }
-//     console.log("id aku", id)
-
-//   }, [id]);
- 
-
-
-//   return (
- 
-//     <div>ss</div>
-//   )
-// }

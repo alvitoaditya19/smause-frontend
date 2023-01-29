@@ -1,6 +1,7 @@
 import axios from 'axios';
 import callAPI from '../config/api';
 import Cookies from 'js-cookie';
+import { ParsedUrlQuery } from 'querystring';
 
 
 
@@ -39,7 +40,7 @@ export async function getCustomDataUser(token, limit, currentPage) {
   });
 }
 
-export async function getDetailUser(id: string) {
+export async function getDetailUser(id: ParsedUrlQuery) {
   const URL = `users/${id}`;
 
   const response = await axios.get(`${ROOT_API}/${API_VERSION}/${URL}`);
@@ -76,27 +77,27 @@ export async function SetEditUser(data, id) {
     url,
     method: 'PUT',
     token: true,
-
     data,
   });
 }
 
-export async function GetLamp() {
-  const url = `${ROOT_API}/${API_VERSION}/lamps`;
+export async function GetControl() {
+  const url = `${ROOT_API}/${API_VERSION}/controls`;
 
   return callAPI({
     url,
     method: 'GET',
-    // data,
+    token:true,
   });
 }
 
-export async function SetLamp(data) {
-  const url = `${ROOT_API}/${API_VERSION}/lamps`;
+export async function SetControl(data) {
+  const url = `${ROOT_API}/${API_VERSION}/controls`;
 
   return callAPI({
     url,
     method: 'PUT',
+    token:true,
     data,
   });
 }

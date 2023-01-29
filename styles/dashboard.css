@@ -1,4 +1,8 @@
 /* Selected */
+.css-1u9des2-indicatorSeparator {
+  display: none;
+
+}
 .css-13cymwt-control {
   background-color: #E7EAF5 !important;
   border: none !important;
@@ -438,6 +442,8 @@ button.btn-search:focus-within {
 
 .btn-edit-user:hover {
   color: #fff;
+  text-decoration: none;
+
 }
 
 .btn-delete-user {

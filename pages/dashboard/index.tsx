@@ -1,16 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { CardMonitor, Header, Sidebar, SummaryCard } from "../../components";
-import { IcHarvest, IcLampAct, IcLampInact, IcParameter, IcUser, IcVegetable } from "../../public/Icon";
-// import { GetLamp, GetDataTemperature, SetLamp } from "../../services/dashboard";
-import { Line } from 'react-chartjs-2';
-import { faker } from '@faker-js/faker';
-import ReactLoading from "react-loading";
+import { IcHarvest, IcLampAct, IcLampInact, IcUser, IcVegetable } from "../../public/Icon";
+import jwtDecode from 'jwt-decode';
+
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import jwtDecode from 'jwt-decode';
-import { PieChart, Pie, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import Chart from "../../components/atoms/Chart";
-import { GetLamp, SetLamp } from "../../services/dashboard";
+import { GetControl, SetControl } from "../../services/dashboard";
+import { JWTPayloadTypes } from "../../services/data-types";
 
 
 export default function Dashboard() {
@@ -19,6 +16,10 @@ export default function Dashboard() {
   const [toggleViewMode, setToggleViewMode] = useState(false);
   const [lamp1, setDataLamp1] = useState(false);
   const [lamp2, setDataLamp2] = useState(false);
+  const [pump1, setDataPump1] = useState(false);
+  const [pump2, setDataPump2] = useState(false);
+  const [valve, setDataValve] = useState(false);
+  const [blend, setDataBlend] = useState(false);
 
   const [temperature, setTemperature] = useState([]);
   const [dataSuhu, setdataSuhu] = useState([]);
@@ -57,8 +58,10 @@ export default function Dashboard() {
 
   var lampuStatus = lamp1;
   var lampuStatus2 = lamp2;
-
-  const WAIT_TIME = 5000;
+  var pompaStatus = pump1;
+  var pompaStatus2 = pump2;
+  var statusValve = valve;
+  var statusBlend = blend;
 
   const submitLamp1 = async () => {
     const data = {
@@ -70,7 +73,7 @@ export default function Dashboard() {
       lamp1: data.lamp1 === true ? "OFF" : "ON",
     };
 
-    const response = await SetLamp(dataValue);
+    const response = await SetControl(dataValue);
 
     if (response.error) {
       toast.error(response.message);
@@ -85,14 +88,14 @@ export default function Dashboard() {
     }
   };
   const getStatusLamp1 = useCallback(async () => {
-    const data = await GetLamp();
+    const data = await GetControl();
 
     if (data.data.lamp1 == "ON") {
       setDataLamp1(true);
     } else {
       setDataLamp1(false);
     }
-  }, [GetLamp]);
+  }, [GetControl]);
 
   const submitLamp2 = async () => {
     const data = {
@@ -104,7 +107,7 @@ export default function Dashboard() {
       lamp2: data.lamp2 === true ? "OFF" : "ON",
     };
 
-    const response = await SetLamp(dataValue);
+    const response = await SetControl(dataValue);
 
     if (response.error) {
       toast.error(response.message);
@@ -119,19 +122,153 @@ export default function Dashboard() {
     }
   };
   const getStatusLamp2 = useCallback(async () => {
-    const data = await GetLamp();
+    const data = await GetControl();
 
     if (data.data.lamp2 == "ON") {
       setDataLamp2(true);
     } else {
       setDataLamp2(false);
     }
-  }, [GetLamp]);
+  }, [GetControl]);
+
+  const submitPump1 = async () => {
+    const data = {
+      pump1: pompaStatus,
+      // lamp2: dataLamp2 === "ON" ? "OFF" : "ON",
+    };
+
+    const dataValue = {
+      pump1: data.pump1 === true ? "OFF" : "ON",
+    };
+
+    const response = await SetControl(dataValue);
+
+    if (response.error) {
+      toast.error(response.message);
+    } else {
+      if (response.data.pump1 == "ON") {
+        setDataPump1(true);
+      } else {
+        setDataPump1(false);
+      }
+      pompaStatus = !pompaStatus;
+    }
+  };
+  const getStatusPump1 = useCallback(async () => {
+    const data = await GetControl();
+
+    if (data.data.pump2 == "ON") {
+      setDataLamp1(true);
+    } else {
+      setDataLamp1(false);
+    }
+  }, [GetControl]);
+
+  const submitPump2 = async () => {
+    const data = {
+      pump2: pompaStatus2,
+      // lamp2: dataLamp2 === "ON" ? "OFF" : "ON",
+    };
+
+    const dataValue = {
+      pump2: data.pump2 === true ? "OFF" : "ON",
+    };
+
+    const response = await SetControl(dataValue);
+
+    if (response.error) {
+      toast.error(response.message);
+    } else {
+      if (response.data.pump2 == "ON") {
+        setDataPump2(true);
+      } else {
+        setDataPump2(false);
+      }
+      pompaStatus2 = !pompaStatus2;
+    }
+  };
+  const getStatusPump2 = useCallback(async () => {
+    const data = await GetControl();
+
+    if (data.data.pump2 == "ON") {
+      setDataLamp2(true);
+    } else {
+      setDataLamp2(false);
+    }
+  }, [GetControl]);
+  const submitValve = async () => {
+    const data = {
+      valve: statusValve,
+      // lamp2: dataLamp2 === "ON" ? "OFF" : "ON",
+    };
+
+    const dataValue = {
+      valve: data.valve === true ? "OFF" : "ON",
+    };
+
+    const response = await SetControl(dataValue);
+
+    if (response.error) {
+      toast.error(response.message);
+    } else {
+      if (response.data.valve == "ON") {
+        setDataValve(true);
+      } else {
+        setDataValve(false);
+      }
+      statusValve = !statusValve;
+    }
+  };
+  const getStatusValve = useCallback(async () => {
+    const data = await GetControl();
+
+    if (data.data.valve == "ON") {
+      setDataValve(true);
+    } else {
+      setDataValve(false);
+    }
+  }, [GetControl]);
+
+  const submitBlend = async () => {
+    const data = {
+      blend: statusBlend,
+      // lamp2: dataLamp2 === "ON" ? "OFF" : "ON",
+    };
+
+    const dataValue = {
+      blend: data.blend === true ? "OFF" : "ON",
+    };
+
+    const response = await SetControl(dataValue);
+
+    if (response.error) {
+      toast.error(response.message);
+    } else {
+      if (response.data.blend == "ON") {
+        setDataBlend(true);
+      } else {
+        setDataBlend(false);
+      }
+      statusBlend = !statusBlend;
+    }
+  };
+  const getStatusBlend = useCallback(async () => {
+    const data = await GetControl();
+
+    if (data.data.blend == "ON") {
+      setDataBlend(true);
+    } else {
+      setDataBlend(false);
+    }
+  }, [GetControl]);
 
   useEffect(() => {
     getStatusLamp1();
     getStatusLamp2();
-
+    getStatusPump1();
+    getStatusPump2();
+    getStatusValve();
+    getStatusBlend();
 
     const fetchDatas = async () => {
       const res = await fetch("https://api.coincap.io/v2/assets/?limit=10");
@@ -199,9 +336,10 @@ export default function Dashboard() {
                         }
                       >
                         <div className="card-body text-center inline-block">
+                          <h1 className="lg:text-xl text-lg font-medium">Lampu 1</h1>
                           {lamp1 ? <IcLampInact /> : <IcLampAct />}
+                          <h1 className="lg:text-xl text-2xl font-semibold">{lamp1 ? "ON" : "OFF"}</h1>
 
-                          <h1 className="lg:text-xl text-lg">Lamp 1</h1>
                         </div>
                       </div>
                     </button>
@@ -220,9 +358,97 @@ export default function Dashboard() {
                         }
                       >
                         <div className="card-body text-center inline-block">
+                        <h1 className="lg:text-xl text-lg font-medium">Lampu 2</h1>
                           {lamp2 ? <IcLampInact /> : <IcLampAct />}
+                          <h1 className="lg:text-xl text-2xl font-semibold">{lamp2 ? "ON" : "OFF"}</h1>
+                        </div>
+                      </div>
+                    </button>
+                    <div className="w-1/3 lg:inline none"></div>
+                    <button
+                      className="lg:w-1/3 w-1/2 btn-control px-2"
+                      onClick={submitPump1}
 
-                          <h1 className="lg:text-xl text-lg">Lamp 1</h1>
+                      type="button"
+                    >
+                      {/* <div className="col-md-12 card-control"> */}
+                      <div
+                        className={
+                          pump1
+                            ? "w-full card-control p-3 justify-center  lg:mr-4 mr-2"
+                            : "w-full card-control-off p-3 justify-center  lg:mr-4 mr-10"
+                        }
+                      >
+                        <div className="card-body text-center inline-block">
+                          <h1 className="lg:text-xl text-lg font-medium">Pompa 1</h1>
+                          {pump1 ? <IcLampInact /> : <IcLampAct />}
+                          <h1 className="lg:text-xl text-2xl font-semibold">{pump1 ? "ON" : "OFF"}</h1>
+
+                        </div>
+                      </div>
+                    </button>
+                    <button
+                      className="lg:w-1/3 w-1/2 btn-control px-2"
+                      onClick={submitPump2}
+
+                      type="button"
+                    >
+                      {/* <div className="col-md-12 card-control"> */}
+                      <div
+                        className={
+                          pump2
+                            ? "w-full card-control p-3 justify-center lg:mr-4 mr-2"
+                            : "w-full card-control-off p-3 justify-center lg:mr-4 mr-10"
+                        }
+                      >
+                        <div className="card-body text-center inline-block">
+                        <h1 className="lg:text-xl text-lg font-medium">Pompa 2</h1>
+                          {pump2 ? <IcLampInact /> : <IcLampAct />}
+                          <h1 className="lg:text-xl text-2xl font-semibold">{pump2 ? "ON" : "OFF"}</h1>
+                        </div>
+                      </div>
+                    </button>
+                    <div className="w-1/3 lg:inline none"></div>
+                    <button
+                      className="lg:w-1/3 w-1/2 btn-control px-2"
+                      onClick={submitValve}
+
+                      type="button"
+                    >
+                      {/* <div className="col-md-12 card-control"> */}
+                      <div
+                        className={
+                          valve
+                            ? "w-full card-control p-3 justify-center  lg:mr-4 mr-2"
+                            : "w-full card-control-off p-3 justify-center  lg:mr-4 mr-10"
+                        }
+                      >
+                        <div className="card-body text-center inline-block">
+                          <h1 className="lg:text-xl text-lg font-medium">Valve</h1>
+                          {valve ? <IcLampInact /> : <IcLampAct />}
+                          <h1 className="lg:text-xl text-2xl font-semibold">{valve ? "ON" : "OFF"}</h1>
+
+                        </div>
+                      </div>
+                    </button>
+                    <button
+                      className="lg:w-1/3 w-1/2 btn-control px-2"
+                      onClick={submitBlend}
+
+                      type="button"
+                    >
+                      {/* <div className="col-md-12 card-control"> */}
+                      <div
+                        className={
+                          blend
+                            ? "w-full card-control p-3 justify-center lg:mr-4 mr-2"
+                            : "w-full card-control-off p-3 justify-center lg:mr-4 mr-10"
+                        }
+                      >
+                        <div className="card-body text-center inline-block">
+                        <h1 className="lg:text-xl text-lg font-medium">Blend</h1>
+                          {blend ? <IcLampInact /> : <IcLampAct />}
+                          <h1 className="lg:text-xl text-2xl font-semibold">{blend ? "ON" : "OFF"}</h1>
                         </div>
                       </div>
                     </button>
@@ -241,46 +467,45 @@ export default function Dashboard() {
                 <Chart data={dataSuhu} title="Kelembapan Udara" />
               </div>
             </div>
-
-
           </section>
-
         </div>
       </div>
     </>
   );
 }
 
-// interface GetServerSideProps{
-//   req: {
-//     cookies:{
-//       token:string,
-//     }
-//   }
-// }
+interface GetServerSideProps{
+  req: {
+    cookies:{
+      token:string,
+    }
+  }
+}
 
-// export async function getServerSideProps({ req }:GetServerSideProps) {
-//   const { token } = req.cookies;
-//   if (!token) {
-//     return {
-//       redirect: {
-//         destination: '/sign-in',
-//         permanent: false,
-//       },
-//     };
-//   }
 
-//   const jwtToken = Buffer.from(token, 'base64').toString('ascii');
-//   const payload = jwtDecode(jwtToken);
 
-//   const userFromPayload = payload.user;
-//   const IMG = process.env.NEXT_PUBLIC_IMG;
-//   userFromPayload.avatar = `${IMG}/${userFromPayload.avatar}`;
-//   return {
-//     props: {
-//       user: userFromPayload,
-//     },
-//   };
-// }
+export async function getServerSideProps({ req }:GetServerSideProps) {
+  const { token } = req.cookies;
+  if (!token) {
+    return {
+      redirect: {
+        destination: '/sign-in',
+        permanent: false,
+      },
+    };
+  }
+
+  const jwtToken = Buffer.from(token, 'base64').toString('ascii');
+  const payload: JWTPayloadTypes = jwtDecode(jwtToken);
+
+  const userFromPayload = payload.user;
+  const IMG = process.env.NEXT_PUBLIC_IMG;
+  userFromPayload.avatar = `${IMG}/${userFromPayload.avatar}`;
+  return {
+    props: {
+      user: userFromPayload,
+    },
+  };
+}
 
 
