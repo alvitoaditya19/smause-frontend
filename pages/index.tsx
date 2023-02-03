@@ -3,6 +3,8 @@ import Link from "next/link";
 import AOS from 'aos';
 
 import Image from "next/image";
+import Hero from "../components/hero";
+import Pricing from "../components/pricing";
 
 export default function Home() {
 

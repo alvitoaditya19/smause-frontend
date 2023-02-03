@@ -2,33 +2,21 @@ import axios from 'axios';
 import callAPI from '../config/api';
 import Cookies from 'js-cookie';
 import { ParsedUrlQuery } from 'querystring';
+import { ControlTypes, SettingsTypes } from './data-types';
 
 
 
 const ROOT_API = process.env.NEXT_PUBLIC_API;
 const API_VERSION = 'api/v1';
 
-export async function getAllDataUser(tokenn) {
+export async function getAllDataUser() {
+  const url = `${ROOT_API}/${API_VERSION}/users`;
 
-
-  const URL = `users`;
-
-  const response = await axios.get(`${ROOT_API}/${API_VERSION}/${URL}/r`,
-  { headers: { Authorization: `Bearer ${tokenn}` } });
-  const axiosResponse = response.data;
-
-  return axiosResponse.data;
-
-
-}
-export async function getDataForUser() {
-  const URL = `users`;
-
-  const response = await axios.get(`${ROOT_API}/${API_VERSION}/${URL}/r`);
-  const axiosResponse = response.data;
-
-  return axiosResponse.data;
-
+  return callAPI({
+    url,
+    method: 'GET',
+    token: true,
+  });
 }
 export async function getCustomDataUser(token, limit, currentPage) {
   const url = `${ROOT_API}/${API_VERSION}/users?page=${currentPage}&limit=${limit}`;
@@ -49,13 +37,16 @@ export async function getDetailUser(id: ParsedUrlQuery) {
   return axiosResponse.data;
 }
 
-export async function DestroyUser(id) {
-  const URL = `users/delete/${id}`;
+export async function DestroyUser(id: string) {
 
-  const response = await axios.delete(`${ROOT_API}/${API_VERSION}/${URL}`);
-  const axiosResponse = response.data;
+  const url = `${ROOT_API}/${API_VERSION}/users/delete/${id}`;
 
-  return axiosResponse.data;
+  return callAPI({
+    url,
+    method: 'DELETE',
+    token: true,
+  });
+
 }
 
 export async function SetAddUser(data) {
@@ -91,7 +82,7 @@ export async function GetControl() {
   });
 }
 
-export async function SetControl(data) {
+export async function SetControl(data :Partial<ControlTypes>) {
   const url = `${ROOT_API}/${API_VERSION}/controls`;
 
   return callAPI({
@@ -118,4 +109,58 @@ export async function GetAllDataTemperature() {
   const axiosResponse = response.data;
 
   return axiosResponse.data;
+}
+
+export async function getAllDataSetting() {
+  const url = `${ROOT_API}/${API_VERSION}/settings`;
+
+  return callAPI({
+    url,
+    method: 'GET',
+    token: true,
+  });
+}
+
+export async function getDetailSetting(id: ParsedUrlQuery) {
+  const url = `${ROOT_API}/${API_VERSION}/settings/${id}`;
+
+  return callAPI({
+    url,
+    method: 'GET',
+    token: true,
+  });
+}
+
+export async function SetAddSetting(data: SettingsTypes) {
+  const url = `${ROOT_API}/${API_VERSION}/settings/create`;
+
+  return callAPI({
+    url,
+    method: 'POST',
+    token: true,
+    data,
+  });
+}
+
+export async function SetEditSetting(data, id) {
+  const url = `${ROOT_API}/${API_VERSION}/settings/edit/${id}`;
+
+  return callAPI({
+    url,
+    method: 'PUT',
+    token: true,
+    data,
+  });
+}
+
+export async function DestroySetting(id: string) {
+
+  const url = `${ROOT_API}/${API_VERSION}/settings/delete/${id}`;
+
+  return callAPI({
+    url,
+    method: 'DELETE',
+    token: true,
+  });
+
 }

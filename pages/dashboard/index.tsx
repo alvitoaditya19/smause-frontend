@@ -7,8 +7,11 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Chart from "../../components/atoms/Chart";
 import { GetControl, SetControl } from "../../services/dashboard";
-import { JWTPayloadTypes } from "../../services/data-types";
+import { ControlTypes, JWTPayloadTypes } from "../../services/data-types";
 
+interface ControlButtonTypes{
+  control: ControlTypes[];
+}
 
 export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(false);
@@ -56,7 +59,7 @@ export default function Dashboard() {
     }
   ]
 
-  var lampuStatus = lamp1;
+  var lampuStatus  = lamp1;
   var lampuStatus2 = lamp2;
   var pompaStatus = pump1;
   var pompaStatus2 = pump2;
@@ -69,7 +72,7 @@ export default function Dashboard() {
       // lamp2: dataLamp2 === "ON" ? "OFF" : "ON",
     };
 
-    const dataValue = {
+    const dataValue : Partial<ControlTypes> = {
       lamp1: data.lamp1 === true ? "OFF" : "ON",
     };
 

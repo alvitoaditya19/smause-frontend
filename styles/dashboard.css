@@ -271,6 +271,24 @@ table {
   background-image: url("/Icon/sidebar/ic-water-act.svg");
 }
 
+.ic-udara {
+  background-image: url("/Icon/sidebar/ic-udara-inact.svg");
+}
+
+.item-menu.active .ic-udara,
+.item-menu:hover .ic-udara {
+  background-image: url("/Icon/sidebar/ic-udara-act.svg");
+}
+
+.ic-tanah {
+  background-image: url("/Icon/sidebar/ic-tanah-inact.svg");
+}
+
+.item-menu.active .ic-tanah,
+.item-menu:hover .ic-tanah {
+  background-image: url("/Icon/sidebar/ic-tanah-act.svg");
+}
+
 /* Pilihan */
 
 .ic-setting {

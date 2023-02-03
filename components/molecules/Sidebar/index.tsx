@@ -2,12 +2,12 @@ import { SidebarItem } from "../../atoms";
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/router';
 
-export interface  SidebarProps {
+export interface SidebarProps {
   toggleViewMode: boolean;
   activeMenu: string;
   toggleNavbar: any;
 }
-export default function Sidebar({ toggleViewMode, activeMenu,toggleNavbar }:SidebarProps) {
+export default function Sidebar({ toggleViewMode, activeMenu, toggleNavbar }: SidebarProps) {
   const router = useRouter();
   const onLogOut = () => {
     Cookies.remove('token');
@@ -45,6 +45,18 @@ export default function Sidebar({ toggleViewMode, activeMenu,toggleNavbar }:Side
               title="Air"
               href="/dashboard/air"
               active={activeMenu == "Air"}
+            />
+            <SidebarItem
+              icon="icon ic-tanah"
+              title="Tanah"
+              href="/dashboard/tanah"
+              active={activeMenu == "Tanah"}
+            />
+            <SidebarItem
+              icon="icon ic-udara"
+              title="Udara"
+              href="/dashboard/udara"
+              active={activeMenu == "Udara"}
             />
           </div>
           <div className="menu">

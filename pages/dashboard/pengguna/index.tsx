@@ -1,13 +1,13 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 import Link from "next/link";
-import { SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ReactLoading from "react-loading";
 import ReactPaginate from "react-paginate";
 import "react-toastify/dist/ReactToastify.css";
 
 import { Header, Sidebar } from "../../../components";
-import { DestroyUser, getCustomDataUser, getDataForUser } from "../../../services/dashboard";
+import { DestroyUser, getAllDataUser, getCustomDataUser } from "../../../services/dashboard";
 
 interface UserStateTypes {
   _id: string;
@@ -96,9 +96,10 @@ export default function User() {
 
   const deleteUser = async (id: string) => {
     DestroyUser(id);
-    const user = await getDataForUser();
+    const user = await getAllDataUser();
+    console.log("data userku : ", user.data.data)
     
-    setItems(user);
+    setItems(user.data.data);
   };
   return (
     <>

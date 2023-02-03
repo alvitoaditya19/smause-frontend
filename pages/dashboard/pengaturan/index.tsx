@@ -6,6 +6,8 @@ import ReactLoading from "react-loading";
 import ReactPaginate from "react-paginate";
 import { Header, Sidebar } from "../../../components";
 import Image from "next/image";
+import { DestroySetting, getAllDataSetting } from "../../../services/dashboard";
+import { SettingsTypes } from "../../../services/data-types";
 
 export default function Setting() {
     const [isLoading, setIsLoading] = useState(false);
@@ -24,22 +26,14 @@ export default function Setting() {
     let statusUser = "admin";
   
     useEffect(() => {
-      const getComments = async () => {
+      const getContent = async () => {
         setIsLoading(true);
-        axios
-          .get(`https://randomuser.me/api/`)
-          .then((res) => {
-            setIsLoading(false);
-            let data = res.data;
-            console.log(data);
-            // setItems(data.data);
-          })
-          .catch((err) => {
-            console.log("err get in progress: ", err);
-          });
+        const data = await getAllDataSetting();
+        setIsLoading(false);
+        setItems(data.data.data);
       };
   
-      getComments();
+      getContent();
     }, [limit]);
     const fetchComments = async (currentPage:any) => {
       const res = await fetch(
@@ -70,9 +64,9 @@ export default function Setting() {
         .get(`http://localhost:3000/api/v1/users/?limit=${limit}`)
         .then((res) => {
           console.log("DATAAA: ", res.data.data);
-          let updatedList = [...res.data.data];
+          let updatedList : any = [...res.data.data];
           // Include all elements which includes the search query
-          updatedList = updatedList.filter((item) => {
+          updatedList = updatedList.filter((item: any) => {
             return (
               item.name.toString().toLowerCase().indexOf(query.toLowerCase()) !==
               -1
@@ -82,10 +76,10 @@ export default function Setting() {
         });
     };
   
-    const deleteUser = async (id:string) => {
-      DestroyUser(id);
-      const user = await getDataUser();
-      setItems(user);
+    const deleteSetting = async (id:string) => {
+      DestroySetting(id);
+      const user  = await getAllDataSetting();
+      setItems(user.data.data);
     };
     return (
       <>
@@ -109,14 +103,14 @@ export default function Setting() {
             <section className="mt-8 mb-10">
               <div className="container-fluid lg:flex lg:justify-between flex-none justify-start">
                 
-                <Link href="/dashboard/user/add-user">
+                <Link href="/dashboard/pengaturan/tambah" legacyBehavior>
                   <div className="btn bg-primary1 border-0 text-white rounded-full lg:inline block px-5">Tambah Pengguna</div>
                 </Link>
                 <div className="lg:flex">
-                  <Link href="/dashboard/user/add-user">
+                  <Link href="/dashboard/user/add-user" legacyBehavior>
                     <div className="btn bg-primary1 border-0 text-white lg:mr-4 mr-0 lg:my-0 my-3 rounded-full px-5 lg:inline block">File CSV (Data Enkripsi)</div>
                   </Link>
-                  <Link href="/dashboard/user/add-user">
+                  <Link href="/dashboard/user/add-user" legacyBehavior>
                     <div className="btn bg-primary1 border-0 text-white rounded-full px-5 lg:inline block">File CSV (Data Asli)</div>
                   </Link>
                 </div>
@@ -138,40 +132,29 @@ export default function Setting() {
                     <thead>
                       <tr>
                         <th scope="col">No</th>
-                        <th scope="col">Email</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">Username</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">Action</th>
+                        <th scope="col">Nama Sayuran</th>
+                        <th scope="col">Jumlah Sayuran</th>
+                        <th scope="col">Jumlah Panen</th>
+                        <th scope="col">Aksi</th>
+
                       </tr>
                     </thead>
   
                     <tbody>
-                      {items.map((item:UserStateTypes) => {
+                      {items.map((item:SettingsTypes) => {
                         return (
                           <tr key={item._id} className="align-items-center">
-                            <td>{(no = no + 1)}</td>
-                            <td>{item.email}</td>
-                            <td>{item.name}</td>
-                            <td>{item.username}</td>
+                            <td>{item.no}</td>
+                            <td>{item.nameVegetable}</td>
+                            <td>{item.amountVegetable}</td>
+                            <td>{item.amountHarvest}</td>
                             <td>
-                              {item.status === "admin" ? (
-                                <div className="admin-card">
-                                  <h1>Admin</h1>
-                                </div>
-                              ) : (
-                                <div className="user-card">
-                                  <h1>User</h1>
-                                </div>
-                              )}
-                            </td>
-                            <td>
-                              <Link href={`/dashboard/user/edit/${item._id}`}>
+                              <Link href={`/dashboard/pengaturan/edit/${item._id}`} legacyBehavior>
                                 <a className="btn-edit-user">Edit</a>
                               </Link>
   
                               <button
-                                onClick={() => deleteUser(item._id)}
+                                onClick={() => deleteSetting(item._id)}
                                 className="btn-delete-user"
                               >
                                 Delete
