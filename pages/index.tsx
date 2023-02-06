@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import AOS from 'aos';
+import AOS from 'aos';  
 
 import Image from "next/image";
 import Hero from "../components/hero";
