@@ -31,11 +31,11 @@ export default function SignInForm() {
         let statusUser = decodedHeader.user.status;
 
         if (statusUser == "user") {
-          toast.error('Anda tidak diizinkan untuk mengakses sistem dashboard ini');
+          toast.error('Anda tidak diizinkan untuk mengakses sistem dashboard ini', { position: "top-center" });
 
           router.push('/not-found');
         } else if (statusUser == "admin") {
-          toast.success('Login Berhasil');
+          toast.success('Login Berhasil', { position: "top-center" });
           // const { token } = response.data;
           const tokenBase64 = btoa(token);
           Cookies.set('token', tokenBase64, { expires: 1 });
