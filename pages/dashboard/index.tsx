@@ -6,7 +6,7 @@ import jwtDecode from 'jwt-decode';
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Chart from "../../components/atoms/Chart";
-import { GetControl, SetControl } from "../../services/dashboard";
+import { getAllDataUser, GetControl, SetControl } from "../../services/dashboard";
 import { ControlTypes, JWTPayloadTypes } from "../../services/data-types";
 
 interface ControlButtonTypes{
@@ -27,6 +27,7 @@ export default function Dashboard() {
   const [temperature, setTemperature] = useState([]);
   const [dataSuhu, setdataSuhu] = useState([]);
 
+  const [totalDataUser, setTotalDataUser] = useState(0);
 
   const toggleNavbar = () => {
     setToggleViewMode(!toggleViewMode);
@@ -266,12 +267,18 @@ export default function Dashboard() {
   }, [GetControl]);
 
   useEffect(() => {
+    const totalUser = async () => {
+      const getDataTotal = await getAllDataUser();
+      setTotalDataUser(getDataTotal.data.total)
+    }
+
     getStatusLamp1();
     getStatusLamp2();
     getStatusPump1();
     getStatusPump2();
     getStatusValve();
     getStatusBlend();
+    totalUser()
 
     const fetchDatas = async () => {
       const res = await fetch("https://api.coincap.io/v2/assets/?limit=10");
@@ -303,7 +310,7 @@ export default function Dashboard() {
               <p className=" text-base text-grey2 mt-1">Kelola data tanaman sebaik mungkin</p>
               <div className="lg:pt-10 pt-8">
                 <div className="flex flex-wrap justify-start items-center -mx-3">
-                  <SummaryCard title="Pengguna" total="50" icon={<IcUser />} />
+                  <SummaryCard title="Pengguna" total={totalDataUser} icon={<IcUser />} />
                   <SummaryCard title="Jenis Tanaman" total="50" icon={<IcVegetable />} />
                   <SummaryCard title="Panen Sayuran" total="50" icon={<IcHarvest />} />
                 </div>

@@ -29,17 +29,17 @@ export default function SignInForm() {
         const { token } = response.data;
         let decodedHeader: any = jwt_decode(token);
         let statusUser = decodedHeader.user.status;
-  
+
         if (statusUser == "user") {
           toast.error('Anda tidak diizinkan untuk mengakses sistem dashboard ini');
-  
+
           router.push('/not-found');
-        } else if(statusUser == "admin"){
+        } else if (statusUser == "admin") {
           toast.success('Login Berhasil');
           // const { token } = response.data;
           const tokenBase64 = btoa(token);
           Cookies.set('token', tokenBase64, { expires: 1 });
-    localStorage.setItem('tokenAdmin', JSON.stringify(tokenBase64));
+          localStorage.setItem('tokenAdmin', JSON.stringify(tokenBase64));
 
           router.push('/dashboard');
         }
@@ -84,26 +84,19 @@ export default function SignInForm() {
           />
         </div>
         <div className="button-group d-flex flex-column mx-auto pt-8">
-          {/* <button
-            type="button"
-            className="btn btn-sign-in fw-medium text-lg text-white rounded-full mb-4"
-            // onClick={onSubmit}
-          >
-            Continue to Sign In
-          </button> */}
           <button
             type="button"
             className="btn btn-sign-in font-medium text-lg text-white rounded-full mb-4"
             onClick={onSubmit}
           >
-            Continue to Sign In
+            Lanjutkan untuk Sign In
           </button>
           <Link href="/" legacyBehavior>
             <a
               className="btn btn-go-home font-medium text-lg text-black rounded-full"
               role="button"
             >
-              Go To Home Page
+              Halaman Utama
             </a>
           </Link>
         </div>

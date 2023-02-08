@@ -2,7 +2,7 @@ import React from "react";
 
 export interface  SummaryCardProps {
   title: string;
-  total: string;
+  total: number;
   icon: JSX.Element;
 }
 export default function SummaryCard({title, total, icon}:SummaryCardProps) {
