@@ -9,7 +9,6 @@ import ReactPaginate from "react-paginate";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Header, Sidebar } from "../../../components";
-import { GetAllDataTemperature, GetCustomDataTemperature, GetLimitDataTemperature } from "../../../services/dashboard";
 import Cookies from "js-cookie";
 
 export default function Air() {
