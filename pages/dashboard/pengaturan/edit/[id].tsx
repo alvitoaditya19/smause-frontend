@@ -10,6 +10,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { sentenceCase } from "sentence-case";
 import { Header, Sidebar } from "../../../../components";
 import { getDetailSetting, getDetailUser, SetEditSetting, SetEditUser } from "../../../../services/dashboard";
+import { SettingsTypes } from "../../../../services/data-types";
 
 export interface UserStateTypes{
   _id: string;
@@ -23,7 +24,7 @@ export interface UserStateTypes{
 
 export default function DetailEdit() {
   const router = useRouter();
-  const { id } : ParsedUrlQuery  = router.query;
+  const  id  : ParsedUrlQuery  = router.query;
  
   const [nameVegetable, setNameVegetable] = useState("");
   const [amountVegetable, setAmountVegetable] = useState("");
@@ -37,7 +38,7 @@ export default function DetailEdit() {
 
 
   const onSubmit = async () => {
-    const data = {
+    const data : Partial<SettingsTypes> = {
       nameVegetable: nameVegetable,
       amountVegetable: amountVegetable,
       amountHarvest: amountHarvest,

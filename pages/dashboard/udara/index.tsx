@@ -9,10 +9,9 @@ import ReactPaginate from "react-paginate";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Header, Sidebar } from "../../../components";
-import { GetAllDataTemperature, GetCustomDataTemperature, GetLimitDataTemperature } from "../../../services/dashboard";
-import Cookies from "js-cookie";
 
-export default function Air() {
+
+export default function Udara() {
   const [isLoading, setIsLoading] = useState(false);
 
   const [toggleViewMode, setToggleViewMode] = useState(false);
@@ -57,7 +56,7 @@ export default function Air() {
     return data;
   };
 
-  const handlePageClick = async (data: string) => {
+  const handlePageClick = async (data: any) => {
     // console.log(data.selected);
 
     let currentPage = data.selected + 1;
@@ -77,9 +76,9 @@ export default function Air() {
       .get(`http://localhost:3000/api/v1/users/?limit=${limit}`)
       .then((res) => {
         console.log("DATAAA: ", res.data.data);
-        let updatedList = [...res.data.data];
+        let updatedList:any = [...res.data.data];
         // Include all elements which includes the search query
-        updatedList = updatedList.filter((item) => {
+        updatedList = updatedList.filter((item:any) => {
           return (
             item.name.toString().toLowerCase().indexOf(query.toLowerCase()) !==
             -1
@@ -158,7 +157,7 @@ export default function Air() {
                     </tr>
                   </thead>
                   <tbody>
-                    {items.map((item) => {
+                    {/* {items.map((item) => {
                       return (
                         <tr key={item.id} className="align-items-center">
                           {item.id}
@@ -168,7 +167,7 @@ export default function Air() {
                           <td>{item.date}</td>
                         </tr>
                       );
-                    })}
+                    })} */}
                   </tbody>
                 </table>
               </div>

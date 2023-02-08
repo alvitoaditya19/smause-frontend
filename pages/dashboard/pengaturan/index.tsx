@@ -7,7 +7,7 @@ import ReactPaginate from "react-paginate";
 import { Header, Sidebar } from "../../../components";
 import Image from "next/image";
 import { DestroySetting, getAllDataSetting } from "../../../services/dashboard";
-import { SettingsTypes } from "../../../services/data-types";
+import { SettingsDataTypes, SettingsTypes } from "../../../services/data-types";
 
 export default function Setting() {
     const [isLoading, setIsLoading] = useState(false);
@@ -44,7 +44,7 @@ export default function Setting() {
       return data;
     };
   
-    const handlePageClick = async (data:string) => {
+    const handlePageClick = async (data:any) => {
       // console.log(data.selected);
   
       let currentPage = data.selected + 1;
@@ -141,7 +141,7 @@ export default function Setting() {
                     </thead>
   
                     <tbody>
-                      {items.map((item:SettingsTypes) => {
+                      {items.map((item:SettingsDataTypes) => {
                         return (
                           <tr key={item._id} className="align-items-center">
                             <td>{item.no}</td>

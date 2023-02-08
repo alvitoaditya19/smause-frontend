@@ -4,19 +4,13 @@ import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
 
-import { JWTPayloadTypes, UserTypes } from '../../../services/data-types';
+import { JWTPayloadTypes, UserStateTypes } from '../../../services/data-types';
 import { updateProfile } from '../../../services/member';
 import { Header, Sidebar } from '../../../components';
 import Input from '../../../components/atoms/Input';
 import Link from 'next/link';
 
-interface UserStateTypes {
-  id: string;
-  name: string;
-  username: string;
-  email: string;
-  avatar: any;
-}
+
 
 export default function EditProfile() {
   const [user, setUser] = useState<UserStateTypes>({
@@ -25,6 +19,8 @@ export default function EditProfile() {
     email: '',
     avatar: '',
     username: '',
+    status: '',
+    no: 0
   });
   const [imagePreview, setImagePreview] = useState('/');
   const router = useRouter();
@@ -41,7 +37,7 @@ export default function EditProfile() {
     if (token) {
       const jwtToken = atob(token);
       const payload: JWTPayloadTypes = jwtDecode(jwtToken);
-      const userFromPayload: UserTypes = payload.user;
+      const userFromPayload: UserStateTypes = payload.user;
 
       console.log(userFromPayload)
 

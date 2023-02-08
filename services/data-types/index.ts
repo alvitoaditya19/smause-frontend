@@ -1,6 +1,7 @@
+import { ParsedUrlQuery } from "querystring";
 
 export interface UserStateTypes {
-  _id: string;
+  id: string;
   name: string;
   email: string;
   username: string;
@@ -24,9 +25,23 @@ export interface ControlTypes{
 }
 
 export interface SettingsTypes {
+  id: string | ParsedUrlQuery;
+  no: number;
+  nameVegetable: string;
+  amountVegetable: string;
+  amountHarvest: string;
+}
+
+export interface SettingsDataTypes {
   _id: string;
   no: number;
   nameVegetable: string;
   amountVegetable: string;
   amountHarvest: string;
+}
+
+
+export interface LoginTypes {
+  email: string;
+  password: string;
 }

@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { GetControl } from "./dashboard";
 
 
-export const getStatusLamp1 =(setDataLamp1)=> useCallback(async () => {
+export const getStatusLamp1 =(setDataLamp1:any)=> useCallback(async () => {
     const data = await GetControl();
 
     if (data.data.lamp1 == "ON") {

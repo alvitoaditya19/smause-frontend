@@ -280,15 +280,15 @@ export default function Dashboard() {
     getStatusBlend();
     totalUser()
 
-    const fetchDatas = async () => {
-      const res = await fetch("https://api.coincap.io/v2/assets/?limit=10");
-      const data = await res.json();
-      // console.log(data);
-      // setdata(data?.data);
-      console.log(dataku);
-      setdataSuhu(dataku);
-    };
-    fetchDatas();
+    // const fetchDatas = async () => {
+    //   const res = await fetch("https://api.coincap.io/v2/assets/?limit=10");
+    //   const data = await res.json();
+    //   // console.log(data);
+    //   // setdata(data?.data);
+    //   console.log(dataku);
+    //   setdataSuhu(dataku);
+    // };
+    // fetchDatas();
   }, []);
 
 
@@ -303,7 +303,7 @@ export default function Dashboard() {
         />
         {/* Main Content */}
         <div className="content">
-          <Header toggleNavbar={toggleNavbar} isFilter={false} filterBySearch />
+          <Header toggleNavbar={toggleNavbar} isFilter={false}  />
           <section className="p-3">
             <div className="header">
               <h3 className="text-3xl text-black font-bold">Dashboard</h3>
@@ -311,8 +311,8 @@ export default function Dashboard() {
               <div className="lg:pt-10 pt-8">
                 <div className="flex flex-wrap justify-start items-center -mx-3">
                   <SummaryCard title="Pengguna" total={totalDataUser} icon={<IcUser />} />
-                  <SummaryCard title="Jenis Tanaman" total="50" icon={<IcVegetable />} />
-                  <SummaryCard title="Panen Sayuran" total="50" icon={<IcHarvest />} />
+                  <SummaryCard title="Jenis Tanaman" total={totalDataUser}  icon={<IcVegetable />} />
+                  <SummaryCard title="Panen Sayuran" total={totalDataUser}  icon={<IcHarvest />} />
                 </div>
               </div>
 
@@ -494,28 +494,28 @@ interface GetServerSideProps{
 
 
 
-export async function getServerSideProps({ req }:GetServerSideProps) {
-  const { token } = req.cookies;
-  if (!token) {
-    return {
-      redirect: {
-        destination: '/sign-in',
-        permanent: false,
-      },
-    };
-  }
+// export async function getServerSideProps({ req }:GetServerSideProps) {
+//   const { token } = req.cookies;
+//   if (!token) {
+//     return {
+//       redirect: {
+//         destination: '/sign-in',
+//         permanent: false,
+//       },
+//     };
+//   }
 
-  const jwtToken = Buffer.from(token, 'base64').toString('ascii');
-  const payload: JWTPayloadTypes = jwtDecode(jwtToken);
+//   const jwtToken = Buffer.from(token, 'base64').toString('ascii');
+//   const payload: JWTPayloadTypes = jwtDecode(jwtToken);
 
-  const userFromPayload = payload.user;
-  const IMG = process.env.NEXT_PUBLIC_IMG;
-  userFromPayload.avatar = `${IMG}/${userFromPayload.avatar}`;
-  return {
-    props: {
-      user: userFromPayload,
-    },
-  };
-}
+//   const userFromPayload = payload.user;
+//   const IMG = process.env.NEXT_PUBLIC_IMG;
+//   userFromPayload.avatar = `${IMG}/${userFromPayload.avatar}`;
+//   return {
+//     props: {
+//       user: userFromPayload,
+//     },
+//   };
+// }
 
 

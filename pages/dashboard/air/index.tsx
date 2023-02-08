@@ -56,10 +56,10 @@ export default function Air() {
     return data;
   };
 
-  const handlePageClick = async (data: string) => {
+  const handlePageClick = async (data: any) => {
     // console.log(data.selected);
 
-    let currentPage = data.selected + 1;
+    let currentPage  = data.selected + 1;
 
     const commentsFormServer = await fetchComments(currentPage);
 
@@ -76,9 +76,9 @@ export default function Air() {
       .get(`http://localhost:3000/api/v1/users/?limit=${limit}`)
       .then((res) => {
         console.log("DATAAA: ", res.data.data);
-        let updatedList = [...res.data.data];
+        let updatedList :any = [...res.data.data];
         // Include all elements which includes the search query
-        updatedList = updatedList.filter((item) => {
+        updatedList = updatedList.filter((item:any) => {
           return (
             item.name.toString().toLowerCase().indexOf(query.toLowerCase()) !==
             -1
@@ -159,13 +159,14 @@ export default function Air() {
                   <tbody>
                     {items.map((item) => {
                       return (
-                        <tr key={item.id} className="align-items-center">
-                          {item.id}
-                          <td>{item.celcius}</td>
-                          <td>{item.humidity}</td>
-                          <td>{item.time}</td>
-                          <td>{item.date}</td>
-                        </tr>
+                        // <tr key={item.id} className="align-items-center">
+                        //   {item.id}
+                        //   <td>{item.celcius}</td>
+                        //   <td>{item.humidity}</td>
+                        //   <td>{item.time}</td>
+                        //   <td>{item.date}</td>
+                        // </tr>
+                        <tr></tr>
                       );
                     })}
                   </tbody>

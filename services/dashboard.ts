@@ -2,7 +2,7 @@ import axios from 'axios';
 import callAPI from '../config/api';
 import Cookies from 'js-cookie';
 import { ParsedUrlQuery } from 'querystring';
-import { ControlTypes, SettingsTypes } from './data-types';
+import { ControlTypes, SettingsTypes, UserStateTypes } from './data-types';
 
 
 
@@ -18,7 +18,7 @@ export async function getAllDataUser() {
     token: true,
   });
 }
-export async function getCustomDataUser(token, limit, currentPage) {
+export async function getCustomDataUser(token:string, limit:number, currentPage:number) {
   const url = `${ROOT_API}/${API_VERSION}/users?page=${currentPage}&limit=${limit}`;
 
   return callAPI({
@@ -28,7 +28,7 @@ export async function getCustomDataUser(token, limit, currentPage) {
   });
 }
 
-export async function getDetailUser(id: ParsedUrlQuery) {
+export async function getDetailUser(id:string | string[] | undefined) {
   const URL = `users/${id}`;
 
   const response = await axios.get(`${ROOT_API}/${API_VERSION}/${URL}`);
@@ -37,7 +37,7 @@ export async function getDetailUser(id: ParsedUrlQuery) {
   return axiosResponse.data;
 }
 
-export async function DestroyUser(id: string) {
+export async function DestroyUser( id:string | string[] | undefined) {
 
   const url = `${ROOT_API}/${API_VERSION}/users/delete/${id}`;
 
@@ -49,7 +49,7 @@ export async function DestroyUser(id: string) {
 
 }
 
-export async function SetAddUser(data) {
+export async function SetAddUser(data:Partial<UserStateTypes>) {
   const url = `${ROOT_API}/${API_VERSION}/users/create`;
 
   return callAPI({
@@ -61,7 +61,7 @@ export async function SetAddUser(data) {
   });
 }
 
-export async function SetEditUser(data, id) {
+export async function SetEditUser(data:Partial<UserStateTypes>, id:string | string[] | undefined) {
   const url = `${ROOT_API}/${API_VERSION}/users/edit/${id}`;
 
   return callAPI({
@@ -131,7 +131,7 @@ export async function getDetailSetting(id: ParsedUrlQuery) {
   });
 }
 
-export async function SetAddSetting(data: SettingsTypes) {
+export async function SetAddSetting(data: Partial<SettingsTypes>) {
   const url = `${ROOT_API}/${API_VERSION}/settings/create`;
 
   return callAPI({
@@ -142,7 +142,7 @@ export async function SetAddSetting(data: SettingsTypes) {
   });
 }
 
-export async function SetEditSetting(data, id) {
+export async function SetEditSetting(data:Partial<SettingsTypes>, id:ParsedUrlQuery) {
   const url = `${ROOT_API}/${API_VERSION}/settings/edit/${id}`;
 
   return callAPI({

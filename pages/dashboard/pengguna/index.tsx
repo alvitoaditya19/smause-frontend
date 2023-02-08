@@ -36,36 +36,41 @@ export default function User() {
     const getDataUser = async () => {
       const token = Cookies.get("token");
 
-      const jwtToken = atob(token);
-      console.log("my token asli", token)
+      if (token) {
+        const jwtToken = atob(token);
+        console.log("my token asli", token)
 
-      console.log("my token", jwtToken)
-      setIsLoading(true);
-      axios
-        .get(`http://localhost:4000/api/v1/users?page=1&limit=${limit}`,
-          { headers: { Authorization: `Bearer ${jwtToken}` } })
-        .then((res) => {
-          setIsLoading(false);
-          let dataUser = res.data;
+        console.log("my token", jwtToken)
+        setIsLoading(true);
+        axios
+          .get(`https://smause-backend-app.azurewebsites.net/api/v1/users?page=1&limit=${limit}`,
+            { headers: { Authorization: `Bearer ${jwtToken}` } })
+          .then((res) => {
+            setIsLoading(false);
+            let dataUser = res.data;
 
-          console.log("plilsss", dataUser)
+            console.log("plilsss", dataUser)
 
-          setpageCount(Math.ceil(dataUser.total / limit));
-          setTotalData(dataUser.total);
-          setItems(dataUser.data);
-        })
-        .catch((err) => {
-          console.log("err get in progress: ", err);
-        });
+            setpageCount(Math.ceil(dataUser.total / limit));
+            setTotalData(dataUser.total);
+            setItems(dataUser.data);
+          })
+          .catch((err) => {
+            console.log("err get in progress: ", err);
+          });
+      }
+
+
     };
 
     getDataUser();
   }, [limit]);
   const fetchComments = async (currentPage: any) => {
     const token = Cookies.get('token');
-
-    const allDataUser = await getCustomDataUser(token, limit, currentPage);
-    return allDataUser.data.data;
+    if(token){
+      const allDataUser = await getCustomDataUser(token, limit, currentPage);
+      return allDataUser.data.data;
+    }
   };
 
   const handlePageClick = async (data: any) => {
@@ -77,28 +82,31 @@ export default function User() {
   const filterBySearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value;
     const token = Cookies.get("token");
-
-    const jwtToken = atob(token);
-    axios
-      .get(`http://localhost:4000/api/v1/users`,
-        { headers: { Authorization: `Bearer ${jwtToken}` } })
-      .then((res) => {
-        let updatedList : any = [...res.data.data];
-        updatedList = updatedList.filter((item : any) => {
-          return (
-            item.name.toString().toLowerCase().indexOf(query.toLowerCase()) !==
-            -1
-          );
+    if (token) {
+      const jwtToken = atob(token);
+      axios
+        .get(`http://localhost:4000/api/v1/users`,
+          { headers: { Authorization: `Bearer ${jwtToken}` } })
+        .then((res) => {
+          let updatedList: any = [...res.data.data];
+          updatedList = updatedList.filter((item: any) => {
+            return (
+              item.name.toString().toLowerCase().indexOf(query.toLowerCase()) !==
+              -1
+            );
+          });
+          setItems(updatedList);
         });
-        setItems(updatedList);
-      });
+    }
+
+
   };
 
   const deleteUser = async (id: string) => {
     DestroyUser(id);
     const user = await getAllDataUser();
     console.log("data userku : ", user.data.data)
-    
+
     setItems(user.data.data);
   };
   return (
@@ -122,7 +130,7 @@ export default function User() {
               </div>
               <h3 className="text-base text-grey2 mt-1">Total : {totalData}</h3>
             </div>
-           
+
           </section>
           <section className="mt-8 mb-10">
             <div className="container-fluid lg:flex lg:justify-between flex-none justify-start">

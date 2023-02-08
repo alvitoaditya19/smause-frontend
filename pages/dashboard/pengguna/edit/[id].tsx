@@ -11,7 +11,7 @@ import { sentenceCase } from "sentence-case";
 import { Header, Sidebar } from "../../../../components";
 import { getDetailUser, SetEditUser } from "../../../../services/dashboard";
 
-export interface UserStateTypes{
+export interface UserStateTypes {
   _id: string;
   name: string;
   email: string;
@@ -23,8 +23,8 @@ export interface UserStateTypes{
 
 export default function DetailEdit() {
   const router = useRouter();
-  const { id } : ParsedUrlQuery  = router.query;
- 
+  const { id }: ParsedUrlQuery = router.query;
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
@@ -42,12 +42,12 @@ export default function DetailEdit() {
     { value: "user", label: "User" },
   ];
 
-  const handleChange = (selectedOption:any) => {
+  const handleChange = (selectedOption: any) => {
     setStatus(selectedOption.value);
   };
 
   const onSubmit = async () => {
-    const data = {
+    const data: Partial<UserStateTypes> = {
       name: name,
       email: email,
       username: username,
@@ -64,16 +64,16 @@ export default function DetailEdit() {
     }
   };
   const colourStyles = {
-    menuList: (styles:any) => ({
+    menuList: (styles: any) => ({
       ...styles,
       background: "#E7EAF5",
     }),
-    option: (styles :any, { isFocused, isSelected }:any) => ({
+    option: (styles: any, { isFocused, isSelected }: any) => ({
       ...styles,
       background: isSelected ? "#4D17E2" : undefined,
       zIndex: 1,
     }),
-    menu: (base :any) => ({
+    menu: (base: any) => ({
       ...base,
       zIndex: 100,
     }),
@@ -87,10 +87,10 @@ export default function DetailEdit() {
     setNumberPhone(data.phoneNumber)
     setStatus(data.status)
   }
-  
-  useEffect( () => {
+
+  useEffect(() => {
     if (!id) {
-      return;  
+      return;
     }
     fetchData()
   }, [id]);
@@ -107,8 +107,8 @@ export default function DetailEdit() {
           <Header toggleNavbar={toggleNavbar} />
           <section className="p-3">
             <div className="header">
-            <h3 className="text-3xl text-black font-bold">Edit User</h3>
-                <p className=" text-base text-grey2 mt-1">Kelola data tanaman sebaik mungkin</p>
+              <h3 className="text-3xl text-black font-bold">Edit User</h3>
+              <p className=" text-base text-grey2 mt-1">Kelola data tanaman sebaik mungkin</p>
             </div>
           </section>
           <div className="form-data-user">

@@ -4,6 +4,7 @@ import { Header, Sidebar } from "../../../../components";
 import { SetAddSetting, SetAddUser } from "../../../../services/dashboard";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { SettingsTypes } from "../../../../services/data-types";
 
 export default function AddVegetable() {
   const [nameVegetable, setNameVegetable] = useState("");
@@ -18,7 +19,7 @@ export default function AddVegetable() {
   const router = useRouter();
 
   const onSubmit = async () => {
-    const data = {
+    const data : Partial<SettingsTypes> = {
       nameVegetable: nameVegetable,
       amountVegetable: amountVegetable,
       amountHarvest: amountHarvest,
