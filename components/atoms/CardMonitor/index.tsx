@@ -15,7 +15,7 @@ export default function CardMonitor({ value=654, isLoading, title, margin }: any
     // setValuee(value);
   })
   return (
-    <div className="w-1/2 px-2">
+    <div className="lg:w-1/3 w-1/2 px-2">
       <div className={classItem}>
         <div className="card-body">
           <h1>{title}</h1>

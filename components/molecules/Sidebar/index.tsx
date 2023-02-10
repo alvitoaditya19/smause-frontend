@@ -35,6 +35,12 @@ export default function Sidebar({ toggleViewMode, activeMenu, toggleNavbar }: Si
               active={activeMenu == "Dashboard"}
             />
             <SidebarItem
+              icon="icon ic-control"
+              title="Kontrol"
+              href="/dashboard/kontrol"
+              active={activeMenu == "Kontrol"}
+            />
+            <SidebarItem
               icon="icon ic-user"
               title="Pengguna"
               href="/dashboard/pengguna"

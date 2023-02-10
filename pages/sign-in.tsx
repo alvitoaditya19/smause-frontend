@@ -21,7 +21,7 @@ export default function SignIn() {
           <div className="lg:w-1/2 pr-4 pl-4 bg-blue text-center lg:pt-[60px] lg:pb-[100px] lg:flex hidden relative">
             <div className="container m-auto">
               <div className="flex items-center justify-center" data-aos="zoom-in">
-                <Image src="/images/img-cover-sign-in.png" height={360} width={502} className="img-fluid" alt='img-iot' />
+                <Image src="/images/img-signin.png" height={360} width={502} className="img-fluid" alt='img-iot' />
               </div>
               <h2 className="text-4xl font-bold text-white mb-8 pt-12">
                 Sistem Green House Modern.

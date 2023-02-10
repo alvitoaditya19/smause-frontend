@@ -211,8 +211,7 @@ table {
 
 .avatar {
   outline: none;
-  width: 50px;
-  height: 50px;
+  width: 70px;
   padding: 4px;
   object-fit: cover;
   border-radius: 50px;
@@ -251,6 +250,15 @@ table {
 .item-menu.active .ic-dashboard,
 .item-menu:hover .ic-dashboard {
   background-image: url("/Icon/sidebar/ic-dashboard-act.svg");
+}
+
+.ic-control {
+  background-image: url("/Icon/sidebar/ic-control-inact.svg");
+}
+
+.item-menu.active .ic-control,
+.item-menu:hover .ic-control {
+  background-image: url("/Icon/sidebar/ic-control-act.svg");
 }
 
 .ic-user {

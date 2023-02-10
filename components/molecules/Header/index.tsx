@@ -7,9 +7,10 @@ export interface  HeaderProps {
   toggleNavbar: MouseEventHandler<HTMLButtonElement>;
   filterBySearch: ChangeEventHandler<HTMLInputElement>;
   isFilter: boolean;
+  name:string
 }
 
-export default function Header({ toggleNavbar, filterBySearch, isFilter }:Partial<HeaderProps>) {
+export default function Header({ toggleNavbar, filterBySearch, isFilter, name }:Partial<HeaderProps>) {
   const [filter, setFilter] = useState(false);
   const router = useRouter();
 
@@ -18,7 +19,7 @@ export default function Header({ toggleNavbar, filterBySearch, isFilter }:Partia
 
   if (isFilter) {
     search = (
-        <div className="lg:flex justify-end  hidden">
+        <div className="lg:flex justify-end  hidden mr-4">
           <input
             type="text"
             placeholder="Search report or product"
@@ -71,11 +72,14 @@ export default function Header({ toggleNavbar, filterBySearch, isFilter }:Partia
             <span className="navbar-toggler-icon"></span>
           </button>
 
-          <div className="search-bar-profile gap-md-4 mt-3 mt-md-0">
+          <div className="search-bar-profile gap-md-4 mt-3 mt-md-0 font-medium">
             {search}
+            {
+              !isFilter ? <h1 className="truncate lg:w-full w-24">Hi, {name}</h1> :""
+            }
             <div className="dropdown">
               <button
-                className="profile-pictures lg:ml-4 ml-0"
+                className="profile-pictures ml-0"
                 type="button"
                 id="dropdownProfile1"
                 data-bs-toggle="dropdown"

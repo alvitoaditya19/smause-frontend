@@ -3,12 +3,11 @@ import Link from "next/link";
 import AOS from 'aos';  
 
 import Image from "next/image";
-import Hero from "../components/hero";
-import Pricing from "../components/pricing";
 
 export default function Home() {
 
   useEffect(() => {
+
     AOS.init();
   }, []);
   return (
@@ -17,7 +16,7 @@ export default function Home() {
         <div className=" flex h-screen">
           <div className="m-auto text-center">
             <div data-aos="zoom-in">
-              <Image src="/images/img-robot.png" className="img-fluid inline" height={400} width={500} alt='robot' />
+              <Image src="/images/img-welcom.png" className="img-fluid inline" height={400} width={500} alt='robot' />
             </div>
             <h1 className="title-home-page font-semibold mt-3">
               Selamat Datang Petani Modern
