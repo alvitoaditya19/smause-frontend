@@ -6,7 +6,7 @@ import jwtDecode from 'jwt-decode';
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Chart from "../../components/atoms/Chart";
-import { getAllDataUser, GetControl, SetControl } from "../../services/dashboard";
+import { getAllDataSetting, getAllDataUser, GetControl, SetControl } from "../../services/dashboard";
 import { ControlTypes, JWTPayloadTypes, UserStateTypes } from "../../services/data-types";
 
 interface UserDataStateTypes{
@@ -15,6 +15,9 @@ interface UserDataStateTypes{
 
 export default function Dashboard(props: UserDataStateTypes) {
   const { user } = props;
+
+  const [totalVegetable, setTotalVegetable] = useState(0);
+  const [totalHarvest, settotalHarvest] = useState(0);
 
   const [isLoading, setIsLoading] = useState(false);
   const [toggleViewMode, setToggleViewMode] = useState(false);
@@ -27,11 +30,29 @@ export default function Dashboard(props: UserDataStateTypes) {
   };
 
   useEffect(() => {
+    const totalVege = async () => {
+      setIsLoading(true);
+
+      const getDataTotal = await getAllDataSetting();
+      setIsLoading(false);
+      setTotalVegetable(getDataTotal.data.totalVegetable)
+    }
+    const totalHarvs = async () => {
+      setIsLoading(true);
+
+      const getDataTotal = await getAllDataSetting();
+      setIsLoading(false);
+      settotalHarvest(getDataTotal.data.totalHarvest)
+    }
     const totalUser = async () => {
+      setIsLoading(true);
+
       const getDataTotal = await getAllDataUser();
+      setIsLoading(false);
       setTotalDataUser(getDataTotal.data.total)
     }
-
+    totalVege()
+    totalHarvs()
     totalUser()
   }, []);
 
@@ -54,9 +75,9 @@ export default function Dashboard(props: UserDataStateTypes) {
               <p className=" text-base text-grey2 mt-1">Kelola data tanaman sebaik mungkin</p>
               <div className="lg:pt-10 pt-8">
                 <div className="flex flex-wrap justify-start items-center -mx-3">
-                  <SummaryCard title="Pengguna" total={totalDataUser} icon={<IcUser />} />
-                  <SummaryCard title="Semua Tanaman" total={totalDataUser}  icon={<IcVegetable />} />
-                  <SummaryCard title="Panen Sayuran" total={totalDataUser}  icon={<IcHarvest />} />
+                  <SummaryCard isLoading={isLoading} title="Pengguna" total={totalDataUser} icon={<IcUser />} />
+                  <SummaryCard isLoading={isLoading} title="Semua Tanaman" total={totalHarvest}  icon={<IcVegetable />} />
+                  <SummaryCard isLoading={isLoading} title="Panen Sayuran" total={totalVegetable}  icon={<IcHarvest />} />
                 </div>
               </div>
 
