@@ -10,7 +10,7 @@ import { CardMonitor, Header, Sidebar, SummaryCard } from "../../../components";
 import { IcHarvest, IcLampAct, IcLampInact, IcUser, IcVegetable } from "../../../public/Icon";
 import Image from "next/image";
 
-interface UserDataStateTypes{
+interface UserDataStateTypes {
   user: UserStateTypes;
 }
 
@@ -36,7 +36,7 @@ export default function Kontrol(props: UserDataStateTypes) {
     setToggleViewMode(!toggleViewMode);
   };
 
-  var lampuStatus  = lamp1;
+  var lampuStatus = lamp1;
   var lampuStatus2 = lamp2;
   var pompaStatus = pump1;
   var pompaStatus2 = pump2;
@@ -49,7 +49,7 @@ export default function Kontrol(props: UserDataStateTypes) {
       // lamp2: dataLamp2 === "ON" ? "OFF" : "ON",
     };
 
-    const dataValue : Partial<ControlTypes> = {
+    const dataValue: Partial<ControlTypes> = {
       lamp1: data.lamp1 === true ? "OFF" : "ON",
     };
 
@@ -256,14 +256,22 @@ export default function Kontrol(props: UserDataStateTypes) {
     <>
       {/* Navbar */}
       <div className="dashboard flex">
-        <Sidebar
-          toggleViewMode={toggleViewMode}
-          toggleNavbar={toggleNavbar}
-          activeMenu="Kontrol"
-        />
+        {
+          user.status == "admin" ? <Sidebar
+            toggleViewMode={toggleViewMode}
+            toggleNavbar={toggleNavbar}
+            activeMenu="Kontrol"
+            statusAdmin
+          /> : <Sidebar
+            toggleViewMode={toggleViewMode}
+            toggleNavbar={toggleNavbar}
+            activeMenu="Kontrol"
+          />
+        }
+
         {/* Main Content */}
         <div className="content">
-          <Header toggleNavbar={toggleNavbar} isFilter={false}  name={user.name} />
+          <Header toggleNavbar={toggleNavbar} isFilter={false} name={user.name} />
           <section className="p-3">
             <div className="header">
               <h3 className="text-3xl text-black font-bold">Kontrol Tanamanmu</h3>
@@ -309,7 +317,7 @@ export default function Kontrol(props: UserDataStateTypes) {
                         }
                       >
                         <div className="card-body text-center inline-block">
-                        <h1 className="lg:text-xl text-lg font-medium">Lampu 2</h1>
+                          <h1 className="lg:text-xl text-lg font-medium">Lampu 2</h1>
                           {lamp2 ? <IcLampInact /> : <IcLampAct />}
                           <h1 className="lg:text-xl text-2xl font-semibold">{lamp2 ? "ON" : "OFF"}</h1>
                         </div>
@@ -353,7 +361,7 @@ export default function Kontrol(props: UserDataStateTypes) {
                         }
                       >
                         <div className="card-body text-center inline-block">
-                        <h1 className="lg:text-xl text-lg font-medium">Pompa 2</h1>
+                          <h1 className="lg:text-xl text-lg font-medium">Pompa 2</h1>
                           {pump2 ? <IcLampInact /> : <IcLampAct />}
                           <h1 className="lg:text-xl text-2xl font-semibold">{pump2 ? "ON" : "OFF"}</h1>
                         </div>
@@ -397,7 +405,7 @@ export default function Kontrol(props: UserDataStateTypes) {
                         }
                       >
                         <div className="card-body text-center inline-block">
-                        <h1 className="lg:text-xl text-lg font-medium">Blend</h1>
+                          <h1 className="lg:text-xl text-lg font-medium">Blend</h1>
                           {blend ? <IcLampInact /> : <IcLampAct />}
                           <h1 className="lg:text-xl text-2xl font-semibold">{blend ? "ON" : "OFF"}</h1>
                         </div>
@@ -406,7 +414,7 @@ export default function Kontrol(props: UserDataStateTypes) {
                   </div>
                 </div>
                 <div className="w-full md:w-1/2 px-2 lg:mb-0 mb-4">
-                <Image src="/images/img-control.png" height={360} width={502} className="img-fluid" alt='img-iot' />
+                  <Image src="/images/img-control.png" height={360} width={502} className="img-fluid" alt='img-iot' />
 
                 </div>
               </div>
@@ -418,17 +426,17 @@ export default function Kontrol(props: UserDataStateTypes) {
   );
 }
 
-interface GetServerSideProps{
+interface GetServerSideProps {
   req: {
-    cookies:{
-      token:string,
+    cookies: {
+      token: string,
     }
   }
 }
 
 
 
-export async function getServerSideProps({ req }:GetServerSideProps) {
+export async function getServerSideProps({ req }: GetServerSideProps) {
   const { token } = req.cookies;
   if (!token) {
     return {

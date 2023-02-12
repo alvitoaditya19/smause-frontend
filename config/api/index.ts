@@ -30,8 +30,6 @@ export default async function callAPI({
     headers,
   }).catch((err) => err.response);
 
-  console.log("kunaoan ieu", response)
-
   if (response == undefined) {
 
     const res = {

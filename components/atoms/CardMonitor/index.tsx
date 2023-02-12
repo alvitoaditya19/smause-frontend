@@ -5,8 +5,7 @@ import cx from "classnames";
 import Image from "next/image";
 
 
-export default function CardMonitor({ value=654, isLoading, title, margin }: any) {
-  const [valuee, setValuee] = useState(765);
+export default function CardMonitor({ value, isLoading, title, margin }: any) {
   const classItem = cx({
     "card-monitoring": true,
     margin
@@ -28,13 +27,13 @@ export default function CardMonitor({ value=654, isLoading, title, margin }: any
               {isLoading ? (
                 <ReactLoading
                   type="spinningBubbles"
-                  color="#ffffff"
+                  color="#4D17E2"
                   height={40}
                   width={40}
                 // className="justify-content-center text-center"
                 />
               ) : (
-                <div className="lg:text-3xl text-xl font-medium text-primary1">{valuee}</div>
+                <div className="lg:text-3xl text-xl font-medium text-primary1">{value}</div>
               )}
               <div className="text-grey2 lg:text-base text-sm font-medium">Celcius</div>
             </div>

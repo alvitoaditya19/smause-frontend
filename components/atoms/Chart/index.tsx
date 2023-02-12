@@ -10,13 +10,12 @@ import {
     ResponsiveContainer,
 } from "recharts";
 
-export default function Chart({ data, title }: any) {
+export default function Chart({ data, title, focusX, focusY }: any) {
     return (
         <div className=" justify-center mx-auto">
             <h1 className="text-black font-medium text-2xl text-center">{title}</h1>
             <ResponsiveContainer width="100%" height={400} >
                 <AreaChart
-
                     width={500}
                     height={400}
                     data={data}
@@ -35,13 +34,13 @@ export default function Chart({ data, title }: any) {
                         </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" tick={{ fill: '#571EF5' }} tickLine={{ stroke: '#571EF5' }}  />
+                    <XAxis dataKey={focusY} tick={{ fill: '#571EF5' }} tickLine={{ stroke: '#571EF5' }}  />
                     {/* <YAxis label={{ value: 'test', fill: '#571EF5', angle:'90', position:"insideLeft" }} tick={{ fill: '#571EF5' }} tickLine={{ stroke: '#571EF5' }} /> */}
                     <YAxis tick={{ fill: '#571EF5' }} tickLine={{ stroke: '#571EF5' }} />
 
                     <Tooltip />
                     <Legend />
-                    <Area type="monotone" dataKey="priceUsd" strokeWidth={3} stroke="#4D17E2" fill="url(#colorUv)"/>
+                    <Area type="monotone" dataKey={focusX} strokeWidth={3} stroke="#4D17E2" fill="url(#colorUv)"/>
                 </AreaChart>
             </ResponsiveContainer>
         </div>

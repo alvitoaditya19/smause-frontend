@@ -6,8 +6,9 @@ export interface SidebarProps {
   toggleViewMode: boolean;
   activeMenu: string;
   toggleNavbar: any;
+  statusAdmin: boolean
 }
-export default function Sidebar({ toggleViewMode, activeMenu, toggleNavbar }: SidebarProps) {
+export default function Sidebar({ toggleViewMode, activeMenu, toggleNavbar, statusAdmin }: Partial<SidebarProps>) {
   const router = useRouter();
   const onLogOut = () => {
     Cookies.remove('token');
@@ -34,12 +35,14 @@ export default function Sidebar({ toggleViewMode, activeMenu, toggleNavbar }: Si
               href="/dashboard"
               active={activeMenu == "Dashboard"}
             />
-            <SidebarItem
-              icon="icon ic-control"
-              title="Kontrol"
-              href="/dashboard/kontrol"
-              active={activeMenu == "Kontrol"}
-            />
+            {
+              statusAdmin ? <SidebarItem
+                icon="icon ic-control"
+                title="Kontrol"
+                href="/dashboard/kontrol"
+                active={activeMenu == "Kontrol"}
+              /> : ""
+            }
             <SidebarItem
               icon="icon ic-user"
               title="Pengguna"

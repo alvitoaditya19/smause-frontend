@@ -93,13 +93,14 @@ export async function SetControl(data :Partial<ControlTypes>) {
   });
 }
 
-export async function GetTemperature() {
-  const URL = `temperatures`;
+export async function GetAirsEnc() {
+  const url = `${ROOT_API}/${API_VERSION}/temperatures/encrypt`;
 
-  const response = await axios.get(`${ROOT_API}/${API_VERSION}/${URL}`);
-  const axiosResponse = response.data;
-
-  return axiosResponse.data;
+  return callAPI({
+    url,
+    method: 'GET',
+    token: true,
+  });
 }
 
 export async function GetAllDataTemperature() {
