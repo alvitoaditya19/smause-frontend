@@ -103,6 +103,26 @@ export async function GetAirsEnc() {
   });
 }
 
+export async function GetWatersEnc() {
+  const url = `${ROOT_API}/${API_VERSION}/waters/encrypt`;
+
+  return callAPI({
+    url,
+    method: 'GET',
+    token: true,
+  });
+}
+
+export async function GetSoilsEnc() {
+  const url = `${ROOT_API}/${API_VERSION}/soils/encrypt`;
+
+  return callAPI({
+    url,
+    method: 'GET',
+    token: true,
+  });
+}
+
 export async function GetAllDataTemperature() {
   const URL = `temperatures`;
 

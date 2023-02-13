@@ -13,11 +13,11 @@ import {
 export default function Chart({ data, title, focusX, focusY }: any) {
     return (
         <div className=" justify-center mx-auto">
-            <h1 className="text-black font-medium text-2xl text-center">{title}</h1>
-            <ResponsiveContainer width="100%" height={400} >
+            <h1 className="text-black font-medium lg:text-xl text-base text-center mb-4">{title}</h1>
+            <ResponsiveContainer width="100%" height={280} >
                 <AreaChart
                     width={500}
-                    height={400}
+                            
                     data={data}
                     margin={{
                         top: 10,
@@ -25,6 +25,7 @@ export default function Chart({ data, title, focusX, focusY }: any) {
                         left: 0,
                         bottom: 0,
                     }}
+             
                 >
                     <defs>
                         <linearGradient id="colorUv" x1="0%" y1="10%" x2="0%" y2="100%">

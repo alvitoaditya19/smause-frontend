@@ -1,5 +1,6 @@
 import axios from "axios";
 import Cookies from "js-cookie";
+import jwtDecode from "jwt-decode";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import ReactLoading from "react-loading";
@@ -8,18 +9,16 @@ import "react-toastify/dist/ReactToastify.css";
 
 import { Header, Sidebar } from "../../../components";
 import { DestroyUser, getAllDataUser, getCustomDataUser } from "../../../services/dashboard";
+import { JWTPayloadTypes, UserStateTypes } from "../../../services/data-types";
 
-interface UserStateTypes {
-  _id: string;
-  name: string;
-  email: string;
-  username: string;
-  status: string;
-  avatar: any;
-  no: number;
+
+interface UserDataStateTypes {
+  user: UserStateTypes;
 }
 
-export default function User() {
+export default function User(props: UserDataStateTypes) {
+  const { user } = props;
+
   const [isLoading, setIsLoading] = useState(false);
   const [toggleViewMode, setToggleViewMode] = useState(false);
   const toggleNavbar = () => {
@@ -43,7 +42,7 @@ export default function User() {
         console.log("my token", jwtToken)
         setIsLoading(true);
         axios
-          .get(`https://smause-backend-app.azurewebsites.net/api/v1/users?page=1&limit=${limit}`,
+          .get(`http://localhost:4000/api/v1/users?page=1&limit=${limit}`,
             { headers: { Authorization: `Bearer ${jwtToken}` } })
           .then((res) => {
             setIsLoading(false);
@@ -113,11 +112,18 @@ export default function User() {
     <>
       {/* Navbar */}
       <div className="dashboard d-flex">
-        <Sidebar
-          toggleViewMode={toggleViewMode}
-          toggleNavbar={toggleNavbar}
-          activeMenu="Pengguna"
-        />
+        {
+          user.status == "admin" ? <Sidebar
+            toggleViewMode={toggleViewMode}
+            toggleNavbar={toggleNavbar}
+            activeMenu="Pengguna"
+            statusAdmin
+          /> : <Sidebar
+            toggleViewMode={toggleViewMode}
+            toggleNavbar={toggleNavbar}
+            activeMenu="Pengguna"
+          />
+        }
         {/* Main Content */}
         <div className="content">
           <Header toggleNavbar={toggleNavbar} filterBySearch={filterBySearch} isFilter />
@@ -176,29 +182,19 @@ export default function User() {
                   <tbody>
                     {items.map((item: UserStateTypes) => (
 
-                      <tr key={item._id} className="align-items-center">
+                      <tr key={item.id} className="align-items-center">
                         <td>{item.no} </td>
                         <td>{item.email}</td>
                         <td>{item.name}</td>
                         <td>{item.username}</td>
+                        <td>{item.status}</td>
                         <td>
-                          {item.status === "admin" ? (
-                            <div className="admin-card">
-                              <h1>Admin</h1>
-                            </div>
-                          ) : (
-                            <div className="user-card">
-                              <h1>User</h1>
-                            </div>
-                          )}
-                        </td>
-                        <td>
-                          <Link href={`/dashboard/pengguna/edit/${item._id}`} legacyBehavior  >
+                          <Link href={`/dashboard/pengguna/edit/${item.id}`} legacyBehavior  >
                             <a className="btn-edit-user">Edit</a>
                           </Link>
 
                           <button
-                            onClick={() => deleteUser(item._id)}
+                            onClick={() => deleteUser(item.id)}
                             className="btn-delete-user"
                           >
                             Delete
@@ -237,4 +233,46 @@ export default function User() {
       </div>
     </>
   );
+}
+
+interface GetServerSideProps {
+  req: {
+    cookies: {
+      token: string,
+    }
+  }
+}
+
+
+
+export async function getServerSideProps({ req }: GetServerSideProps) {
+  const { token } = req.cookies;
+  if (!token) {
+    return {
+      redirect: {
+        destination: '/sign-in',
+        permanent: false,
+      },
+    };
+  }
+
+  const jwtToken = Buffer.from(token, 'base64').toString('ascii');
+  const payload: JWTPayloadTypes = jwtDecode(jwtToken);
+
+  const userFromPayload = payload.user;
+  if (userFromPayload.status !== "admin") {
+    return {
+      redirect: {
+        destination: '/dashboard',
+        permanent: false,
+      },
+    };
+  }
+  const IMG = process.env.NEXT_PUBLIC_IMG;
+  userFromPayload.avatar = `${IMG}/${userFromPayload.avatar}`;
+  return {
+    props: {
+      user: userFromPayload,
+    },
+  };
 }

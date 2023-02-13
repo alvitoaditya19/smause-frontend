@@ -35,20 +35,21 @@ export default function Sidebar({ toggleViewMode, activeMenu, toggleNavbar, stat
               href="/dashboard"
               active={activeMenu == "Dashboard"}
             />
+            <SidebarItem
+              icon="icon ic-control"
+              title="Kontrol"
+              href="/dashboard/kontrol"
+              active={activeMenu == "Kontrol"}
+            />
             {
               statusAdmin ? <SidebarItem
-                icon="icon ic-control"
-                title="Kontrol"
-                href="/dashboard/kontrol"
-                active={activeMenu == "Kontrol"}
+                icon="icon ic-user"
+                title="Pengguna"
+                href="/dashboard/pengguna"
+                active={activeMenu == "Pengguna"}
               /> : ""
             }
-            <SidebarItem
-              icon="icon ic-user"
-              title="Pengguna"
-              href="/dashboard/pengguna"
-              active={activeMenu == "Pengguna"}
-            />
+
             <SidebarItem
               icon="icon ic-water"
               title="Air"
@@ -85,7 +86,6 @@ export default function Sidebar({ toggleViewMode, activeMenu, toggleNavbar, stat
             <SidebarItem
               icon="icon ic-out"
               title="Keluar"
-
               active={activeMenu == "Keluar"}
               onClick={onLogOut}
             />

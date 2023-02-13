@@ -9,7 +9,7 @@ import { createDecipheriv } from 'crypto';
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Chart from "../../components/atoms/Chart";
-import { getAllDataSetting, getAllDataUser, GetControl, GetAirsEnc, SetControl } from "../../services/dashboard";
+import { getAllDataSetting, getAllDataUser, GetControl, GetAirsEnc, SetControl, GetWatersEnc, GetSoilsEnc } from "../../services/dashboard";
 import { ControlTypes, JWTPayloadTypes, TemperatureDataTypes, UserStateTypes } from "../../services/data-types";
 
 
@@ -27,8 +27,15 @@ export default function Dashboard(props: UserDataStateTypes) {
   const [toggleViewMode, setToggleViewMode] = useState(false);
   const [celcius, setCelcius] = useState("");
   const [humidity, setHumidity] = useState("");
+  const [ketinggianAir, setKetinggianAir] = useState("");
+  const [oksigen, setOksigen] = useState("");
+  const [kekeruhanAir, setKekeruhanAir] = useState("");
+  const [kelembapanTanah, setKelembapanTanah] = useState("");
+  const [phTanah, setPhTanah] = useState("");
 
   const [dataGrapAirs, seDataGrapAirs] = useState([]);
+  const [dataGrapWaters, seDataGrapWaters] = useState([]);
+  const [dataGrapSoils, seDataGrapSoils] = useState([]);
 
   const [totalDataUser, setTotalDataUser] = useState(0);
 
@@ -86,6 +93,56 @@ export default function Dashboard(props: UserDataStateTypes) {
     setHumidity(decHumidity);
   }, [GetAirsEnc]);
 
+  const getValueWaters = useCallback(async () => {
+    setIsLoading(true);
+    const data: any = await GetWatersEnc();
+    setIsLoading(false);
+
+    const dataMapKetiA = data.data.data.slice(-1)[0].ketinggianAir
+    const dataMapOks = data.data.data.slice(-1)[0].oksigen
+    const dataMapKeruhA = data.data.data.slice(-1)[0].kekeruhanAir
+
+
+    const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
+    let decKetinggianAir = dataDecipher1.update(dataMapKetiA, 'hex', 'utf8')
+    decKetinggianAir += dataDecipher1.final('utf8');
+
+    const dataDecipher2 = createDecipheriv(cryptoAlgorithm, key, iv);
+    let decOksigen = dataDecipher2.update(dataMapOks, 'hex', 'utf8')
+    decOksigen += dataDecipher2.final('utf8');
+
+    const dataDecipher3 = createDecipheriv(cryptoAlgorithm, key, iv);
+    let decKeruhAir = dataDecipher3.update(dataMapKeruhA, 'hex', 'utf8')
+    decKeruhAir += dataDecipher3.final('utf8');
+
+    setKetinggianAir(decKetinggianAir);
+    setOksigen(decOksigen);
+    setKekeruhanAir(decKeruhAir);
+
+  }, [GetWatersEnc]);
+
+  const getValueSoils = useCallback(async () => {
+    setIsLoading(true);
+    const data: any = await GetSoilsEnc();
+    setIsLoading(false);
+
+    const dataMapKelemTa = data.data.data.slice(-1)[0].kelembapanTanah
+    const dataMapPHTa = data.data.data.slice(-1)[0].phTanah
+
+    const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
+    let decKelembapanTanah = dataDecipher1.update(dataMapKelemTa, 'hex', 'utf8')
+    decKelembapanTanah += dataDecipher1.final('utf8');
+
+    const dataDecipher2 = createDecipheriv(cryptoAlgorithm, key, iv);
+    let decPHTanah = dataDecipher2.update(dataMapPHTa, 'hex', 'utf8')
+    decPHTanah += dataDecipher2.final('utf8');
+
+
+    setKelembapanTanah(decKelembapanTanah);
+    setPhTanah(decPHTanah);
+
+  }, [GetSoilsEnc]);
+
   const getValueGraphAirs = useCallback(async () => {
     setIsLoading(true);
 
@@ -115,15 +172,89 @@ export default function Dashboard(props: UserDataStateTypes) {
     seDataGrapAirs(dataMapDec);
   }, [GetAirsEnc]);
 
-  useEffect(() => {
+  const getValueGraphWaters = useCallback(async () => {
+    setIsLoading(true);
 
+    const data: any = await GetWatersEnc();
+    setIsLoading(false);
+
+    const dataMap = data.data.data
+
+    const dataMapDec = dataMap.slice(0, 4).map((watersDataMap: any, index: any) => {
+      const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decKetinggianAir = dataDecipher1.update(watersDataMap.ketinggianAir, 'hex', 'utf8')
+      decKetinggianAir += dataDecipher1.final('utf8');
+
+      const dataDecipher2 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decOksigen = dataDecipher2.update(watersDataMap.oksigen, 'hex', 'utf8')
+      decOksigen += dataDecipher2.final('utf8');
+
+      const dataDecipher3 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decKeruhAir = dataDecipher3.update(watersDataMap.kekeruhanAir, 'hex', 'utf8')
+      decKeruhAir += dataDecipher3.final('utf8');
+
+      return {
+        no: index + 1,
+        id: watersDataMap.id,
+        ketinggianAir: decKetinggianAir,
+        oksigen: decOksigen,
+        kekeruhanAir: decKeruhAir,
+        date: watersDataMap.date,
+        time: watersDataMap.time
+      };
+    })
+    seDataGrapWaters(dataMapDec);
+  }, [GetWatersEnc]);
+
+  const getValueGraphSoils = useCallback(async () => {
+    setIsLoading(true);
+
+    const data: any = await GetSoilsEnc();
+    setIsLoading(false);
+
+    const dataMap = data.data.data
+
+    const dataMapDec = dataMap.slice(0, 4).map((watersDataMap: any, index: any) => {
+      const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decKelembapanTanah = dataDecipher1.update(watersDataMap.kelembapanTanah, 'hex', 'utf8')
+      decKelembapanTanah += dataDecipher1.final('utf8');
+
+      const dataDecipher2 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decPHTanah = dataDecipher2.update(watersDataMap.phTanah, 'hex', 'utf8')
+      decPHTanah += dataDecipher2.final('utf8');
+
+      return {
+        no: index + 1,
+        id: watersDataMap.id,
+        kelembapanTanah: decKelembapanTanah,
+        phTanah: decPHTanah,
+        date: watersDataMap.date,
+        time: watersDataMap.time
+      };
+    })
+    seDataGrapSoils(dataMapDec);
+  }, [GetSoilsEnc]);
+
+  useEffect(() => {
     totalVege()
     totalHarvs()
     totalUser()
+    getValueGraphAirs();
+    getValueGraphWaters();
+    getValueGraphSoils();
+    getValueAirs();
+    getValueWaters();
+    getValueSoils();
 
     const id = setInterval(() => {
       getValueGraphAirs();
+      getValueGraphWaters();
+      getValueGraphSoils();
+
       getValueAirs();
+      getValueWaters();
+      getValueSoils();
+
     }, WAIT_TIME);
 
     return () => clearInterval(id);
@@ -169,10 +300,11 @@ export default function Dashboard(props: UserDataStateTypes) {
                   <div className="flex flex-wrap justify-start items-center -mx-2">
                     <CardMonitor value={celcius} isLoading={isLoading} title="Suhu" margin="mr-12" />
                     <CardMonitor value={humidity} isLoading={isLoading} title="Kelembapan Udara" />
-                    <CardMonitor value={celcius} isLoading={isLoading} title="Sensor TDS" />
-                    <CardMonitor value={celcius} isLoading={isLoading} title="Sensor Oksigen" />
-                    <CardMonitor value={celcius} isLoading={isLoading} title="Kelembapan Tanah" />
-                    <CardMonitor value={celcius} isLoading={isLoading} title="PH Tanah" />
+                    <CardMonitor value={kekeruhanAir} isLoading={isLoading} title="Sensor TDS" />
+                    <CardMonitor value={oksigen} isLoading={isLoading} title="Sensor Oksigen" />
+                    <CardMonitor value={ketinggianAir} isLoading={isLoading} title="Ketinggian Air" />
+                    <CardMonitor value={kelembapanTanah} isLoading={isLoading} title="Kelembapan Tanah" />
+                    <CardMonitor value={phTanah} isLoading={isLoading} title="PH Tanah" />
                   </div>
                 </div>
               </div>
@@ -181,11 +313,26 @@ export default function Dashboard(props: UserDataStateTypes) {
           <section className="p-3 lg:mt-7 mt-8">
             <h1 className="text-2xl font-semibold text-black lg:mb-2 mb-0">Pemantauan Data</h1>
             <div className="flex flex-wrap justify-start items-center -mx-2">
-              <div className="w-full md:w-1/2 px-3 lg:mb-0 mb-4">
+              <div className="w-1/2 px-3 lg:mb-0 mb-4">
                 <Chart data={dataGrapAirs} title="Suhu" focusX="celcius" focusY="time" />
               </div>
-              <div className="w-full md:w-1/2 px-3 lg:mb-0 mb-4">
+              <div className="w-1/2 px-3 lg:mb-0 mb-4">
                 <Chart data={dataGrapAirs} title="Kelembapan Udara" focusX="humidity" focusY="time" />
+              </div>
+              <div className="w-1/2 px-3 lg:mb-0 mb-4 lg:mt-8 mt-4">
+                <Chart data={dataGrapWaters} title="TDS" focusX="kekeruhanAir" focusY="time" />
+              </div>
+              <div className="w-1/2 px-3 lg:mb-0 mb-4 lg:mt-8 mt-4">
+                <Chart data={dataGrapWaters} title="Oksigen" focusX="oksigen" focusY="time" />
+              </div>
+              <div className="w-1/2 px-3 lg:mb-0 mb-4 lg:mt-8 mt-4">
+                <Chart data={dataGrapWaters} title="Ketinggian Air" focusX="ketinggianAir" focusY="time" />
+              </div>
+              <div className="w-1/2 px-3 lg:mb-0 mb-4 lg:mt-8 mt-4">
+                <Chart data={dataGrapSoils} title="Kelembapan Tanah" focusX="kelembapanTanah" focusY="time" />
+              </div>
+              <div className="w-1/2 px-3 lg:mb-0 mb-4 lg:mt-8 mt-4">
+                <Chart data={dataGrapSoils} title="PH Tanah" focusX="phTanah" focusY="time" />
               </div>
             </div>
           </section>

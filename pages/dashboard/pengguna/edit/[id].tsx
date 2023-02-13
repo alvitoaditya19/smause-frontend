@@ -40,6 +40,8 @@ export default function DetailEdit() {
   const options = [
     { value: "admin", label: "Admin" },
     { value: "user", label: "User" },
+    { value: "petani", label: "Petani" },
+
   ];
 
   const handleChange = (selectedOption: any) => {
