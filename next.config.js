@@ -1,6 +1,16 @@
-module.exports = {
+
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   images: { domains: ['localhost'] },
-  eslint: {
-    ignoreDuringBuilds: true,
+  swcMinify: true,
+  experimental: {
+    appDir: true,
   },
-};
+  i18n: {
+    locales: ['en'],
+    defaultLocale: 'en',
+  },
+}
+
+module.exports = nextConfig
