@@ -95,7 +95,7 @@ export default function Dashboard(props: UserDataStateTypes) {
 
   const getValueWaters = useCallback(async () => {
     setIsLoading(true);
-    const data: any = await GetWatersEnc();
+    const data: any = await GetWatersEnc(1, Infinity);
     setIsLoading(false);
 
     const dataMapKetiA = data.data.data.slice(-1)[0].ketinggianAir
@@ -123,7 +123,7 @@ export default function Dashboard(props: UserDataStateTypes) {
 
   const getValueSoils = useCallback(async () => {
     setIsLoading(true);
-    const data: any = await GetSoilsEnc();
+    const data: any = await GetSoilsEnc(1, Infinity);
     setIsLoading(false);
 
     const dataMapKelemTa = data.data.data.slice(-1)[0].kelembapanTanah
@@ -175,7 +175,7 @@ export default function Dashboard(props: UserDataStateTypes) {
   const getValueGraphWaters = useCallback(async () => {
     setIsLoading(true);
 
-    const data: any = await GetWatersEnc();
+    const data: any = await GetWatersEnc(1, Infinity);
     setIsLoading(false);
 
     const dataMap = data.data.data
@@ -209,7 +209,7 @@ export default function Dashboard(props: UserDataStateTypes) {
   const getValueGraphSoils = useCallback(async () => {
     setIsLoading(true);
 
-    const data: any = await GetSoilsEnc();
+    const data: any = await GetSoilsEnc(1, Infinity);
     setIsLoading(false);
 
     const dataMap = data.data.data

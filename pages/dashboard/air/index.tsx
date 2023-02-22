@@ -1,17 +1,25 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
-import { CSVLink } from "react-csv";
+import { createDecipheriv } from 'crypto';
 import jwtDecode from "jwt-decode";
-import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
+import { CSVLink } from "react-csv";
+
 
 import ReactLoading from "react-loading";
 import ReactPaginate from "react-paginate";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Header, Sidebar } from "../../../components";
-import Cookies from "js-cookie";
+import { GetWatersEnc } from "../../../services/dashboard";
+import { JWTPayloadTypes, UserStateTypes, WaterDataTypes } from "../../../services/data-types";
 
-export default function Air() {
+
+interface UserDataStateTypes {
+  user: UserStateTypes;
+}
+
+export default function Air(props: UserDataStateTypes) {
+  const { user } = props;
+  
   const [isLoading, setIsLoading] = useState(false);
 
   const [toggleViewMode, setToggleViewMode] = useState(false);
@@ -19,84 +27,152 @@ export default function Air() {
     setToggleViewMode(!toggleViewMode);
   };
   const [items, setItems] = useState([]);
-  const [allItems, setAllItems] = useState([]);
-
+  const [itemsEnc, setItemsEnc] = useState([]);
   const [totalData, setTotalData] = useState(0);
 
   const [pageCount, setpageCount] = useState(0);
 
-  let limit = 10;
-  let no = 0;
-  let statusUser = "admin";
+  let limit = 5;
+
+  const cryptoAlgorithm = 'aes-128-cbc';
+  const key = 'tugasakhir421654'; //16 karakter
+  const iv = '4567123212343219'; //16 karakter
+
+  const getValueWaters = useCallback(async () => {
+    setIsLoading(true);
+    const data: any = await GetWatersEnc(1,limit);
+    const dataWaters = data.data.data
+
+    setIsLoading(false);
+
+    const dataMap = data.data.data.map((waterDataMap:any, index:any) => {
+      const dataDecipher1 = createDecipheriv(cryptoAlgorithm , key, iv);
+      let decKetinngianAir = dataDecipher1.update(waterDataMap.ketinggianAir,  'hex', 'utf8');
+      decKetinngianAir += dataDecipher1.final('utf8');
+
+      const dataDecipher2 = createDecipheriv(cryptoAlgorithm , key, iv);
+      let decOksigen = dataDecipher2.update(waterDataMap.oksigen,  'hex', 'utf8');
+      decOksigen += dataDecipher2.final('utf8');
+      
+      const dataDecipher3 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decKeruhAir = dataDecipher3.update(waterDataMap.kekeruhanAir, 'hex', 'utf8')
+      decKeruhAir += dataDecipher3.final('utf8');
+
+      return {
+        no: index + 1,
+        id: waterDataMap.id,
+        ketinggianAir: decKetinngianAir,
+        oksigen:decOksigen,
+        kekeruhanAir:decKeruhAir,
+        date: waterDataMap.date,
+        time: waterDataMap.time
+      };
+    })
+    setTotalData(data.data.total)
+    setpageCount(Math.ceil(data.data.total / limit));
+
+    setItemsEnc(dataWaters)
+    setItems(dataMap);
+  }, [GetWatersEnc]);
 
   useEffect(() => {
-    const getComments = async () => {
-      setIsLoading(true);
-      axios
-        .get(`https://randomuser.me/api/`)
-        .then((res) => {
-          setIsLoading(false);
-          let data = res.data;
-          console.log(data);
-          // setItems(data.data);
-        })
-        .catch((err) => {
-          console.log("err get in progress: ", err);
-        });
-    };
-
-    getComments();
+    getValueWaters();
   }, [limit]);
-  const fetchComments = async (currentPage: any) => {
-    const res = await fetch(
-      // `http://localhost:3004/comments?_page=${currentPage}&_limit=${limit}`
-      `http://localhost:3000/api/v1/users/?limit=${limit}`
-    );
-    const data = await res.json();
-    return data;
+
+  
+  const fetchComments = async (currentPage: any, limit:number) => {
+    const data: any = await GetWatersEnc(currentPage,limit);
+
+    const dataMap = data.data.data.map((waterDataMap:any, index:any) => {
+      const dataDecipher1 = createDecipheriv(cryptoAlgorithm , key, iv);
+      let decKetinngianAir = dataDecipher1.update(waterDataMap.ketinggianAir,  'hex', 'utf8');
+      decKetinngianAir += dataDecipher1.final('utf8');
+
+      const dataDecipher2 = createDecipheriv(cryptoAlgorithm , key, iv);
+      let decOksigen = dataDecipher2.update(waterDataMap.oksigen,  'hex', 'utf8');
+      decOksigen += dataDecipher2.final('utf8');
+      
+      const dataDecipher3 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decKeruhAir = dataDecipher3.update(waterDataMap.kekeruhanAir, 'hex', 'utf8')
+      decKeruhAir += dataDecipher3.final('utf8');
+
+      return {
+        no: index + 1,
+        id: waterDataMap.id,
+        ketinggianAir: decKetinngianAir,
+        oksigen:decOksigen,
+        kekeruhanAir:decKeruhAir,
+        date: waterDataMap.date,
+        time: waterDataMap.time
+      };
+    })
+    return dataMap;
   };
 
   const handlePageClick = async (data: any) => {
-    // console.log(data.selected);
-
     let currentPage  = data.selected + 1;
-
-    const commentsFormServer = await fetchComments(currentPage);
-
+    const commentsFormServer = await fetchComments(currentPage, limit);
     setItems(commentsFormServer);
-    // scroll to the top
-    //window.scrollTo(0, 0)
   };
 
-  const filterBySearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // Access input value
+  const filterBySearch =async (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value;
-    // Create copy of item list
-    axios
-      .get(`http://localhost:3000/api/v1/users/?limit=${limit}`)
-      .then((res) => {
-        console.log("DATAAA: ", res.data.data);
-        let updatedList :any = [...res.data.data];
-        // Include all elements which includes the search query
-        updatedList = updatedList.filter((item:any) => {
-          return (
-            item.name.toString().toLowerCase().indexOf(query.toLowerCase()) !==
-            -1
-          );
-        });
-        setItems(updatedList);
-      });
+    const data: any = await GetWatersEnc(1, Infinity);
+    
+    let updatedList :any = [...data.data.data];
+
+    let dataMap = updatedList.map((waterDataMap:any, index:any) => {
+      const dataDecipher1 = createDecipheriv(cryptoAlgorithm , key, iv);
+      let decKetinngianAir = dataDecipher1.update(waterDataMap.ketinggianAir,  'hex', 'utf8');
+      decKetinngianAir += dataDecipher1.final('utf8');
+
+      const dataDecipher2 = createDecipheriv(cryptoAlgorithm , key, iv);
+      let decOksigen = dataDecipher2.update(waterDataMap.oksigen,  'hex', 'utf8');
+      decOksigen += dataDecipher2.final('utf8');
+      
+      const dataDecipher3 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decKeruhAir = dataDecipher3.update(waterDataMap.kekeruhanAir, 'hex', 'utf8')
+      decKeruhAir += dataDecipher3.final('utf8');
+
+      return {
+        no: index + 1,
+        id: waterDataMap.id,
+        ketinggianAir: decKetinngianAir,
+        oksigen:decOksigen,
+        kekeruhanAir:decKeruhAir,
+        date: waterDataMap.date,
+        time: waterDataMap.time
+      };
+    })
+
+    dataMap = dataMap.filter((item:any) => {
+      return (
+        item.date.toString().toLowerCase().indexOf(query.toLowerCase()) !==
+        -1
+      );
+    });
+    setItems(dataMap);
+
   };
-  const notifyDownload = () => toast.success("Berhasil download data Suhu");
+  const notifyDownload = () => toast.success("Berhasil download data air");
+  const notifyDownloadEnc = () => toast.success("Berhasil download data air enkripsi");
+
   return (
     <>
       {/* Navbar */}
       <div className="dashboard d-flex">
-        <Sidebar
-          toggleViewMode={toggleViewMode}
-          toggleNavbar={toggleNavbar}
-          activeMenu="Air"
-        />
+      {
+          user.status == "admin" ? <Sidebar
+            toggleViewMode={toggleViewMode}
+            toggleNavbar={toggleNavbar}
+            activeMenu="Air"
+            statusAdmin
+          /> : <Sidebar
+            toggleViewMode={toggleViewMode}
+            toggleNavbar={toggleNavbar}
+            activeMenu="Air"
+          />
+        }
         {/* Main Content */}
         <div className="content">
           <Header
@@ -117,18 +193,18 @@ export default function Air() {
           <section className="mt-4 mb-10">
             <div className="container-fluid lg:flex flex-none justify-start">
               <CSVLink
-                data={allItems}
+                data={items}
                 className="btn bg-primary1 border-0 text-white rounded-full px-5 lg:inline block lg:mr-4 mr-0"
-                filename={"Temperature-data.csv"}
+                filename={"Waters-data.csv"}
                 onClick={notifyDownload}
               >
                 File CSV (Data Asli)
               </CSVLink>
               <CSVLink
-                data={allItems}
+                data={itemsEnc}
                 className="btn bg-primary1 border-0 text-white rounded-full px-5 lg:inline block lg:mt-0 mt-3"
-                filename={"Temperature-data.csv"}
-                onClick={notifyDownload}
+                filename={"Waters-Enc-data.csv"}
+                onClick={notifyDownloadEnc}
               >
                 File CSV (Data Enkripsi)
               </CSVLink>
@@ -150,23 +226,24 @@ export default function Air() {
                   <thead>
                     <tr>
                       <th scope="col">No</th>
-                      <th scope="col">Celcius</th>
-                      <th scope="col">Humidity</th>
+                      <th scope="col">Ketinggian Air</th>
+                      <th scope="col">Oksigen</th>
+                      <th scope="col">Kekeruhan Air</th>
                       <th scope="col">Time</th>
                       <th scope="col">Date</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {items.map((item) => {
+                    {items.map((item:WaterDataTypes) => {
                       return (
-                        // <tr key={item.id} className="align-items-center">
-                        //   {item.id}
-                        //   <td>{item.celcius}</td>
-                        //   <td>{item.humidity}</td>
-                        //   <td>{item.time}</td>
-                        //   <td>{item.date}</td>
-                        // </tr>
-                        <tr></tr>
+                        <tr key={item.id} className="align-items-center">
+                          <td>{item.no} </td>                       
+                          <td>{item.ketinggianAir}</td>
+                          <td>{item.oksigen}</td>
+                          <td>{item.kekeruhanAir}</td>
+                          <td>{item.time}</td>
+                          <td>{item.date}</td>
+                        </tr>
                       );
                     })}
                   </tbody>
@@ -200,26 +277,37 @@ export default function Air() {
   );
 }
 
-// export async function getServerSideProps({ req }) {
-//   const { token } = req.cookies;
-//   if (!token) {
-//     return {
-//       redirect: {
-//         destination: "/sign-in",
-//         permanent: false,
-//       },
-//     };
-//   }
+interface GetServerSideProps {
+  req: {
+    cookies: {
+      token: string,
+    }
+  }
+}
 
-//   const jwtToken = Buffer.from(token, "base64").toString("ascii");
-//   const payload = jwtDecode(jwtToken);
 
-//   const userFromPayload = payload.user;
-//   const IMG = process.env.NEXT_PUBLIC_IMG;
-//   userFromPayload.avatar = `${IMG}/${userFromPayload.avatar}`;
-//   return {
-//     props: {
-//       user: userFromPayload,
-//     },
-//   };
-// }
+
+export async function getServerSideProps({ req }: GetServerSideProps) {
+  const { token } = req.cookies;
+  if (!token) {
+    return {
+      redirect: {
+        destination: '/sign-in',
+        permanent: false,
+      },
+    };
+  }
+
+  const jwtToken = Buffer.from(token, 'base64').toString('ascii');
+  const payload: JWTPayloadTypes = jwtDecode(jwtToken);
+
+  const userFromPayload = payload.user;
+  const IMG = process.env.NEXT_PUBLIC_IMG;
+  userFromPayload.avatar = `${IMG}/${userFromPayload.avatar}`;
+  return {
+    props: {
+      user: userFromPayload,
+    },
+  };
+}
+

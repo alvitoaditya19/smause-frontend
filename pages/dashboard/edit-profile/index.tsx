@@ -39,8 +39,6 @@ export default function EditProfile() {
       const payload: JWTPayloadTypes = jwtDecode(jwtToken);
       const userFromPayload: UserStateTypes = payload.user;
 
-      console.log(userFromPayload)
-
       if (userFromPayload.avatar == "") {
         setImagePreview("/images/img_profile.png")
       }

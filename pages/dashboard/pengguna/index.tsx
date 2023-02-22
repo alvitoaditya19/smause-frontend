@@ -8,7 +8,7 @@ import ReactPaginate from "react-paginate";
 import "react-toastify/dist/ReactToastify.css";
 
 import { Header, Sidebar } from "../../../components";
-import { DestroyUser, getAllDataUser, getCustomDataUser } from "../../../services/dashboard";
+import { DestroyUser, GetUserData } from "../../../services/dashboard";
 import { JWTPayloadTypes, UserStateTypes } from "../../../services/data-types";
 
 
@@ -28,48 +28,28 @@ export default function User(props: UserDataStateTypes) {
   const [pageCount, setpageCount] = useState(0);
   const [totalData, setTotalData] = useState(0);
 
-  let limit = 5;
+  let limit = 1;
+
+  const getDataUser = async () => {
+    setIsLoading(true);
+
+    const data: any = await GetUserData(1,limit);
+    const dataUsers = data.data.data
+    setIsLoading(false);
+
+    setTotalData(data.data.total)
+    setpageCount(Math.ceil(data.data.total / limit));
+    setItems(dataUsers);
+  };
 
   useEffect(() => {
-
-    const getDataUser = async () => {
-      const token = Cookies.get("token");
-
-      if (token) {
-        const jwtToken = atob(token);
-        console.log("my token asli", token)
-
-        console.log("my token", jwtToken)
-        setIsLoading(true);
-        axios
-          .get(`http://localhost:4000/api/v1/users?page=1&limit=${limit}`,
-            { headers: { Authorization: `Bearer ${jwtToken}` } })
-          .then((res) => {
-            setIsLoading(false);
-            let dataUser = res.data;
-
-            console.log("plilsss", dataUser)
-
-            setpageCount(Math.ceil(dataUser.total / limit));
-            setTotalData(dataUser.total);
-            setItems(dataUser.data);
-          })
-          .catch((err) => {
-            console.log("err get in progress: ", err);
-          });
-      }
-
-
-    };
-
     getDataUser();
   }, [limit]);
+
   const fetchComments = async (currentPage: any) => {
-    const token = Cookies.get('token');
-    if(token){
-      const allDataUser = await getCustomDataUser(token, limit, currentPage);
-      return allDataUser.data.data;
-    }
+    const data: any = await GetUserData(currentPage,limit);
+    return data.data.data;
+
   };
 
   const handlePageClick = async (data: any) => {
@@ -78,34 +58,24 @@ export default function User(props: UserDataStateTypes) {
     setItems(commentsFormServer);
   };
 
-  const filterBySearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const filterBySearch = async(event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value;
-    const token = Cookies.get("token");
-    if (token) {
-      const jwtToken = atob(token);
-      axios
-        .get(`http://localhost:4000/api/v1/users`,
-          { headers: { Authorization: `Bearer ${jwtToken}` } })
-        .then((res) => {
-          let updatedList: any = [...res.data.data];
-          updatedList = updatedList.filter((item: any) => {
-            return (
-              item.name.toString().toLowerCase().indexOf(query.toLowerCase()) !==
-              -1
-            );
-          });
-          setItems(updatedList);
-        });
-    }
+    const data: any = await GetUserData(1, Infinity);
+    
+    let updatedList :any = [...data.data.data];
 
-
+    updatedList = updatedList.filter((item:any) => {
+      return (
+        item.name.toString().toLowerCase().indexOf(query.toLowerCase()) !==
+        -1
+      );
+    });
+    setItems(updatedList);
   };
 
   const deleteUser = async (id: string) => {
     DestroyUser(id);
-    const user = await getAllDataUser();
-    console.log("data userku : ", user.data.data)
-
+    const user = await GetUserData(1, limit);
     setItems(user.data.data);
   };
   return (
@@ -182,19 +152,19 @@ export default function User(props: UserDataStateTypes) {
                   <tbody>
                     {items.map((item: UserStateTypes) => (
 
-                      <tr key={item.id} className="align-items-center">
+                      <tr key={item._id} className="align-items-center">
                         <td>{item.no} </td>
                         <td>{item.email}</td>
                         <td>{item.name}</td>
                         <td>{item.username}</td>
                         <td>{item.status}</td>
                         <td>
-                          <Link href={`/dashboard/pengguna/edit/${item.id}`} legacyBehavior  >
+                          <Link href={`/dashboard/pengguna/edit/${item._id}`} legacyBehavior  >
                             <a className="btn-edit-user">Edit</a>
                           </Link>
 
                           <button
-                            onClick={() => deleteUser(item.id)}
+                            onClick={() => deleteUser(item._id)}
                             className="btn-delete-user"
                           >
                             Delete

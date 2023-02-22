@@ -9,16 +9,16 @@ import { ControlTypes, SettingsTypes, UserStateTypes } from './data-types';
 const ROOT_API = process.env.NEXT_PUBLIC_API;
 const API_VERSION = 'api/v1';
 
-export async function getAllDataUser() {
-  const url = `${ROOT_API}/${API_VERSION}/users`;
+// export async function getAllDataUser() {
+//   const url = `${ROOT_API}/${API_VERSION}/users`;
 
-  return callAPI({
-    url,
-    method: 'GET',
-    token: true,
-  });
-}
-export async function getCustomDataUser(token:string, limit:number, currentPage:number) {
+//   return callAPI({
+//     url,
+//     method: 'GET',
+//     token: true,
+//   });
+// }
+export async function GetUserData(currentPage:Partial<number>, limit:Partial<number>) {
   const url = `${ROOT_API}/${API_VERSION}/users?page=${currentPage}&limit=${limit}`;
 
   return callAPI({
@@ -29,12 +29,13 @@ export async function getCustomDataUser(token:string, limit:number, currentPage:
 }
 
 export async function getDetailUser(id:string | string[] | undefined) {
-  const URL = `users/${id}`;
+  const url = `${ROOT_API}/${API_VERSION}/users/${id}`;
 
-  const response = await axios.get(`${ROOT_API}/${API_VERSION}/${URL}`);
-  const axiosResponse = response.data;
-
-  return axiosResponse.data;
+  return callAPI({
+    url,
+    method: 'GET',
+    token: true,
+  });
 }
 
 export async function DestroyUser( id:string | string[] | undefined) {
@@ -93,8 +94,8 @@ export async function SetControl(data :Partial<ControlTypes>) {
   });
 }
 
-export async function GetAirsEnc() {
-  const url = `${ROOT_API}/${API_VERSION}/temperatures/encrypt`;
+export async function GetAirsEnc(currentPage:Partial<number>, limit:Partial<number>) {
+  const url = `${ROOT_API}/${API_VERSION}/temperatures/encrypt?page=${currentPage}&limit=${limit}`;
 
   return callAPI({
     url,
@@ -103,8 +104,8 @@ export async function GetAirsEnc() {
   });
 }
 
-export async function GetWatersEnc() {
-  const url = `${ROOT_API}/${API_VERSION}/waters/encrypt`;
+export async function GetWatersEnc(currentPage:Partial<number>, limit:Partial<number>) {
+  const url = `${ROOT_API}/${API_VERSION}/waters/encrypt?page=${currentPage}&limit=${limit}`;
 
   return callAPI({
     url,
@@ -113,8 +114,8 @@ export async function GetWatersEnc() {
   });
 }
 
-export async function GetSoilsEnc() {
-  const url = `${ROOT_API}/${API_VERSION}/soils/encrypt`;
+export async function GetSoilsEnc(currentPage:Partial<number>, limit:Partial<number>) {
+  const url = `${ROOT_API}/${API_VERSION}/soils/encrypt?page=${currentPage}&limit=${limit}`;
 
   return callAPI({
     url,
@@ -132,8 +133,8 @@ export async function GetAllDataTemperature() {
   return axiosResponse.data;
 }
 
-export async function getAllDataSetting() {
-  const url = `${ROOT_API}/${API_VERSION}/settings`;
+export async function getAllDataSetting(currentPage:Partial<number>, limit:Partial<number>) {
+  const url = `${ROOT_API}/${API_VERSION}/settings?page=${currentPage}&limit=${limit}`;
 
   return callAPI({
     url,
@@ -142,7 +143,7 @@ export async function getAllDataSetting() {
   });
 }
 
-export async function getDetailSetting(id: ParsedUrlQuery) {
+export async function getDetailSetting(id:string | string[] | undefined) {
   const url = `${ROOT_API}/${API_VERSION}/settings/${id}`;
 
   return callAPI({

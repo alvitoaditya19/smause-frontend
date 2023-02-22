@@ -1,28 +1,22 @@
 // alt + shift + O
 
+import jwtDecode from "jwt-decode";
 import { useRouter } from "next/router";
 import { ParsedUrlQuery } from "querystring";
 import { useEffect, useState } from "react";
-import Select from "react-select";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import { sentenceCase } from "sentence-case";
 import { Header, Sidebar } from "../../../../components";
-import { getDetailSetting, getDetailUser, SetEditSetting, SetEditUser } from "../../../../services/dashboard";
-import { SettingsTypes } from "../../../../services/data-types";
+import { getDetailSetting, SetEditSetting } from "../../../../services/dashboard";
+import { JWTPayloadTypes, SettingsTypes, UserStateTypes } from "../../../../services/data-types";
 
-export interface UserStateTypes{
-  _id: string;
-  name: string;
-  email: string;
-  username: string;
-  status: string;
-  avatar: any;
-  no: number;
+interface UserDataStateTypes {
+  user: UserStateTypes;
 }
+export default function DetailEdit(props: UserDataStateTypes) {
+  const { user } = props;
 
-export default function DetailEdit() {
   const router = useRouter();
   const  id  : ParsedUrlQuery  = router.query;
  
@@ -55,7 +49,7 @@ export default function DetailEdit() {
   };
 
   const fetchData = async () => {
-    const data = await getDetailSetting(id)
+    const data = await getDetailSetting(id.id)
     setNameVegetable(data.data.nameVegetable)
     setAmountVegetable(data.data.amountVegetable)
     setAmountHarvest(data.data.amountHarvest)
@@ -71,11 +65,18 @@ export default function DetailEdit() {
   return (
     <>
       <div className="dashboard d-flex">
-        <Sidebar
-          toggleViewMode={toggleViewMode}
-          toggleNavbar={toggleNavbar}
-          activeMenu="user"
-        />
+      {
+          user.status == "admin" ? <Sidebar
+            toggleViewMode={toggleViewMode}
+            toggleNavbar={toggleNavbar}
+            activeMenu="Pengaturan"
+            statusAdmin
+          /> : <Sidebar
+            toggleViewMode={toggleViewMode}
+            toggleNavbar={toggleNavbar}
+            activeMenu="Pengaturan"
+          />
+        }
         <div className="content">
           <Header toggleNavbar={toggleNavbar} />
           <section className="p-3">
@@ -142,4 +143,38 @@ export default function DetailEdit() {
       </div>
     </>
   );
+}
+
+interface GetServerSideProps {
+  req: {
+    cookies: {
+      token: string,
+    }
+  }
+}
+
+
+
+export async function getServerSideProps({ req }: GetServerSideProps) {
+  const { token } = req.cookies;
+  if (!token) {
+    return {
+      redirect: {
+        destination: '/sign-in',
+        permanent: false,
+      },
+    };
+  }
+
+  const jwtToken = Buffer.from(token, 'base64').toString('ascii');
+  const payload: JWTPayloadTypes = jwtDecode(jwtToken);
+
+  const userFromPayload = payload.user;
+  const IMG = process.env.NEXT_PUBLIC_IMG;
+  userFromPayload.avatar = `${IMG}/${userFromPayload.avatar}`;
+  return {
+    props: {
+      user: userFromPayload,
+    },
+  };
 }

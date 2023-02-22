@@ -58,7 +58,6 @@ export default function Kontrol(props: UserDataStateTypes) {
     if (response.error) {
       toast.error(response.message);
     } else {
-      console.log("ya allah", response.data.lamp1);
       if (response.data.lamp1 == "ON") {
         setDataLamp1(true);
       } else {
@@ -92,7 +91,6 @@ export default function Kontrol(props: UserDataStateTypes) {
     if (response.error) {
       toast.error(response.message);
     } else {
-      console.log("ya allah", response.data.lamp1);
       if (response.data.lamp2 == "ON") {
         setDataLamp2(true);
       } else {

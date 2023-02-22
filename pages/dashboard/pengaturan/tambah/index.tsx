@@ -4,9 +4,15 @@ import { Header, Sidebar } from "../../../../components";
 import { SetAddSetting, SetAddUser } from "../../../../services/dashboard";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { SettingsTypes } from "../../../../services/data-types";
+import { JWTPayloadTypes, SettingsTypes, UserStateTypes } from "../../../../services/data-types";
+import jwtDecode from "jwt-decode";
 
-export default function AddVegetable() {
+interface UserDataStateTypes {
+  user: UserStateTypes;
+}
+export default function AddVegetable(props: UserDataStateTypes) {
+  const { user } = props;
+  
   const [nameVegetable, setNameVegetable] = useState("");
   const [amountVegetable, setAmountVegetable] = useState("");
   const [amountHarvest, setAmountHarvest] = useState("");
@@ -39,11 +45,18 @@ export default function AddVegetable() {
     <>
       {/* Navbar */}
       <div className="dashboard flex">
-        <Sidebar
-          toggleViewMode={toggleViewMode}
-          toggleNavbar={toggleNavbar}
-          activeMenu="user"
-        />
+      {
+          user.status == "admin" ? <Sidebar
+            toggleViewMode={toggleViewMode}
+            toggleNavbar={toggleNavbar}
+            activeMenu="Pengaturan"
+            statusAdmin
+          /> : <Sidebar
+            toggleViewMode={toggleViewMode}
+            toggleNavbar={toggleNavbar}
+            activeMenu="Pengaturan"
+          />
+        }
         {/* Main Content */}
         <div className="content">
           <Header toggleNavbar={toggleNavbar} />
@@ -116,4 +129,39 @@ export default function AddVegetable() {
       </div>
     </>
   );
+}
+
+
+interface GetServerSideProps {
+  req: {
+    cookies: {
+      token: string,
+    }
+  }
+}
+
+
+
+export async function getServerSideProps({ req }: GetServerSideProps) {
+  const { token } = req.cookies;
+  if (!token) {
+    return {
+      redirect: {
+        destination: '/sign-in',
+        permanent: false,
+      },
+    };
+  }
+
+  const jwtToken = Buffer.from(token, 'base64').toString('ascii');
+  const payload: JWTPayloadTypes = jwtDecode(jwtToken);
+
+  const userFromPayload = payload.user;
+  const IMG = process.env.NEXT_PUBLIC_IMG;
+  userFromPayload.avatar = `${IMG}/${userFromPayload.avatar}`;
+  return {
+    props: {
+      user: userFromPayload,
+    },
+  };
 }

@@ -1,7 +1,7 @@
 import { ParsedUrlQuery } from "querystring";
 
 export interface UserStateTypes {
-  id: string;
+  _id: string;
   name: string;
   email: string;
   username: string;
@@ -48,8 +48,29 @@ export interface LoginTypes {
 
 
 export interface TemperatureDataTypes {
-  _id: string;
+  id: string;
   no: number;
   celcius: string;
   humidity: string;
+  time:string;
+  date:string;
+}
+
+export interface WaterDataTypes {
+  id: string;
+  no: number;
+  ketinggianAir: string;
+  oksigen: string;
+  kekeruhanAir: string;
+  time:string;
+  date:string;
+}
+
+export interface SoilDataTypes {
+  id: string;
+  no: number;
+  kelembapanTanah: string;
+  phTanah: string;
+  time:string;
+  date:string;
 }

@@ -4,8 +4,16 @@ import { Header, Sidebar } from "../../../../components";
 import { SetAddUser } from "../../../../services/dashboard";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { JWTPayloadTypes, UserStateTypes } from "../../../../services/data-types";
+import jwtDecode from "jwt-decode";
 
-export default function AddUser() {
+interface UserDataStateTypes {
+  user: UserStateTypes;
+}
+
+export default function AddUser(props: UserDataStateTypes) {
+  const { user } = props;
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
@@ -42,11 +50,18 @@ export default function AddUser() {
     <>
       {/* Navbar */}
       <div className="dashboard flex">
-        <Sidebar
-          toggleViewMode={toggleViewMode}
-          toggleNavbar={toggleNavbar}
-          activeMenu="user"
-        />
+      {
+          user.status == "admin" ? <Sidebar
+            toggleViewMode={toggleViewMode}
+            toggleNavbar={toggleNavbar}
+            activeMenu="Pengguna"
+            statusAdmin
+          /> : <Sidebar
+            toggleViewMode={toggleViewMode}
+            toggleNavbar={toggleNavbar}
+            activeMenu="Pengguna"
+          />
+        }
         {/* Main Content */}
         <div className="content">
           <Header toggleNavbar={toggleNavbar} />
@@ -149,4 +164,46 @@ export default function AddUser() {
       </div>
     </>
   );
+}
+
+interface GetServerSideProps {
+  req: {
+    cookies: {
+      token: string,
+    }
+  }
+}
+
+
+
+export async function getServerSideProps({ req }: GetServerSideProps) {
+  const { token } = req.cookies;
+  if (!token) {
+    return {
+      redirect: {
+        destination: '/sign-in',
+        permanent: false,
+      },
+    };
+  }
+
+  const jwtToken = Buffer.from(token, 'base64').toString('ascii');
+  const payload: JWTPayloadTypes = jwtDecode(jwtToken);
+
+  const userFromPayload = payload.user;
+  if (userFromPayload.status !== "admin") {
+    return {
+      redirect: {
+        destination: '/dashboard',
+        permanent: false,
+      },
+    };
+  }
+  const IMG = process.env.NEXT_PUBLIC_IMG;
+  userFromPayload.avatar = `${IMG}/${userFromPayload.avatar}`;
+  return {
+    props: {
+      user: userFromPayload,
+    },
+  };
 }
