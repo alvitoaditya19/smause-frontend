@@ -9,7 +9,7 @@ import { createDecipheriv } from 'crypto';
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Chart from "../../components/atoms/Chart";
-import { getAllDataSetting, getAllDataUser, GetControl, GetAirsEnc, SetControl, GetWatersEnc, GetSoilsEnc } from "../../services/dashboard";
+import { getAllDataSetting, GetControl, GetAirsEnc, SetControl, GetWatersEnc, GetSoilsEnc, GetUserData } from "../../services/dashboard";
 import { ControlTypes, JWTPayloadTypes, TemperatureDataTypes, UserStateTypes } from "../../services/data-types";
 
 
@@ -51,21 +51,21 @@ export default function Dashboard(props: UserDataStateTypes) {
   const totalVege = async () => {
     setIsLoading(true);
 
-    const getDataTotal = await getAllDataSetting();
+    const getDataTotal = await getAllDataSetting(1, Infinity);
     setIsLoading(false);
     setTotalVegetable(getDataTotal.data.totalVegetable)
   }
   const totalHarvs = async () => {
     setIsLoading(true);
 
-    const getDataTotal = await getAllDataSetting();
+    const getDataTotal = await getAllDataSetting(1, Infinity);
     setIsLoading(false);
     settotalHarvest(getDataTotal.data.totalHarvest)
   }
   const totalUser = async () => {
     setIsLoading(true);
 
-    const getDataTotal = await getAllDataUser();
+    const getDataTotal = await GetUserData(1, Infinity);
 
     if (getDataTotal.data === null) {
       return setIsLoading(true);
@@ -75,7 +75,7 @@ export default function Dashboard(props: UserDataStateTypes) {
   }
   const getValueAirs = useCallback(async () => {
     setIsLoading(true);
-    const data: any = await GetAirsEnc();
+    const data: any = await GetAirsEnc(1, Infinity);
     setIsLoading(false);
 
     const dataMapCel = data.data.data.slice(-1)[0].celcius
@@ -146,7 +146,7 @@ export default function Dashboard(props: UserDataStateTypes) {
   const getValueGraphAirs = useCallback(async () => {
     setIsLoading(true);
 
-    const data: any = await GetAirsEnc();
+    const data: any = await GetAirsEnc(1, Infinity);
     setIsLoading(false);
 
     const dataMap = data.data.data
