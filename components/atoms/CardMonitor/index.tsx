@@ -7,17 +7,17 @@ import Image from "next/image";
 
 export default function CardMonitor({ value, isLoading, title, margin }: any) {
   const classItem = cx({
-    "card-monitoring": true,
+    "bg-background2 p-5 rounded-2xl mt-4": true,
     margin
   });
   useEffect(()  => {
     // setValuee(value);
   })
   return (
-    <div className="lg:w-1/3 w-1/2 px-2">
+    <div className="lg:w-1/4 w-1/2 px-2 ">
       <div className={classItem}>
-        <div className="card-body">
-          <h1>{title}</h1>
+        <div className="p-0 card-body">
+          <h1 className="lg:text-lg text-base text-black mb-2 font-medium">{title}</h1>
           <div className="flex justify-start items-center">
             <div className="lg:mr-4 mr-2">
               {/* <IcPemantauan /> */}
@@ -27,7 +27,7 @@ export default function CardMonitor({ value, isLoading, title, margin }: any) {
               {isLoading ? (
                 <ReactLoading
                   type="spinningBubbles"
-                  color="#4D17E2"
+                  color="#174AFF"
                   height={40}
                   width={40}
                 // className="justify-content-center text-center"
@@ -35,7 +35,7 @@ export default function CardMonitor({ value, isLoading, title, margin }: any) {
               ) : (
                 <div className="lg:text-3xl text-xl font-medium text-primary1">{value}</div>
               )}
-              <div className="text-grey2 lg:text-base text-sm font-medium">Celcius</div>
+              <div className="text-grey2 text-sm font-medium">Celcius</div>
             </div>
           </div>
         </div>

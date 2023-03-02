@@ -56,13 +56,13 @@ export default function SignInForm() {
         <div className="pt-0">
           <label
             htmlFor="email"
-            className="form-label text-lg fw-medium text-black mb-3"
+            className="form-label text-lg font-medium text-black mb-3"
           >
             Email Address
           </label>
           <input
             type="email"
-            className="form-control rounded-full text-lg bg-background4"
+            className="form-control rounded-full text-lg bg-background4 "
             placeholder="Masukkan alamat email anda"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
@@ -71,13 +71,13 @@ export default function SignInForm() {
         <div className="pt-8">
           <label
             htmlFor="password"
-            className="form-label text-lg fw-medium text-black mb-3"
+            className="form-label text-lg font-medium text-black mb-3"
           >
             Password
           </label>
           <input
             type="password"
-            className="form-control rounded-full text-lg bg-background4"
+            className="form-control rounded-full text-lg bg-background4 "
             placeholder="Masukkan password anda"
             value={password}
             onChange={(event) => setPassword(event.target.value)}

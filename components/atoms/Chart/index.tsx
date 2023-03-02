@@ -41,7 +41,7 @@ export default function Chart({ data, title, focusX, focusY }: any) {
 
                     <Tooltip />
                     <Legend />
-                    <Area type="monotone" dataKey={focusX} strokeWidth={3} stroke="#4D17E2" fill="url(#colorUv)"/>
+                    <Area type="monotone" dataKey={focusX} strokeWidth={3} stroke="#174AFF" fill="url(#colorUv)"/>
                 </AreaChart>
             </ResponsiveContainer>
         </div>

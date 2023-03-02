@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import Link from 'next/link';
 import { SignInForm } from '../components/molecules';
 import { IcLogoIOT } from "../public/Icon";
 

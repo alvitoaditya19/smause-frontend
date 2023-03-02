@@ -27,12 +27,13 @@
 
 .sign-in input[type="password"]::placeholder,
 .sign-in input[type="email"]::placeholder{
-    color: #0D1458;
+    color: #808DBC;
+    opacity: 0.7;
 }
 
 .sign-in .btn-sign-in{
     padding: 0.75rem;
-    background-color: #4D17E2;
+    background-color: #174AFF;
 }
 
 .sign-in .btn-go-home{

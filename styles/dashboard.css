@@ -58,8 +58,8 @@ table {
 
 /* pagination */
 .page-item.active .page-link {
-  background-color: #4D17E2;
-  border-color: #4D17E2;
+  background-color: #174AFF;
+  border-color: #174AFF;
   color: #ffffff !important;
 }
 
@@ -68,7 +68,7 @@ table {
 }
 
 .page-item .page-link {
-  color: #4D17E2 !important;
+  color: #174AFF !important;
 }
 
 #gradient-chart {
@@ -133,7 +133,7 @@ table {
 .item-menu.active,
 .item-menu:hover {
   text-decoration: none;
-  color: #4D17E2;
+  color: #174AFF;
   font-weight: 600;
 }
 
@@ -147,7 +147,7 @@ table {
   position: absolute;
   border-radius: 4px;
   transform: translateX(-50%);
-  background-color: #4D17E2;
+  background-color: #174AFF;
 }
 
 .content {
@@ -173,7 +173,6 @@ table {
 
 .search-bar-profile {
   display: flex;
-  margin-top: 16px;
   align-items: center;
   justify-content: flex-end;
 }
@@ -219,7 +218,7 @@ table {
   object-fit: cover;
   border-radius: 50px;
   box-sizing: border-box;
-  border: 1px solid #4D17E2;
+  border: 1px solid #174AFF;
 }
 
 
@@ -355,43 +354,6 @@ table {
   border: 0px;
 }
 
-.card-body {
-  padding: 0px;
-}
-
-.header .card-monitoring {
-  background-color: #F4F7FF;
-  padding: 20px;
-  border-radius: 16px;
-  margin-top: 16px;
-}
-
-.header .card-monitoring .card-body h1 {
-  font-size: 18px;
-  color: #0D1458;
-  margin-bottom: 6px;
-  font-weight: 500;
-}
-
-@media (max-width: 1024px) {
-  .header .card-monitoring .card-body h1 {
-    font-size: 16px;
-  }
-}
-
-.header .card-monitoring .card-body .data-value {
-  font-size: 24px;
-  color: #ffffff;
-  margin-bottom: 3px;
-  font-weight: 600px;
-
-}
-
-.header .card-monitoring .card-body .data-unit {
-  font-size: 16px;
-  color: #ffffff;
-
-}
 
 button.btn-control {
   background: unset !important;
@@ -400,7 +362,7 @@ button.btn-control {
 }
 
 .card-control {
-  background-color: #4D17E2;
+  background-color: #174AFF;
   border-radius: 16px;
 
   margin-top: 16px;
@@ -418,7 +380,7 @@ button.btn-control {
 }
 
 .card-control-off .card-body h1 {
-  color: #4D17E2;
+  color: #174AFF;
   margin-top: 4px;
 }
 
@@ -434,7 +396,7 @@ button.btn-search:focus-within {
 
 .user-card {
   padding: 6px 8px;
-  background: #4D17E2;
+  background: #174AFF;
   color: #fff;
   border-radius: 100px;
 }

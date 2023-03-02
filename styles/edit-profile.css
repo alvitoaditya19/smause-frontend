@@ -34,7 +34,7 @@
 .edit-profile .image-upload{
   box-sizing: border-box;
   border-radius: 520px;
-  border: 4px solid #4D17E2;
+  border: 4px solid #174AFF;
   padding: 8px;
 }
 
@@ -78,7 +78,7 @@
 
 .edit-profile .btn-save{
     padding: 0.75rem;
-    background-color: #4D17E2;
+    background-color: #174AFF;
 }
 
 .edit-profile .button-group{

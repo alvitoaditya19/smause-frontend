@@ -1,5 +1,3 @@
-import axios from "axios";
-import Cookies from "js-cookie";
 import jwtDecode from "jwt-decode";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -130,7 +128,7 @@ export default function User(props: UserDataStateTypes) {
               <div className="justify-center mx-auto flex">
                 <ReactLoading
                   type="spinningBubbles"
-                  color="#4D17E2"
+                  color="#174AFF"
                   height={667}
                   width={375}
                 />

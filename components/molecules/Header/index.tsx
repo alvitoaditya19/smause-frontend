@@ -64,7 +64,7 @@ export default function Header({ toggleNavbar, filterBySearch, isFilter, name }:
   return (
     <>
       <nav className="navbar navbar-expand-lg">
-        <div className="container-fluid gap-2">
+        <div className="container-fluid gap-2 p-0">
           <button
             className="btn icon-bar sidebarCollapse"
             onClick={toggleNavbar}

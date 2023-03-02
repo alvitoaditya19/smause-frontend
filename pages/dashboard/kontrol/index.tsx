@@ -12,6 +12,8 @@ import Image from "next/image";
 import { GetControl, GetUserData, SetControl } from "../../../services/dashboard";
 import IcContLamp from "../../../public/Icon/Ic-Cont-Lamp";
 import ToggleSwitch from "../../../components/Toogle";
+import IcContPump from "../../../public/Icon/Ic-Cont-Pump";
+import IcContBlend from "../../../public/Icon/Ic-Cont-Blend";
 
 interface UserDataStateTypes {
   user: UserStateTypes;
@@ -341,7 +343,7 @@ export default function Kontrol(props: UserDataStateTypes) {
                         className="w-full card-control-off px-4 py-3 justify-center  lg:mr-4 mr-10"
                       >
                         <div className="flex justify-between items-center">
-                          <IcContLamp />
+                          <IcContPump />
                           <h1 className={pump1 ? "lg:text-2xl text-2xl font-semibold text-primary1" : "lg:text-2xl text-2xl font-semibold text-grey3"}>{pump1 ? "ON" : "OFF"}</h1>
                         </div>
 
@@ -371,7 +373,7 @@ export default function Kontrol(props: UserDataStateTypes) {
                         className="w-full card-control-off px-4 py-3 justify-center  lg:mr-4 mr-10"
                       >
                         <div className="flex justify-between items-center">
-                          <IcContLamp />
+                          <IcContPump />
                           <h1 className={pump2 ? "lg:text-2xl text-2xl font-semibold text-primary1" : "lg:text-2xl text-2xl font-semibold text-grey3"}>{pump2 ? "ON" : "OFF"}</h1>
                         </div>
 
@@ -405,7 +407,7 @@ export default function Kontrol(props: UserDataStateTypes) {
                         className="w-full card-control-off px-4 py-3 justify-center  lg:mr-4 mr-10"
                       >
                         <div className="flex justify-between items-center">
-                          <IcContLamp />
+                          <IcContPump />
                           <h1 className={valve ? "lg:text-2xl text-2xl font-semibold text-primary1" : "lg:text-2xl text-2xl font-semibold text-grey3"}>{valve ? "ON" : "OFF"}</h1>
                         </div>
 
@@ -435,7 +437,7 @@ export default function Kontrol(props: UserDataStateTypes) {
                         className="w-full card-control-off px-4 py-3 justify-center  lg:mr-4 mr-10"
                       >
                         <div className="flex justify-between items-center">
-                          <IcContLamp />
+                          <IcContBlend />
                           <h1 className={blend ? "lg:text-2xl text-2xl font-semibold text-primary1" : "lg:text-2xl text-2xl font-semibold text-grey3"}>{blend ? "ON" : "OFF"}</h1>
                         </div>
 

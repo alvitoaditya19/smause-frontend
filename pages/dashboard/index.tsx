@@ -1,26 +1,34 @@
-import { useCallback, useEffect, useState } from "react";
-import { CardMonitor, Header, Sidebar, SummaryCard } from "../../components";
-import { IcHarvest, IcLampAct, IcLampInact, IcUser, IcVegetable } from "../../public/Icon";
-import jwtDecode from 'jwt-decode';
 import { createDecipheriv } from 'crypto';
+import jwtDecode from 'jwt-decode';
 
+import { useCallback, useEffect, useState,useRef } from "react";
+import { CardMonitor, Header, Sidebar, SummaryCard } from "../../components";
+import { IcHarvest, IcUser, IcVegetable } from "../../public/Icon";
 
-
-import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Chart from "../../components/atoms/Chart";
-import { getAllDataSetting, GetControl, GetAirsEnc, SetControl, GetWatersEnc, GetSoilsEnc, GetUserData } from "../../services/dashboard";
-import { ControlTypes, JWTPayloadTypes, TemperatureDataTypes, UserStateTypes } from "../../services/data-types";
+import { GetAirsEnc, getAllDataSetting, GetSoilsEnc, GetUserData, GetWatersEnc } from "../../services/dashboard";
+import { JWTPayloadTypes, UserStateTypes } from "../../services/data-types";
+import io from 'socket.io-client';
 
 
 interface UserDataStateTypes {
   user: UserStateTypes;
 }
 
+
+const host : any = process.env.NEXT_PUBLIC_SOCKET;
+const socket = io(host);
+
 export default function Dashboard(props: UserDataStateTypes) {
   const { user } = props;
 
   const [totalVegetable, setTotalVegetable] = useState(0);
+
+  const [tesData, setTesData] = useState(null);
+
+  const [isConnected, setIsConnected] = useState(socket.connected);
+
   const [totalHarvest, settotalHarvest] = useState(0);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -73,6 +81,7 @@ export default function Dashboard(props: UserDataStateTypes) {
     setIsLoading(false);
     setTotalDataUser(getDataTotal.data.total)
   }
+  
   const getValueAirs = useCallback(async () => {
     setIsLoading(true);
     const data: any = await GetAirsEnc(1, Infinity);
@@ -151,7 +160,7 @@ export default function Dashboard(props: UserDataStateTypes) {
 
     const dataMap = data.data.data
 
-    const dataMapDec = dataMap.slice(0, 4).map((suhuDataMap: any, index: any) => {
+    const dataMapDec = dataMap.slice(0,4).map((suhuDataMap: any, index: any) => {
       const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
       let decCelcius = dataDecipher1.update(suhuDataMap.celcius, 'hex', 'utf8')
       decCelcius += dataDecipher1.final('utf8');
@@ -180,7 +189,7 @@ export default function Dashboard(props: UserDataStateTypes) {
 
     const dataMap = data.data.data
 
-    const dataMapDec = dataMap.slice(0, 4).map((watersDataMap: any, index: any) => {
+    const dataMapDec = dataMap.slice(-4).map((watersDataMap: any, index: any) => {
       const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
       let decKetinggianAir = dataDecipher1.update(watersDataMap.ketinggianAir, 'hex', 'utf8')
       decKetinggianAir += dataDecipher1.final('utf8');
@@ -236,26 +245,37 @@ export default function Dashboard(props: UserDataStateTypes) {
   }, [GetSoilsEnc]);
 
   useEffect(() => {
+    socket.on('data', (data) => {
+      seDataGrapWaters(data);
+      console.log("data udara dong", data)
+    });
+    socket.on('dataUdara', (data) => {
+      seDataGrapAirs(data);
+      console.log("data udara dong", data)
+    });
+    socket.on('dataTanah', (data) => {
+      seDataGrapSoils(data);
+      console.log("data tanah dong", data)
+    });
+
     totalVege()
     totalHarvs()
     totalUser()
-    getValueGraphAirs();
-    getValueGraphWaters();
-    getValueGraphSoils();
-    getValueAirs();
-    getValueWaters();
-    getValueSoils();
+
+    // getValueAirs();
+    // getValueWaters();
+    // getValueSoils();
 
     const id = setInterval(() => {
-      getValueGraphAirs();
-      getValueGraphWaters();
-      getValueGraphSoils();
-
       getValueAirs();
       getValueWaters();
       getValueSoils();
 
     }, WAIT_TIME);
+
+    getValueGraphAirs();
+    getValueGraphWaters();
+    getValueGraphSoils();
 
     return () => clearInterval(id);
   }, []);
@@ -282,10 +302,11 @@ export default function Dashboard(props: UserDataStateTypes) {
         {/* Main Content */}
         <div className="content">
           <Header toggleNavbar={toggleNavbar} isFilter={false} name={user.name} />
-          <section className="p-3">
+          <section className="px-3">
             <div className="header">
               <h3 className="text-3xl text-black font-bold">Dashboard</h3>
-              <p className=" text-base text-grey2 mt-1">Kelola data tanaman sebaik mungkin</p>
+              <p className=" text-base text-grey2 mt-2">Kelola data tanaman sebaik mungkin</p>
+   
               <div className="lg:pt-10 pt-8">
                 <div className="flex flex-wrap justify-start items-center -mx-3">
                   <SummaryCard isLoading={isLoading} title="Pengguna" total={totalDataUser} icon={<IcUser />} />
@@ -295,9 +316,9 @@ export default function Dashboard(props: UserDataStateTypes) {
               </div>
 
               <div className="flex flex-wrap justify-start items-start -mx-2 lg:pt-10 pt-8">
-                <div className="w-full md:w-3/4 px-2 lg:mb-0 mb-4">
+                <div className="w-full px-2 lg:mb-0 mb-4">
                   <h1 className="text-2xl font-semibold text-black lg:mb-2 mb-0">Pemantauan Data</h1>
-                  <div className="flex flex-wrap justify-start items-center -mx-2">
+                  <div className="flex flex-wrap justify-start items-center -mx-4">
                     <CardMonitor value={celcius} isLoading={isLoading} title="Suhu" margin="mr-12" />
                     <CardMonitor value={humidity} isLoading={isLoading} title="Kelembapan Udara" />
                     <CardMonitor value={kekeruhanAir} isLoading={isLoading} title="Sensor TDS" />

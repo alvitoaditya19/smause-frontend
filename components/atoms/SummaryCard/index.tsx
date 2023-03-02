@@ -10,27 +10,27 @@ export interface  SummaryCardProps {
 export default function SummaryCard({title, total, icon,isLoading}:SummaryCardProps) {
   return (
     <>
-      <div className="w-full md:w-1/3 px-3 lg:mb-0 mb-4">
+      <div className="w-full md:w-1/3 px-2 lg:mb-0 mb-4">
         <div className="summary-card">
-          <div className="flex items-center mb-6">
+          <div className="flex items-center mb-4">
            {icon}
-            <p className="mb-0 mx-3 text-lg text-black font-medium">
+            <p className="mb-0 mx-3 lg:text-xl text-lg text-black font-medium">
              Jumlah
               <br /> {title}
             </p>
           </div>
           <div>
-            <p className="text-sm text-grey2 mb-1">Total</p>
+            <p className="text-lg text-grey2 mb-1">Total</p>
             {isLoading ? (
            
                 <ReactLoading
                   type="spinningBubbles"
-                  color="#4D17E2"
+                  color="#174AFF"
                   height={40}
                   width={40}
                 />
            ) :(
-              <p className="text-4xl text-primary1 font-medium mt-1">{total}</p>
+              <p className="lg:text-5xl text-4xl text-primary1 font-medium mt-1">{total}</p>
             )}
           </div>
         </div>

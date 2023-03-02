@@ -1,86 +1,55 @@
-import { useCallback, useEffect, useState } from "react";
+import AOS from 'aos';
 import Link from "next/link";
-import AOS from 'aos';  
-
+import { useEffect, useState } from "react";
+import io from 'socket.io-client';
 import Image from "next/image";
-import { ControlTypes } from "../services/data-types";
-import { GetControl, SetControl } from "../services/dashboard";
-import { toast } from "react-toastify";
+
+
+const host : any = process.env.NEXT_PUBLIC_SOCKET;
+const socket = io(host);
 
 export default function Home() {
-  const [enabled, setEnabled] = useState(false);
-  const [lamp1, setDataLamp1] = useState(false);
-
-  var lampuStatus = lamp1;
-
-
-  const submitLamp1 = async () => {
-    const data = {
-      lamp1: lampuStatus,
-      // lamp2: dataLamp2 === "ON" ? "OFF" : "ON",
-    };
-
-    const dataValue: Partial<ControlTypes> = {
-      lamp1: data.lamp1 === true ? "OFF" : "ON",
-    };
-
-    const response = await SetControl(dataValue);
-
-    if (response.error) {
-      toast.error(response.message);
-    } else {
-      if (response.data.lamp1 == "ON") {
-        setDataLamp1(true);
-      } else {
-        setDataLamp1(false);
-      }
-      lampuStatus = !lampuStatus;
-    }
-  };
-  const getStatusLamp1 = useCallback(async () => {
-    const data = await GetControl();
-
-    if (data.data.lamp1 == "ON") {
-      setDataLamp1(true);
-    } else {
-      setDataLamp1(false);
-    }
-  }, [GetControl]);
-
+  const [tesData, setTesData] = useState(0);
+  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    // getStatusLamp1()
-    AOS.init();
+    AOS.init(); 
   }, []);
+  useEffect(() => {
+
+    socket.on('connection', () => {
+      console.log('connected to server');
+      setIsConnected(true);
+    });
+
+    socket.on('message', (data) => {
+      console.log("dataaa dong", data)
+      setTesData(data)
+    });
+
+    socket.on('data', (data) => {
+      console.log("dataaa wair", data)
+    });
+
+
+  },[])
+
+  const sendMessage = () => {
+
+    // socket.emit("message", "hey it worked")
+  }
   return (
     <>
       <div className="container">
-      {/* <div className="relative flex flex-col items-center justify-center min-h-screen overflow-hidden">
-            <div className="flex">
-                <label className="inline-flex relative items-center mr-5 cursor-pointer">
-                    <input
-                        type="checkbox"
-                        className="sr-only peer"
-                        checked={lamp1}
-                        readOnly
-                    />
-                    <div
-                        onClick={() => {
-                          submitLamp1();
-                        }}
-                        className="w-11 h-6 bg-gray-200 rounded-full peer  peer-focus:ring-green-300  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"
-                    ></div>
-                    <span className="ml-2 text-sm font-medium text-gray-900">
-                        ON
-                    </span>
-                </label>
-            </div>
-        </div> */}
         <div className=" flex h-screen">
           <div className="m-auto text-center">
             <div data-aos="zoom-in">
               <Image src="/images/img-welcom.png" className="img-fluid inline" height={400} width={500} alt='robot' />
             </div>
+           
+      <h1>Connected: {isConnected}</h1>
+      <h1>tesData: {tesData}</h1>
+        
             <h1 className="title-home-page font-semibold mt-3">
               Selamat Datang Petani Modern
             </h1>
@@ -88,6 +57,9 @@ export default function Home() {
               Ayo gunakan teknologi internet of things <br />
               untuk sistem smart green house kamu
             </h1>
+            <button className='btn btn-get-started' onClick={sendMessage}>
+              coba dong
+            </button>
             <Link href='/sign-in' legacyBehavior>
               <a className="btn btn-get-started">
                 Get Started

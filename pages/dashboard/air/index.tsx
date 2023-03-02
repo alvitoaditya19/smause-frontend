@@ -215,7 +215,7 @@ export default function Air(props: UserDataStateTypes) {
               <div className="justify-center mx-auto flex">
                 <ReactLoading
                   type="spinningBubbles"
-                  color="#4D17E2"
+                  color="#174AFF"
                   height={667}
                   width={375}
                 />

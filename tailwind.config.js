@@ -21,7 +21,8 @@ module.exports = {
       transparent: colors.transparent,
       
       black: "#0D1458",
-      primary1: "#4D17E2",
+      // primary1: "#4D17E2",
+      primary1: "#174AFF",
       background1: "#FFFFFF",
       background2: "#F4F7FF",
       background3: "#F9F9FF",

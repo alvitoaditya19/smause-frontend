@@ -129,7 +129,7 @@ export default function Setting(props: UserDataStateTypes) {
             {isLoading ? (
               <ReactLoading
                 type="spinningBubbles"
-                color="#4D17E2"
+                color="#174AFF"
                 height={667}
                 width={375}
               // className="justify-content-center text-center"

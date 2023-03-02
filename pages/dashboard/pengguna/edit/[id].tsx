@@ -70,7 +70,7 @@ export default function DetailEdit(props: UserDataStateTypes) {
     }),
     option: (styles: any, { isFocused, isSelected }: any) => ({
       ...styles,
-      background: isSelected ? "#4D17E2" : undefined,
+      background: isSelected ? "#174AFF" : undefined,
       zIndex: 1,
     }),
     menu: (base: any) => ({

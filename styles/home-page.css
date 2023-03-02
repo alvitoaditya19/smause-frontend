@@ -1,12 +1,7 @@
 
 
 .title-home-page {
-  background: linear-gradient(
-    270deg,
-    #f11edc -3.99%,
-    #cf1cde 41.2%,
-    #4d17e2 73.68%
-  );
+  background: linear-gradient(270deg, #25CBFF -3.99%, #1DB4F4 41.2%, #2864FF 73.68%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -25,7 +20,7 @@
   padding: 8px 32px;
   color: #fff;
   border-radius: 100px;
-  background-color: #4e1be0;
+  background-color: #174AFF;
   font-size: 16px;
   text-decoration: none; 
 }
