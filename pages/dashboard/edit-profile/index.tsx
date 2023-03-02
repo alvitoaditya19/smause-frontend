@@ -14,7 +14,7 @@ import Link from 'next/link';
 
 export default function EditProfile() {
   const [user, setUser] = useState<UserStateTypes>({
-    id: '',
+    _id: '',
     name: '',
     email: '',
     avatar: '',
@@ -51,7 +51,7 @@ export default function EditProfile() {
 
     data.append('image', user.avatar);
     data.append('name', user.name);
-    const response = await updateProfile(data, user.id);
+    const response = await updateProfile(data, user._id);
     if (response.error) {
       toast.error(response.message);
     } else {
