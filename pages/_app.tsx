@@ -30,6 +30,7 @@ export default function App({ Component, pageProps }: AppProps) {
           href="https://unpkg.com/aos@2.3.1/dist/aos.css"
           rel="stylesheet"
         />
+        <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"/>
       </Head>
 
       {/* Boostrap JS */}
