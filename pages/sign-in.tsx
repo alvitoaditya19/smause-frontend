@@ -1,8 +1,14 @@
 import Image from 'next/image';
 import { SignInForm } from '../components/molecules';
 import { IcLogoIOT } from "../public/Icon";
+import AOS from 'aos';
+import { useEffect } from 'react';
+
 
 export default function SignIn() {
+  useEffect(() => {
+    AOS.init(); 
+  }, []);
   return (
     <>
       <section className="sign-in mx-auto">

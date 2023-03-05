@@ -10,9 +10,7 @@ export default function CardMonitor({ value, isLoading, title, margin }: any) {
     "bg-background2 p-5 rounded-2xl mt-4": true,
     margin
   });
-  useEffect(()  => {
-    // setValuee(value);
-  })
+
   return (
     <div className="lg:w-1/4 w-1/2 px-2 ">
       <div className={classItem}>

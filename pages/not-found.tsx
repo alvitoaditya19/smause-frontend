@@ -1,14 +1,10 @@
-import { useEffect, useState } from "react";
 import Link from "next/link";
-import AOS from 'aos';
 
 import Image from "next/image";
 
 export default function NotFound() {
 
-  useEffect(() => {
-    AOS.init();
-  }, []);
+
   return (
     <>
       <div className="container">

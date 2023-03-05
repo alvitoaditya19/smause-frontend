@@ -262,9 +262,9 @@ export default function Dashboard(props: UserDataStateTypes) {
     totalHarvs()
     totalUser()
 
-    // getValueAirs();
-    // getValueWaters();
-    // getValueSoils();
+    getValueAirs();
+    getValueWaters();
+    getValueSoils();
 
     const id = setInterval(() => {
       getValueAirs();
