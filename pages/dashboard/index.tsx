@@ -1,6 +1,9 @@
 import { createDecipheriv } from 'crypto';
 import jwtDecode from 'jwt-decode';
 
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import { useCallback, useEffect, useState,useRef } from "react";
 import { CardMonitor, Header, Sidebar, SummaryCard } from "../../components";
 import { IcHarvest, IcUser, IcVegetable } from "../../public/Icon";
@@ -25,9 +28,6 @@ export default function Dashboard(props: UserDataStateTypes) {
 
   const [totalVegetable, setTotalVegetable] = useState(0);
 
-  const [tesData, setTesData] = useState(null);
-
-  const [isConnected, setIsConnected] = useState(socket.connected);
 
   const [totalHarvest, settotalHarvest] = useState(0);
 
@@ -245,17 +245,25 @@ export default function Dashboard(props: UserDataStateTypes) {
   }, [GetSoilsEnc]);
 
   useEffect(() => {
-    socket.on('data', (data) => {
+
+    socket.on('dataGraphAir', (data) => {
       seDataGrapWaters(data);
-      console.log("data udara dong", data)
+      
     });
-    socket.on('dataUdara', (data) => {
+    socket.on('dataGraphUdara', (data) => {
       seDataGrapAirs(data);
-      console.log("data udara dong", data)
+      
     });
-    socket.on('dataTanah', (data) => {
+    socket.on('dataGraphTanah', (data) => {
       seDataGrapSoils(data);
-      console.log("data tanah dong", data)
+      
+    });
+
+    socket.on('dataMessaage', (data) => {
+      toast.error(`Nilai : ${data.nilai} | ${data.message}!!!!!!!`,{
+        theme: "colored",
+      });
+
     });
 
     totalVege()
