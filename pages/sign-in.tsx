@@ -3,10 +3,21 @@ import { SignInForm } from '../components/molecules';
 import { IcLogoIOT } from "../public/Icon";
 import AOS from 'aos';
 import { useEffect } from 'react';
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import io from 'socket.io-client';
 
+
+const host : any = process.env.NEXT_PUBLIC_SOCKET;
+const socket = io(host);
 
 export default function SignIn() {
   useEffect(() => {
+    socket.on('dataMessaage', (data) => {
+      toast.error(`Nilai : ${data.nilai} | ${data.message}!!!!!!!`,{
+        theme: "colored",
+      });
+    });
     AOS.init(); 
   }, []);
   return (

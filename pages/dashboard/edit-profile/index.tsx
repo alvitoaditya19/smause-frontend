@@ -2,6 +2,9 @@ import jwtDecode from 'jwt-decode';
 import Cookies from 'js-cookie';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
+import io from 'socket.io-client';
+
 import { useRouter } from 'next/router';
 
 import { JWTPayloadTypes, UserStateTypes } from '../../../services/data-types';
@@ -10,17 +13,31 @@ import { Header, Sidebar } from '../../../components';
 import Input from '../../../components/atoms/Input';
 import Link from 'next/link';
 
+const host : any = process.env.NEXT_PUBLIC_SOCKET;
+const socket = io(host);
 
+interface UserLoginStateTypes {
+  _id: string;
+  name: string;
+  username: string;
+  email: string;
+  password:string;
+  avatar: any;
+}
+
+export interface JWTPayloadEditTypes{
+  user:UserLoginStateTypes,
+  iat: number,
+}
 
 export default function EditProfile() {
-  const [user, setUser] = useState<UserStateTypes>({
+  const [user, setUser] = useState<UserLoginStateTypes>({
     _id: '',
     name: '',
     email: '',
     avatar: '',
+    password:'',
     username: '',
-    status: '',
-    no: 0
   });
   const [imagePreview, setImagePreview] = useState('/');
   const router = useRouter();
@@ -33,11 +50,16 @@ export default function EditProfile() {
 
 
   useEffect(() => {
+    socket.on('dataMessaage', (data) => {
+      toast.error(`Nilai : ${data.nilai} | ${data.message}!!!!!!!`,{
+        theme: "colored",
+      });
+    });
     const token = Cookies.get('token');
     if (token) {
       const jwtToken = atob(token);
-      const payload: JWTPayloadTypes = jwtDecode(jwtToken);
-      const userFromPayload: UserStateTypes = payload.user;
+      const payload: JWTPayloadEditTypes = jwtDecode(jwtToken);
+      const userFromPayload: UserLoginStateTypes = payload.user;
 
       if (userFromPayload.avatar == "") {
         setImagePreview("/images/img_profile.png")
@@ -51,6 +73,12 @@ export default function EditProfile() {
 
     data.append('image', user.avatar);
     data.append('name', user.name);
+    data.append('username', user.username);
+    if(user.password !== undefined){
+     data.append('password', user.password);
+    }
+
+
     const response = await updateProfile(data, user._id);
     if (response.error) {
       toast.error(response.message);
@@ -111,7 +139,7 @@ export default function EditProfile() {
                     value={user.email}
                     onChange={(event) => setUser({
                       ...user,
-                      name: event.target.value,
+                      email: event.target.value,
                     })}
                   />
                 </div>
@@ -122,7 +150,7 @@ export default function EditProfile() {
                     value={user.username}
                     onChange={(event) => setUser({
                       ...user,
-                      name: event.target.value,
+                      username: event.target.value,
                     })}
                   />
                 </div>
@@ -132,7 +160,7 @@ export default function EditProfile() {
                     typeInput={true}
                     onChange={(event) => setUser({
                       ...user,
-                      name: event.target.value,
+                      password: event.target.value,
                     })}
                   />
                 </div>

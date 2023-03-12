@@ -13,11 +13,14 @@ import "react-toastify/dist/ReactToastify.css";
 import { Header, Sidebar } from "../../../components";
 import { JWTPayloadTypes, SoilDataTypes, UserStateTypes } from "../../../services/data-types";
 import { GetSoilsEnc } from "../../../services/dashboard";
+import io from 'socket.io-client';
 
 interface UserDataStateTypes {
   user: UserStateTypes;
 }
 
+const host: any = process.env.NEXT_PUBLIC_SOCKET;
+const socket = io(host);
 
 export default function Tanah(props: UserDataStateTypes) {
   const { user } = props;
@@ -28,8 +31,13 @@ export default function Tanah(props: UserDataStateTypes) {
   const toggleNavbar = () => {
     setToggleViewMode(!toggleViewMode);
   };
+
+  const [toggle, setToggle] = useState(false);
+
   const [items, setItems] = useState([]);
   const [itemsEnc, setItemsEnc] = useState([]);
+  const [itemstable, setItemsTable] = useState([]);
+
   const [totalData, setTotalData] = useState(0);
 
   const [pageCount, setpageCount] = useState(0);
@@ -39,6 +47,15 @@ export default function Tanah(props: UserDataStateTypes) {
   const cryptoAlgorithm = 'aes-128-cbc';
   const key = 'tugasakhir421654'; //16 karakter
   const iv = '4567123212343219'; //16 karakter
+
+  const submitToggle = async () => {
+    if(toggle == true){
+      setItemsTable(itemsEnc)
+    }else if(toggle == false){
+      setItemsTable(items)
+    }
+    setToggle(!toggle);
+  }
 
   const getValueSoils = useCallback(async () => {
     setIsLoading(true);
@@ -71,12 +88,9 @@ export default function Tanah(props: UserDataStateTypes) {
 
     setItemsEnc(dataSoils)
     setItems(dataMap);
+    setItemsTable(dataMap)
+
   }, [GetSoilsEnc]);
-
-  useEffect(() => {
-    getValueSoils();
-  }, [limit]);
-
   
   const fetchComments = async (currentPage: any, limit:number) => {
     const data: any = await GetSoilsEnc(currentPage,limit);
@@ -144,6 +158,20 @@ export default function Tanah(props: UserDataStateTypes) {
   };
   const notifyDownload = () => toast.success("Berhasil download data tanah");
   const notifyDownloadEnc = () => toast.success("Berhasil download data tanah enkripsi");
+ 
+  
+  useEffect(() => {
+    socket.on('dataMessaage', (data) => {
+      toast.error(`Nilai : ${data.nilai} | ${data.message}!!!!!!!`, {
+        theme: "colored",
+      });
+
+    });
+    setToggle(true)
+
+    getValueSoils();
+  }, [limit]);
+  
   return (
     <>
       {/* Navbar */}
@@ -178,7 +206,8 @@ export default function Tanah(props: UserDataStateTypes) {
             </div>
           </section>
           <section className="mt-4 mb-10">
-            <div className="container-fluid lg:flex flex-none justify-start">
+          <div className="container-fluid lg:flex flex-none justify-between items-center">
+              <div>
               <CSVLink
                 data={items}
                 className="btn bg-primary1 border-0 text-white rounded-full px-5 lg:inline block lg:mr-4 mr-0"
@@ -195,6 +224,21 @@ export default function Tanah(props: UserDataStateTypes) {
               >
                 File CSV (Data Enkripsi)
               </CSVLink>
+              </div>
+              <label className="inline-flex relative items-center cursor-pointer mb-0">
+                <input
+                  type="checkbox"
+                  className="sr-only peer"
+                  checked={toggle}
+                  readOnly
+                />
+                <div
+                  onClick={() => {
+                    submitToggle();
+                  }}
+                  className="w-20 h-10 bg-grey3 rounded-full peer  peer-focus:ring-primary1  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-grey3 after:border after:rounded-full after:h-9 after:w-9 after:transition-all peer-checked:bg-primary1"
+                ></div>
+              </label>
             </div>
           </section>
           <div className="m-2 ">
@@ -220,7 +264,7 @@ export default function Tanah(props: UserDataStateTypes) {
                     </tr>
                   </thead>
                   <tbody>
-                  {items.map((item:SoilDataTypes) => {
+                  {itemstable.map((item:SoilDataTypes) => {
                       return (
                         <tr key={item.id} className="align-items-center">
                           <td>{item.no} </td>                       

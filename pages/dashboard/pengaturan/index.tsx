@@ -1,19 +1,22 @@
-import axios from "axios";
 
+import jwtDecode from "jwt-decode";
 import Link from "next/link";
-import { SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ReactLoading from "react-loading";
 import ReactPaginate from "react-paginate";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import io from 'socket.io-client';
 import { Header, Sidebar } from "../../../components";
-import Image from "next/image";
-import { DestroySetting, getAllDataSetting, GetUserData } from "../../../services/dashboard";
-import { SettingsDataTypes, SettingsTypes, JWTPayloadTypes, UserStateTypes } from "../../../services/data-types";
-import jwtDecode from "jwt-decode";
-
+import { DestroySetting, getAllDataSetting } from "../../../services/dashboard";
+import { JWTPayloadTypes, SettingsDataTypes, UserStateTypes } from "../../../services/data-types";
 
 interface UserDataStateTypes {
   user: UserStateTypes;
 }
+
+const host : any = process.env.NEXT_PUBLIC_SOCKET;
+const socket = io(host);
 
 export default function Setting(props: UserDataStateTypes) {
   const { user } = props;
@@ -44,6 +47,12 @@ export default function Setting(props: UserDataStateTypes) {
   };
 
   useEffect(() => {
+    socket.on('dataMessaage', (data) => {
+      toast.error(`Nilai : ${data.nilai} | ${data.message}!!!!!!!`,{
+        theme: "colored",
+      });
+
+    });
     getContent();
   }, [limit]);
 
@@ -136,6 +145,7 @@ export default function Setting(props: UserDataStateTypes) {
               />
             ) : (
               <div className="table-responsive-lg">
+                
                 <table className="table table-borderless table-data">
                   <thead>
                     <tr>
@@ -149,6 +159,7 @@ export default function Setting(props: UserDataStateTypes) {
                   </thead>
 
                   <tbody>
+               
                     {items.map((item: SettingsDataTypes) => {
                       return (
                         <tr key={item._id} className="align-items-center">

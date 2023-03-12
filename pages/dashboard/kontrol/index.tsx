@@ -4,28 +4,30 @@ import jwtDecode from 'jwt-decode';
 
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Header, Sidebar } from "../../../components";
 import { ControlTypes, JWTPayloadTypes, UserStateTypes } from "../../../services/data-types";
-import { CardMonitor, Header, Sidebar, SummaryCard } from "../../../components";
 
-import { IcHarvest, IcLampAct, IcLampInact, IcUser, IcVegetable } from "../../../public/Icon";
 import Image from "next/image";
-import { GetControl, GetUserData, SetControl } from "../../../services/dashboard";
-import IcContLamp from "../../../public/Icon/Ic-Cont-Lamp";
-import ToggleSwitch from "../../../components/Toogle";
-import IcContPump from "../../../public/Icon/Ic-Cont-Pump";
+import io from 'socket.io-client';
 import IcContBlend from "../../../public/Icon/Ic-Cont-Blend";
+import IcContLamp from "../../../public/Icon/Ic-Cont-Lamp";
+import IcContPump from "../../../public/Icon/Ic-Cont-Pump";
+import { GetControl, SetControl } from "../../../services/dashboard";
 
 interface UserDataStateTypes {
   user: UserStateTypes;
 }
 
+const host: any = process.env.NEXT_PUBLIC_SOCKET;
+const socket = io(host);
+
 export default function Kontrol(props: UserDataStateTypes) {
   const { user } = props;
 
-  const [isLoading, setIsLoading] = useState(false);
-
   const [toggleViewMode, setToggleViewMode] = useState(false);
+  const [statusControl, setStatusControl] = useState(false);
   const [lamp1, setDataLamp1] = useState(false);
+
   const [lamp2, setDataLamp2] = useState(false);
 
   const [pump1, setDataPump1] = useState(false);
@@ -33,17 +35,22 @@ export default function Kontrol(props: UserDataStateTypes) {
   const [valve, setDataValve] = useState(false);
   const [blend, setDataBlend] = useState(false);
 
+  const [disabled, setDisabled] = useState(false);
+
   const toggleNavbar = () => {
     setToggleViewMode(!toggleViewMode);
   };
 
   const submitLamp1 = async () => {
+    const dataControl = await GetControl();
+
     const data = {
       lamp1: lamp1,
     };
 
-    const dataValue: Partial<ControlTypes> = {
+    const dataValue = {
       lamp1: data.lamp1 === true ? "OFF" : "ON",
+      status: dataControl.data.status
     };
 
     const response = await SetControl(dataValue);
@@ -65,12 +72,15 @@ export default function Kontrol(props: UserDataStateTypes) {
   }, [GetControl]);
 
   const submitLamp2 = async () => {
+    const dataControl = await GetControl();
+
     const data = {
       lamp2: lamp2,
     };
 
     const dataValue = {
       lamp2: data.lamp2 === true ? "OFF" : "ON",
+      status: dataControl.data.status
     };
 
     const response = await SetControl(dataValue);
@@ -98,12 +108,16 @@ export default function Kontrol(props: UserDataStateTypes) {
   }, [GetControl]);
 
   const submitPump1 = async () => {
+    const dataControl = await GetControl();
+
     const data = {
       pump1: pump1,
     };
 
     const dataValue = {
       pump1: data.pump1 === true ? "OFF" : "ON",
+      status: dataControl.data.status
+
     };
 
     const response = await SetControl(dataValue);
@@ -125,12 +139,16 @@ export default function Kontrol(props: UserDataStateTypes) {
   }, [GetControl]);
 
   const submitPump2 = async () => {
+    const dataControl = await GetControl();
+
     const data = {
       pump2: pump2,
     };
 
     const dataValue = {
       pump2: data.pump2 === true ? "OFF" : "ON",
+      status: dataControl.data.status
+
     };
 
     const response = await SetControl(dataValue);
@@ -151,12 +169,16 @@ export default function Kontrol(props: UserDataStateTypes) {
     }
   }, [GetControl]);
   const submitValve = async () => {
+    const dataControl = await GetControl();
+
     const data = {
       valve: valve,
     };
 
     const dataValue = {
       valve: data.valve === true ? "OFF" : "ON",
+      status: dataControl.data.status
+
     };
 
     const response = await SetControl(dataValue);
@@ -178,12 +200,16 @@ export default function Kontrol(props: UserDataStateTypes) {
   }, [GetControl]);
 
   const submitBlend = async () => {
+    const dataControl = await GetControl();
+
     const data = {
       blend: blend,
     };
 
     const dataValue = {
       blend: data.blend === true ? "OFF" : "ON",
+      status: dataControl.data.status
+
     };
 
     const response = await SetControl(dataValue);
@@ -194,6 +220,7 @@ export default function Kontrol(props: UserDataStateTypes) {
       setDataBlend(!blend);
     }
   };
+
   const getStatusBlend = useCallback(async () => {
     const data = await GetControl();
 
@@ -201,6 +228,46 @@ export default function Kontrol(props: UserDataStateTypes) {
       setDataBlend(true);
     } else {
       setDataBlend(false);
+    }
+  }, [GetControl]);
+
+  const submitStatus = async () => {
+    const data = {
+      statusControl: statusControl,
+    };
+
+    const dataValue = {
+      statusControl: data.statusControl === true ? "OFF" : "ON",
+    };
+
+    const response = await SetControl(dataValue);
+
+    if (response.error) {
+      toast.error(response.message);
+    } else {
+      setStatusControl(!statusControl);
+
+      if (dataValue.statusControl == "ON") {
+        setDisabled(true);
+
+      } else if (dataValue.statusControl == "OFF") {
+        setDisabled(false);
+
+      }
+      console.log("oadpad", dataValue.statusControl)
+    }
+  };
+  const getStatusStatus = useCallback(async () => {
+    const data = await GetControl();
+
+    if (data.data.statusControl == "ON") {
+      setDisabled(true);
+
+      setStatusControl(true);
+    } else {
+      setDisabled(false);
+
+      setStatusControl(false);
     }
   }, [GetControl]);
 
@@ -234,14 +301,22 @@ export default function Kontrol(props: UserDataStateTypes) {
   //     console.log("status lampu", !lampu1)
   //   }
   // };
+  const notifyAllert = () => toast.error("Tombol Nonaktif, Ubah Status dalam keadaan OFF");
 
   useEffect(() => {
+    socket.on('dataMessaage', (data) => {
+      toast.error(`Nilai : ${data.nilai} | ${data.message}!!!!!!!`, {
+        theme: "colored",
+      });
+
+    });
     getStatusLamp1()
     getStatusLamp2()
     getStatusPump1()
     getStatusPump2()
     getStatusBlend()
     getStatusValve()
+    getStatusStatus()
   }, []);
 
   return (
@@ -283,21 +358,58 @@ export default function Kontrol(props: UserDataStateTypes) {
                       >
                         <div className="flex justify-between items-center">
                           <IcContLamp />
+                          <h1 className={statusControl ? "lg:text-2xl text-2xl font-semibold text-primary1" : "lg:text-2xl text-2xl font-semibold text-grey3"}>{statusControl ? "ON" : "OFF"}</h1>
+                        </div>
+                        <h1 className="mt-2 text-sm text-grey2">Kebun</h1>
+                        <h1 className="lg:text-xl text-lg font-medium text-black mb-2">status</h1>
+                        <label className="inline-flex relative items-center mr-5 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            className="sr-only peer"
+                            checked={statusControl}
+                            readOnly
+                          />
+                          <div
+                            onClick={() => {
+                              submitStatus();
+                            }}
+                            className="w-20 h-10 bg-grey3 rounded-full peer  peer-focus:ring-primary1  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-grey3 after:border after:rounded-full after:h-9 after:w-9 after:transition-all peer-checked:bg-primary1"
+                          ></div>
+                        </label>
+                      </div>
+                    </div>
+                    <div
+                      className="lg:w-1/3 w-0 btn-control lg:px-2 px-0"
+                    ></div>
+                    <div
+                      className="lg:w-1/3 w-0 btn-control lg:px-2 px-0"
+                    ></div>
+                    <div
+                      className="lg:w-1/3 w-1/2 btn-control px-2"
+                    >
+                      <div
+                        className="w-full card-control-off px-4 py-3 justify-center  lg:mr-4 mr-10"
+                      >
+                        <div className="flex justify-between items-center">
+                          <IcContLamp />
                           <h1 className={lamp1 ? "lg:text-2xl text-2xl font-semibold text-primary1" : "lg:text-2xl text-2xl font-semibold text-grey3"}>{lamp1 ? "ON" : "OFF"}</h1>
                         </div>
                         <h1 className="mt-2 text-sm text-grey2">Kebun</h1>
+
                         <h1 className="lg:text-xl text-lg font-medium text-black mb-2">Lampu 1</h1>
                         <label className="inline-flex relative items-center mr-5 cursor-pointer">
                           <input
                             type="checkbox"
                             className="sr-only peer"
                             checked={lamp1}
+
                             readOnly
                           />
                           <div
                             onClick={() => {
-                              submitLamp1();
+                              disabled !== true ? submitLamp1() : notifyAllert();
                             }}
+
                             className="w-20 h-10 bg-grey3 rounded-full peer  peer-focus:ring-primary1  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-grey3 after:border after:rounded-full after:h-9 after:w-9 after:transition-all peer-checked:bg-primary1"
                           ></div>
                         </label>
@@ -321,12 +433,12 @@ export default function Kontrol(props: UserDataStateTypes) {
                             type="checkbox"
                             className="sr-only peer"
                             checked={lamp2}
+                            disabled={true}
                             readOnly
                           />
                           <div
                             onClick={() => {
-                              submitLamp2();
-                              // getStatusLampu1()
+                              disabled !== true ? submitLamp2() : notifyAllert();
                             }}
                             className="w-20 h-10 bg-grey3 rounded-full peer  peer-focus:ring-primary1  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-grey3 after:border after:rounded-full after:h-9 after:w-9 after:transition-all peer-checked:bg-primary1"
                           ></div>
@@ -358,7 +470,7 @@ export default function Kontrol(props: UserDataStateTypes) {
                           />
                           <div
                             onClick={() => {
-                              submitPump1();
+                              disabled !== true ? submitPump1() : notifyAllert();
                             }}
                             className="w-20 h-10 bg-grey3 rounded-full peer  peer-focus:ring-primary1  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-grey3 after:border after:rounded-full after:h-9 after:w-9 after:transition-all peer-checked:bg-primary1"
                           ></div>
@@ -388,7 +500,7 @@ export default function Kontrol(props: UserDataStateTypes) {
                           />
                           <div
                             onClick={() => {
-                              submitPump2();
+                              disabled !== true ? submitPump2() : notifyAllert();
                             }}
                             className="w-20 h-10 bg-grey3 rounded-full peer  peer-focus:ring-primary1  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-grey3 after:border after:rounded-full after:h-9 after:w-9 after:transition-all peer-checked:bg-primary1"
                           ></div>
@@ -422,7 +534,7 @@ export default function Kontrol(props: UserDataStateTypes) {
                           />
                           <div
                             onClick={() => {
-                              submitValve();
+                              disabled !== true ? submitValve() : notifyAllert();
                             }}
                             className="w-20 h-10 bg-grey3 rounded-full peer  peer-focus:ring-primary1  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-grey3 after:border after:rounded-full after:h-9 after:w-9 after:transition-all peer-checked:bg-primary1"
                           ></div>
@@ -452,7 +564,7 @@ export default function Kontrol(props: UserDataStateTypes) {
                           />
                           <div
                             onClick={() => {
-                              submitBlend();
+                              disabled !== true ? submitBlend() : notifyAllert();
                             }}
                             className="w-20 h-10 bg-grey3 rounded-full peer  peer-focus:ring-primary1  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-grey3 after:border after:rounded-full after:h-9 after:w-9 after:transition-all peer-checked:bg-primary1"
                           ></div>

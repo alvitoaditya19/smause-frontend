@@ -11,23 +11,31 @@ import "react-toastify/dist/ReactToastify.css";
 import { Header, Sidebar } from "../../../components";
 import { GetWatersEnc } from "../../../services/dashboard";
 import { JWTPayloadTypes, UserStateTypes, WaterDataTypes } from "../../../services/data-types";
+import io from 'socket.io-client';
 
 
 interface UserDataStateTypes {
   user: UserStateTypes;
 }
+const host: any = process.env.NEXT_PUBLIC_SOCKET;
+const socket = io(host);
 
 export default function Air(props: UserDataStateTypes) {
   const { user } = props;
-  
+
   const [isLoading, setIsLoading] = useState(false);
 
   const [toggleViewMode, setToggleViewMode] = useState(false);
   const toggleNavbar = () => {
     setToggleViewMode(!toggleViewMode);
   };
+
+  const [toggle, setToggle] = useState(false);
+
   const [items, setItems] = useState([]);
   const [itemsEnc, setItemsEnc] = useState([]);
+  const [itemstable, setItemsTable] = useState([]);
+
   const [totalData, setTotalData] = useState(0);
 
   const [pageCount, setpageCount] = useState(0);
@@ -38,22 +46,31 @@ export default function Air(props: UserDataStateTypes) {
   const key = 'tugasakhir421654'; //16 karakter
   const iv = '4567123212343219'; //16 karakter
 
+  const submitToggle = async () => {
+    if(toggle == true){
+      setItemsTable(itemsEnc)
+    }else if(toggle == false){
+      setItemsTable(items)
+    }
+    setToggle(!toggle);
+  }
+
   const getValueWaters = useCallback(async () => {
     setIsLoading(true);
-    const data: any = await GetWatersEnc(1,limit);
+    const data: any = await GetWatersEnc(1, limit);
     const dataWaters = data.data.data
 
     setIsLoading(false);
 
-    const dataMap = data.data.data.map((waterDataMap:any, index:any) => {
-      const dataDecipher1 = createDecipheriv(cryptoAlgorithm , key, iv);
-      let decKetinngianAir = dataDecipher1.update(waterDataMap.ketinggianAir,  'hex', 'utf8');
+    const dataMap = data.data.data.map((waterDataMap: any, index: any) => {
+      const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decKetinngianAir = dataDecipher1.update(waterDataMap.ketinggianAir, 'hex', 'utf8');
       decKetinngianAir += dataDecipher1.final('utf8');
 
-      const dataDecipher2 = createDecipheriv(cryptoAlgorithm , key, iv);
-      let decOksigen = dataDecipher2.update(waterDataMap.oksigen,  'hex', 'utf8');
+      const dataDecipher2 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decOksigen = dataDecipher2.update(waterDataMap.oksigen, 'hex', 'utf8');
       decOksigen += dataDecipher2.final('utf8');
-      
+
       const dataDecipher3 = createDecipheriv(cryptoAlgorithm, key, iv);
       let decKeruhAir = dataDecipher3.update(waterDataMap.kekeruhanAir, 'hex', 'utf8')
       decKeruhAir += dataDecipher3.final('utf8');
@@ -62,8 +79,8 @@ export default function Air(props: UserDataStateTypes) {
         no: index + 1,
         id: waterDataMap.id,
         ketinggianAir: decKetinngianAir,
-        oksigen:decOksigen,
-        kekeruhanAir:decKeruhAir,
+        oksigen: decOksigen,
+        kekeruhanAir: decKeruhAir,
         date: waterDataMap.date,
         time: waterDataMap.time
       };
@@ -73,25 +90,22 @@ export default function Air(props: UserDataStateTypes) {
 
     setItemsEnc(dataWaters)
     setItems(dataMap);
+
+    setItemsTable(dataMap)
   }, [GetWatersEnc]);
 
-  useEffect(() => {
-    getValueWaters();
-  }, [limit]);
+  const fetchComments = async (currentPage: any, limit: number) => {
+    const data: any = await GetWatersEnc(currentPage, limit);
 
-  
-  const fetchComments = async (currentPage: any, limit:number) => {
-    const data: any = await GetWatersEnc(currentPage,limit);
-
-    const dataMap = data.data.data.map((waterDataMap:any, index:any) => {
-      const dataDecipher1 = createDecipheriv(cryptoAlgorithm , key, iv);
-      let decKetinngianAir = dataDecipher1.update(waterDataMap.ketinggianAir,  'hex', 'utf8');
+    const dataMap = data.data.data.map((waterDataMap: any, index: any) => {
+      const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decKetinngianAir = dataDecipher1.update(waterDataMap.ketinggianAir, 'hex', 'utf8');
       decKetinngianAir += dataDecipher1.final('utf8');
 
-      const dataDecipher2 = createDecipheriv(cryptoAlgorithm , key, iv);
-      let decOksigen = dataDecipher2.update(waterDataMap.oksigen,  'hex', 'utf8');
+      const dataDecipher2 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decOksigen = dataDecipher2.update(waterDataMap.oksigen, 'hex', 'utf8');
       decOksigen += dataDecipher2.final('utf8');
-      
+
       const dataDecipher3 = createDecipheriv(cryptoAlgorithm, key, iv);
       let decKeruhAir = dataDecipher3.update(waterDataMap.kekeruhanAir, 'hex', 'utf8')
       decKeruhAir += dataDecipher3.final('utf8');
@@ -100,8 +114,8 @@ export default function Air(props: UserDataStateTypes) {
         no: index + 1,
         id: waterDataMap.id,
         ketinggianAir: decKetinngianAir,
-        oksigen:decOksigen,
-        kekeruhanAir:decKeruhAir,
+        oksigen: decOksigen,
+        kekeruhanAir: decKeruhAir,
         date: waterDataMap.date,
         time: waterDataMap.time
       };
@@ -110,26 +124,26 @@ export default function Air(props: UserDataStateTypes) {
   };
 
   const handlePageClick = async (data: any) => {
-    let currentPage  = data.selected + 1;
+    let currentPage = data.selected + 1;
     const commentsFormServer = await fetchComments(currentPage, limit);
     setItems(commentsFormServer);
   };
 
-  const filterBySearch =async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const filterBySearch = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value;
     const data: any = await GetWatersEnc(1, Infinity);
-    
-    let updatedList :any = [...data.data.data];
 
-    let dataMap = updatedList.map((waterDataMap:any, index:any) => {
-      const dataDecipher1 = createDecipheriv(cryptoAlgorithm , key, iv);
-      let decKetinngianAir = dataDecipher1.update(waterDataMap.ketinggianAir,  'hex', 'utf8');
+    let updatedList: any = [...data.data.data];
+
+    let dataMap = updatedList.map((waterDataMap: any, index: any) => {
+      const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decKetinngianAir = dataDecipher1.update(waterDataMap.ketinggianAir, 'hex', 'utf8');
       decKetinngianAir += dataDecipher1.final('utf8');
 
-      const dataDecipher2 = createDecipheriv(cryptoAlgorithm , key, iv);
-      let decOksigen = dataDecipher2.update(waterDataMap.oksigen,  'hex', 'utf8');
+      const dataDecipher2 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decOksigen = dataDecipher2.update(waterDataMap.oksigen, 'hex', 'utf8');
       decOksigen += dataDecipher2.final('utf8');
-      
+
       const dataDecipher3 = createDecipheriv(cryptoAlgorithm, key, iv);
       let decKeruhAir = dataDecipher3.update(waterDataMap.kekeruhanAir, 'hex', 'utf8')
       decKeruhAir += dataDecipher3.final('utf8');
@@ -138,14 +152,14 @@ export default function Air(props: UserDataStateTypes) {
         no: index + 1,
         id: waterDataMap.id,
         ketinggianAir: decKetinngianAir,
-        oksigen:decOksigen,
-        kekeruhanAir:decKeruhAir,
+        oksigen: decOksigen,
+        kekeruhanAir: decKeruhAir,
         date: waterDataMap.date,
         time: waterDataMap.time
       };
     })
 
-    dataMap = dataMap.filter((item:any) => {
+    dataMap = dataMap.filter((item: any) => {
       return (
         item.date.toString().toLowerCase().indexOf(query.toLowerCase()) !==
         -1
@@ -157,11 +171,24 @@ export default function Air(props: UserDataStateTypes) {
   const notifyDownload = () => toast.success("Berhasil download data air");
   const notifyDownloadEnc = () => toast.success("Berhasil download data air enkripsi");
 
+  useEffect(() => {
+    socket.on('dataMessaage', (data) => {
+      toast.error(`Nilai : ${data.nilai} | ${data.message}!!!!!!!`, {
+        theme: "colored",
+      });
+
+    });
+    setToggle(true)
+
+    getValueWaters();
+
+  }, [limit]);
+
   return (
     <>
       {/* Navbar */}
       <div className="dashboard d-flex">
-      {
+        {
           user.status == "admin" ? <Sidebar
             toggleViewMode={toggleViewMode}
             toggleNavbar={toggleNavbar}
@@ -191,23 +218,39 @@ export default function Air(props: UserDataStateTypes) {
             </div>
           </section>
           <section className="mt-4 mb-10">
-            <div className="container-fluid lg:flex flex-none justify-start">
-              <CSVLink
-                data={items}
-                className="btn bg-primary1 border-0 text-white rounded-full px-5 lg:inline block lg:mr-4 mr-0"
-                filename={"Waters-data.csv"}
-                onClick={notifyDownload}
-              >
-                File CSV (Data Asli)
-              </CSVLink>
-              <CSVLink
-                data={itemsEnc}
-                className="btn bg-primary1 border-0 text-white rounded-full px-5 lg:inline block lg:mt-0 mt-3"
-                filename={"Waters-Enc-data.csv"}
-                onClick={notifyDownloadEnc}
-              >
-                File CSV (Data Enkripsi)
-              </CSVLink>
+            <div className="container-fluid lg:flex flex-none justify-between items-center">
+              <div>
+                <CSVLink
+                  data={items}
+                  className="btn bg-primary1 border-0 text-white rounded-full px-5 lg:inline block lg:mr-4 mr-0"
+                  filename={"Waters-data.csv"}
+                  onClick={notifyDownload}
+                >
+                  File CSV (Data Asli)
+                </CSVLink>
+                <CSVLink
+                  data={itemsEnc}
+                  className="btn bg-primary1 border-0 text-white rounded-full px-5 lg:inline block lg:mt-0 mt-3"
+                  filename={"Waters-Enc-data.csv"}
+                  onClick={notifyDownloadEnc}
+                >
+                  File CSV (Data Enkripsi)
+                </CSVLink>
+              </div>
+              <label className="inline-flex relative items-center cursor-pointer mb-0">
+                <input
+                  type="checkbox"
+                  className="sr-only peer"
+                  checked={toggle}
+                  readOnly
+                />
+                <div
+                  onClick={() => {
+                    submitToggle();
+                  }}
+                  className="w-20 h-10 bg-grey3 rounded-full peer  peer-focus:ring-primary1  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-grey3 after:border after:rounded-full after:h-9 after:w-9 after:transition-all peer-checked:bg-primary1"
+                ></div>
+              </label>
             </div>
           </section>
           <div className="m-2 ">
@@ -234,10 +277,10 @@ export default function Air(props: UserDataStateTypes) {
                     </tr>
                   </thead>
                   <tbody>
-                    {items.map((item:WaterDataTypes) => {
+                    {itemstable.map((item: WaterDataTypes) => {
                       return (
                         <tr key={item.id} className="align-items-center">
-                          <td>{item.no} </td>                       
+                          <td>{item.no} </td>
                           <td>{item.ketinggianAir}</td>
                           <td>{item.oksigen}</td>
                           <td>{item.kekeruhanAir}</td>

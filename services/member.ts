@@ -5,7 +5,7 @@ const API_VERSION = 'api/v1';
 
 
 export async function updateProfile(data: FormData, id: string) {
-  const url = `${ROOT_API}/${API_VERSION}/players/profile/${id}`;
+  const url = `${ROOT_API}/${API_VERSION}/users/profile/${id}`;
 
   return callAPI({
     url,

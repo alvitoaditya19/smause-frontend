@@ -4,15 +4,14 @@ import jwtDecode from 'jwt-decode';
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import { useCallback, useEffect, useState,useRef } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CardMonitor, Header, Sidebar, SummaryCard } from "../../components";
 import { IcHarvest, IcUser, IcVegetable } from "../../public/Icon";
 
-import "react-toastify/dist/ReactToastify.css";
+import io from 'socket.io-client';
 import Chart from "../../components/atoms/Chart";
 import { GetAirsEnc, getAllDataSetting, GetSoilsEnc, GetUserData, GetWatersEnc } from "../../services/dashboard";
 import { JWTPayloadTypes, UserStateTypes } from "../../services/data-types";
-import io from 'socket.io-client';
 
 
 interface UserDataStateTypes {

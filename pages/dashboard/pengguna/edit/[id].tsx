@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import Select from "react-select";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import io from 'socket.io-client';
 
 import { sentenceCase } from "sentence-case";
 import { Header, Sidebar } from "../../../../components";
@@ -16,6 +17,9 @@ import { JWTPayloadTypes, UserStateTypes } from "../../../../services/data-types
 interface UserDataStateTypes {
   user: UserStateTypes;
 }
+
+const host : any = process.env.NEXT_PUBLIC_SOCKET;
+const socket = io(host);
 
 export default function DetailEdit(props: UserDataStateTypes) {
   const { user } = props;
@@ -89,6 +93,11 @@ export default function DetailEdit(props: UserDataStateTypes) {
   }
 
   useEffect(() => {
+    socket.on('dataMessaage', (data) => {
+      toast.error(`Nilai : ${data.nilai} | ${data.message}!!!!!!!`,{
+        theme: "colored",
+      });
+    });
     if (!id) {
       return;
     }

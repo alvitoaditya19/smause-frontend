@@ -3,8 +3,18 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import io from 'socket.io-client';
 import Image from "next/image";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+const host : any = process.env.NEXT_PUBLIC_SOCKET;
+const socket = io(host);
 
 export default function Home() {
+  socket.on('dataMessaage', (data) => {
+    toast.error(`Nilai : ${data.nilai} | ${data.message}!!!!!!!`,{
+      theme: "colored",
+    });
+  });
   useEffect(() => {
     AOS.init(); 
   }, []);

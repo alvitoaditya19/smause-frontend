@@ -1,15 +1,20 @@
 import { useRouter } from "next/router";
-import { useState } from "react";
-import { Header, Sidebar } from "../../../../components";
-import { SetAddSetting, SetAddUser } from "../../../../services/dashboard";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { JWTPayloadTypes, SettingsTypes, UserStateTypes } from "../../../../services/data-types";
+import io from 'socket.io-client';
+import { Header, Sidebar } from "../../../../components";
+import { SetAddSetting } from "../../../../services/dashboard";
+
 import jwtDecode from "jwt-decode";
+import { JWTPayloadTypes, SettingsTypes, UserStateTypes } from "../../../../services/data-types";
 
 interface UserDataStateTypes {
   user: UserStateTypes;
 }
+const host : any = process.env.NEXT_PUBLIC_SOCKET;
+const socket = io(host);
+
 export default function AddVegetable(props: UserDataStateTypes) {
   const { user } = props;
   
@@ -40,6 +45,14 @@ export default function AddVegetable(props: UserDataStateTypes) {
       router.push("/dashboard/pengaturan");
     }
   };
+
+  useEffect(() => {
+    socket.on('dataMessaage', (data) => {
+      toast.error(`Nilai : ${data.nilai} | ${data.message}!!!!!!!`,{
+        theme: "colored",
+      });
+    });
+  });
 
   return (
     <>

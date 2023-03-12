@@ -1,15 +1,20 @@
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Header, Sidebar } from "../../../../components";
 import { SetAddUser } from "../../../../services/dashboard";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import io from 'socket.io-client';
+
 import { JWTPayloadTypes, UserStateTypes } from "../../../../services/data-types";
 import jwtDecode from "jwt-decode";
 
 interface UserDataStateTypes {
   user: UserStateTypes;
 }
+
+const host : any = process.env.NEXT_PUBLIC_SOCKET;
+const socket = io(host);
 
 export default function AddUser(props: UserDataStateTypes) {
   const { user } = props;
@@ -45,6 +50,14 @@ export default function AddUser(props: UserDataStateTypes) {
       router.push("/dashboard/pengguna");
     }
   };
+
+  useEffect(() => {
+    socket.on('dataMessaage', (data) => {
+      toast.error(`Nilai : ${data.nilai} | ${data.message}!!!!!!!`,{
+        theme: "colored",
+      });
+    });
+  });
 
   return (
     <>

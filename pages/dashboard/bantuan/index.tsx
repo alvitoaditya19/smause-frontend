@@ -1,14 +1,21 @@
 
 import Link from "next/link";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { Header, Sidebar } from "../../../components";
 import Image from "next/image";
 import { JWTPayloadTypes, UserStateTypes } from "../../../services/data-types";
 import jwtDecode from "jwt-decode";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import io from 'socket.io-client';
+
 
 interface UserDataStateTypes {
     user: UserStateTypes;
 }
+
+const host : any = process.env.NEXT_PUBLIC_SOCKET;
+const socket = io(host);
 
 export default function Help(props: UserDataStateTypes) {
     const { user } = props;
@@ -17,6 +24,15 @@ export default function Help(props: UserDataStateTypes) {
     const toggleNavbar = () => {
         setToggleViewMode(!toggleViewMode);
     };
+
+    useEffect(() => {
+        socket.on('dataMessaage', (data) => {
+            toast.error(`Nilai : ${data.nilai} | ${data.message}!!!!!!!`,{
+              theme: "colored",
+            });
+      
+          });
+    }, []);
 
     return (
         <>

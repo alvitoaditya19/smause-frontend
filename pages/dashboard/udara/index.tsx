@@ -1,21 +1,23 @@
-import axios from "axios";
+import jwtDecode from "jwt-decode";
 import { useCallback, useEffect, useState } from "react";
 import { CSVLink } from "react-csv";
-import jwtDecode from "jwt-decode";
-import Link from "next/link";
 
+import { createDecipheriv } from "crypto";
 import ReactLoading from "react-loading";
 import ReactPaginate from "react-paginate";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { JWTPayloadTypes, SoilDataTypes, TemperatureDataTypes, UserStateTypes } from "../../../services/data-types";
 import { Header, Sidebar } from "../../../components";
 import { GetAirsEnc } from "../../../services/dashboard";
-import { createDecipheriv } from "crypto";
+import { JWTPayloadTypes, TemperatureDataTypes, UserStateTypes } from "../../../services/data-types";
+import io from 'socket.io-client';
+
 
 interface UserDataStateTypes {
   user: UserStateTypes;
 }
+const host: any = process.env.NEXT_PUBLIC_SOCKET;
+const socket = io(host);
 export default function Udara(props: UserDataStateTypes) {
   const { user } = props;
 
@@ -25,8 +27,14 @@ export default function Udara(props: UserDataStateTypes) {
   const toggleNavbar = () => {
     setToggleViewMode(!toggleViewMode);
   };
+
+  const [toggle, setToggle] = useState(false);
+
+
   const [items, setItems] = useState([]);
   const [itemsEnc, setItemsEnc] = useState([]);
+  const [itemstable, setItemsTable] = useState([]);
+
   const [totalData, setTotalData] = useState(0);
 
   const [pageCount, setpageCount] = useState(0);
@@ -37,28 +45,37 @@ export default function Udara(props: UserDataStateTypes) {
   const key = 'tugasakhir421654'; //16 karakter
   const iv = '4567123212343219'; //16 karakter
 
+  const submitToggle = async () => {
+    if (toggle == true) {
+      setItemsTable(itemsEnc)
+    } else if (toggle == false) {
+      setItemsTable(items)
+    }
+    setToggle(!toggle);
+  }
+
   const getValueAirs = useCallback(async () => {
     setIsLoading(true);
-    const data: any = await GetAirsEnc(1,limit);
+    const data: any = await GetAirsEnc(1, limit);
     const dataAirs = data.data.data
 
     setIsLoading(false);
 
-    const dataMap = data.data.data.map((soilDataMap:any, index:any) => {
-      const dataDecipher1 = createDecipheriv(cryptoAlgorithm , key, iv);
-      let decCelcius = dataDecipher1.update(soilDataMap.celcius,  'hex', 'utf8');
+    const dataMap = data.data.data.map((soilDataMap: any, index: any) => {
+      const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decCelcius = dataDecipher1.update(soilDataMap.celcius, 'hex', 'utf8');
       decCelcius += dataDecipher1.final('utf8');
 
-      const dataDecipher2 = createDecipheriv(cryptoAlgorithm , key, iv);
-      let decHumidity = dataDecipher2.update(soilDataMap.humidity,  'hex', 'utf8');
+      const dataDecipher2 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decHumidity = dataDecipher2.update(soilDataMap.humidity, 'hex', 'utf8');
       decHumidity += dataDecipher2.final('utf8');
-    
+
 
       return {
         no: index + 1,
         id: soilDataMap.id,
         celcius: decCelcius,
-        humidity:decHumidity,
+        humidity: decHumidity,
         date: soilDataMap.date,
         time: soilDataMap.time
       };
@@ -68,30 +85,28 @@ export default function Udara(props: UserDataStateTypes) {
 
     setItemsEnc(dataAirs)
     setItems(dataMap);
+
+    setItemsTable(dataMap)
+
   }, [GetAirsEnc]);
 
-  useEffect(() => {
-    getValueAirs();
-  }, [limit]);
+  const fetchComments = async (currentPage: any, limit: number) => {
+    const data: any = await GetAirsEnc(currentPage, limit);
 
-  
-  const fetchComments = async (currentPage: any, limit:number) => {
-    const data: any = await GetAirsEnc(currentPage,limit);
-
-    const dataMap = data.data.data.map((soilDataMap:any, index:any) => {
-      const dataDecipher1 = createDecipheriv(cryptoAlgorithm , key, iv);
-      let decCelcius = dataDecipher1.update(soilDataMap.celcius,  'hex', 'utf8');
+    const dataMap = data.data.data.map((soilDataMap: any, index: any) => {
+      const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decCelcius = dataDecipher1.update(soilDataMap.celcius, 'hex', 'utf8');
       decCelcius += dataDecipher1.final('utf8');
 
-      const dataDecipher2 = createDecipheriv(cryptoAlgorithm , key, iv);
-      let decHumidity = dataDecipher2.update(soilDataMap.humidity,  'hex', 'utf8');
+      const dataDecipher2 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decHumidity = dataDecipher2.update(soilDataMap.humidity, 'hex', 'utf8');
       decHumidity += dataDecipher2.final('utf8');
 
       return {
         no: index + 1,
         id: soilDataMap.id,
         celcius: decCelcius,
-        humidity:decHumidity,
+        humidity: decHumidity,
         date: soilDataMap.date,
         time: soilDataMap.time
       };
@@ -100,37 +115,37 @@ export default function Udara(props: UserDataStateTypes) {
   };
 
   const handlePageClick = async (data: any) => {
-    let currentPage  = data.selected + 1;
+    let currentPage = data.selected + 1;
     const commentsFormServer = await fetchComments(currentPage, limit);
     setItems(commentsFormServer);
   };
 
-  const filterBySearch =async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const filterBySearch = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value;
     const data: any = await GetAirsEnc(1, Infinity);
-    
-    let updatedList :any = [...data.data.data];
 
-    let dataMap = updatedList.map((soilDataMap:any, index:any) => {
-      const dataDecipher1 = createDecipheriv(cryptoAlgorithm , key, iv);
-      let decCelcius = dataDecipher1.update(soilDataMap.celcius,  'hex', 'utf8');
+    let updatedList: any = [...data.data.data];
+
+    let dataMap = updatedList.map((soilDataMap: any, index: any) => {
+      const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decCelcius = dataDecipher1.update(soilDataMap.celcius, 'hex', 'utf8');
       decCelcius += dataDecipher1.final('utf8');
 
-      const dataDecipher2 = createDecipheriv(cryptoAlgorithm , key, iv);
-      let decHumidity = dataDecipher2.update(soilDataMap.humidity,  'hex', 'utf8');
+      const dataDecipher2 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decHumidity = dataDecipher2.update(soilDataMap.humidity, 'hex', 'utf8');
       decHumidity += dataDecipher2.final('utf8');
 
       return {
         no: index + 1,
         id: soilDataMap.id,
         celcius: decCelcius,
-        humidity:decHumidity,
+        humidity: decHumidity,
         date: soilDataMap.date,
         time: soilDataMap.time
       };
     })
 
-    dataMap = dataMap.filter((item:any) => {
+    dataMap = dataMap.filter((item: any) => {
       return (
         item.date.toString().toLowerCase().indexOf(query.toLowerCase()) !==
         -1
@@ -141,12 +156,24 @@ export default function Udara(props: UserDataStateTypes) {
   };
   const notifyDownload = () => toast.success("Berhasil download data udara");
   const notifyDownloadEnc = () => toast.success("Berhasil download data udara enkripsi");
- 
+
+  useEffect(() => {
+    socket.on('dataMessaage', (data) => {
+      toast.error(`Nilai : ${data.nilai} | ${data.message}!!!!!!!`, {
+        theme: "colored",
+      });
+
+    });
+    setToggle(true)
+
+    getValueAirs();
+  }, [limit]);
+
   return (
     <>
       {/* Navbar */}
       <div className="dashboard d-flex">
-      {
+        {
           user.status == "admin" ? <Sidebar
             toggleViewMode={toggleViewMode}
             toggleNavbar={toggleNavbar}
@@ -176,23 +203,39 @@ export default function Udara(props: UserDataStateTypes) {
             </div>
           </section>
           <section className="mt-4 mb-10">
-            <div className="container-fluid lg:flex flex-none justify-start">
-              <CSVLink
-                data={items}
-                className="btn bg-primary1 border-0 text-white rounded-full px-5 lg:inline block lg:mr-4 mr-0"
-                filename={"Temperature-data.csv"}
-                onClick={notifyDownload}
-              >
-                File CSV (Data Asli)
-              </CSVLink>
-              <CSVLink
-                data={itemsEnc}
-                className="btn bg-primary1 border-0 text-white rounded-full px-5 lg:inline block lg:mt-0 mt-3"
-                filename={"Temperature-data.csv"}
-                onClick={notifyDownloadEnc}
-              >
-                File CSV (Data Enkripsi)
-              </CSVLink>
+            <div className="container-fluid lg:flex flex-none justify-between items-center">
+              <div>
+                <CSVLink
+                  data={items}
+                  className="btn bg-primary1 border-0 text-white rounded-full px-5 lg:inline block lg:mr-4 mr-0"
+                  filename={"Temperature-data.csv"}
+                  onClick={notifyDownload}
+                >
+                  File CSV (Data Asli)
+                </CSVLink>
+                <CSVLink
+                  data={itemsEnc}
+                  className="btn bg-primary1 border-0 text-white rounded-full px-5 lg:inline block lg:mt-0 mt-3"
+                  filename={"Temperature-data.csv"}
+                  onClick={notifyDownloadEnc}
+                >
+                  File CSV (Data Enkripsi)
+                </CSVLink>
+              </div>
+              <label className="inline-flex relative items-center cursor-pointer mb-0">
+                <input
+                  type="checkbox"
+                  className="sr-only peer"
+                  checked={toggle}
+                  readOnly
+                />
+                <div
+                  onClick={() => {
+                    submitToggle();
+                  }}
+                  className="w-20 h-10 bg-grey3 rounded-full peer  peer-focus:ring-primary1  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-grey3 after:border after:rounded-full after:h-9 after:w-9 after:transition-all peer-checked:bg-primary1"
+                ></div>
+              </label>
             </div>
           </section>
           <div className="m-2 ">
@@ -218,10 +261,10 @@ export default function Udara(props: UserDataStateTypes) {
                     </tr>
                   </thead>
                   <tbody>
-                    {items.map((item:TemperatureDataTypes) => {
+                    {itemstable.map((item: TemperatureDataTypes) => {
                       return (
                         <tr key={item.id} className="align-items-center">
-                                                    <td>{item.no} </td>                       
+                          <td>{item.no} </td>
                           <td>{item.celcius}</td>
                           <td>{item.humidity}</td>
                           <td>{item.time}</td>

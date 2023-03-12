@@ -22,6 +22,7 @@ export interface ControlTypes{
   pump2: string;
   valve: string;
   blend: string;
+  statusControl:string;
 }
 
 export interface SettingsTypes {
