@@ -117,7 +117,7 @@ export default function Udara(props: UserDataStateTypes) {
   const handlePageClick = async (data: any) => {
     let currentPage = data.selected + 1;
     const commentsFormServer = await fetchComments(currentPage, limit);
-    setItems(commentsFormServer);
+    setItemsTable(commentsFormServer);
   };
 
   const filterBySearch = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -151,7 +151,7 @@ export default function Udara(props: UserDataStateTypes) {
         -1
       );
     });
-    setItems(dataMap);
+    setItemsTable(dataMap);
 
   };
   const notifyDownload = () => toast.success("Berhasil download data udara");

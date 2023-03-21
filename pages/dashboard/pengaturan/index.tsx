@@ -121,7 +121,7 @@ export default function Setting(props: UserDataStateTypes) {
             <div className="container-fluid lg:flex lg:justify-between flex-none justify-start">
 
               <Link href="/dashboard/pengaturan/tambah" legacyBehavior>
-                <div className="btn bg-primary1 border-0 text-white rounded-full lg:inline block px-5">Tambah Pengguna</div>
+                <div className="btn bg-primary1 border-0 text-white rounded-full lg:inline block px-5">Tambah Sayuran</div>
               </Link>
               <div className="lg:flex">
                 <Link href="/dashboard/user/add-user" legacyBehavior>

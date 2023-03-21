@@ -126,7 +126,8 @@ export default function Air(props: UserDataStateTypes) {
   const handlePageClick = async (data: any) => {
     let currentPage = data.selected + 1;
     const commentsFormServer = await fetchComments(currentPage, limit);
-    setItems(commentsFormServer);
+    console.log("asasasa", commentsFormServer)
+    setItemsTable(commentsFormServer);
   };
 
   const filterBySearch = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -165,7 +166,7 @@ export default function Air(props: UserDataStateTypes) {
         -1
       );
     });
-    setItems(dataMap);
+    setItemsTable(dataMap);
 
   };
   const notifyDownload = () => toast.success("Berhasil download data air");

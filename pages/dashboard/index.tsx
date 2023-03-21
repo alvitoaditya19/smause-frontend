@@ -20,7 +20,7 @@ interface UserDataStateTypes {
 
 
 const host : any = process.env.NEXT_PUBLIC_SOCKET;
-const socket = io(host);
+const socket = io(host, {transports: ['websocket']});
 
 export default function Dashboard(props: UserDataStateTypes) {
   const { user } = props;
@@ -244,7 +244,21 @@ export default function Dashboard(props: UserDataStateTypes) {
   }, [GetSoilsEnc]);
 
   useEffect(() => {
+    socket.on('dataCardAir', (data) => {
+      setOksigen(data[0].oksigen);
+      setKekeruhanAir(data[0].kekeruhanAir)
+      setKetinggianAir(data[0].ketinggianAir)
+    });
 
+    socket.on('dataCardUdara', (data) => {
+      setHumidity(data[0].humidity);
+      setCelcius(data[0].celcius)
+    });
+
+    socket.on('dataCardTanah', (data) => {
+      setKelembapanTanah(data[0].kelembapanTanah);
+      setPhTanah(data[0].phTanah)
+    });
     socket.on('dataGraphAir', (data) => {
       seDataGrapWaters(data);
       
@@ -273,18 +287,18 @@ export default function Dashboard(props: UserDataStateTypes) {
     getValueWaters();
     getValueSoils();
 
-    const id = setInterval(() => {
-      getValueAirs();
-      getValueWaters();
-      getValueSoils();
+    // const id = setInterval(() => {
+    //   getValueAirs();
+    //   getValueWaters();
+    //   getValueSoils();
 
-    }, WAIT_TIME);
+    // }, WAIT_TIME);
 
     getValueGraphAirs();
     getValueGraphWaters();
     getValueGraphSoils();
 
-    return () => clearInterval(id);
+    // return () => clearInterval(id);,, {transports: ['websocket']}
   }, []);
 
 
