@@ -214,6 +214,9 @@ table {
 .avatar {
   outline: none;
   width: 70px;
+  height: 70px;
+  max-width: none !important;
+  margin-left: 10px;
   padding: 4px;
   object-fit: cover;
   border-radius: 50px;

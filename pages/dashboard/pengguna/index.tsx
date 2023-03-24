@@ -104,7 +104,7 @@ export default function User(props: UserDataStateTypes) {
         }
         {/* Main Content */}
         <div className="content">
-          <Header toggleNavbar={toggleNavbar} filterBySearch={filterBySearch} isFilter />
+          <Header toggleNavbar={toggleNavbar} filterBySearch={filterBySearch} isFilter imageProfile = {user.avatar} />
           {/* <input id="search-box" onChange={filterBySearch} /> */}
           <section className="px-3">
             <div className="header justify-between flex-row items-center">

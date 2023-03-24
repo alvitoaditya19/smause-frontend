@@ -4,7 +4,7 @@ import jwtDecode from 'jwt-decode';
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import { useCallback, useEffect, useState } from "react";
+import { use, useCallback, useEffect, useState } from "react";
 import { CardMonitor, Header, Sidebar, SummaryCard } from "../../components";
 import { IcHarvest, IcUser, IcVegetable } from "../../public/Icon";
 
@@ -322,7 +322,7 @@ export default function Dashboard(props: UserDataStateTypes) {
 
         {/* Main Content */}
         <div className="content">
-          <Header toggleNavbar={toggleNavbar} isFilter={false} name={user.name} />
+          <Header toggleNavbar={toggleNavbar} isFilter={false} name={user.name} imageProfile = {user.avatar}/>
           <section className="px-3">
             <div className="header">
               <h3 className="text-3xl text-black font-bold">Dashboard</h3>

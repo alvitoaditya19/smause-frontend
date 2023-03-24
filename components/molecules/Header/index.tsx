@@ -7,12 +7,15 @@ export interface  HeaderProps {
   toggleNavbar: MouseEventHandler<HTMLButtonElement>;
   filterBySearch: ChangeEventHandler<HTMLInputElement>;
   isFilter: boolean;
-  name:string
+  name:string;
+  imageProfile:string;
 }
 
-export default function Header({ toggleNavbar, filterBySearch, isFilter, name }:Partial<HeaderProps>) {
+export default function Header({ toggleNavbar,imageProfile, filterBySearch, isFilter, name }:Partial<HeaderProps>) {
   const [filter, setFilter] = useState(false);
   const router = useRouter();
+  const host : any = process.env.NEXT_PUBLIC_IMG;
+
 
   let search;
   let searchResponsive;
@@ -86,7 +89,7 @@ export default function Header({ toggleNavbar, filterBySearch, isFilter, name }:
                 aria-expanded="false"
               >
                 <img
-                  src="/images/img_profile.png"
+                  src= {imageProfile !== host ? imageProfile : "/images/img_profile.png"}
                   alt="Photo Profile"
                   className="avatar "
                 />

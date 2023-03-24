@@ -207,6 +207,7 @@ export default function Air(props: UserDataStateTypes) {
             toggleNavbar={toggleNavbar}
             filterBySearch={filterBySearch}
             isFilter
+            imageProfile = {user.avatar} 
           />
           {/* <input id="search-box" onChange={filterBySearch} /> */}
           <section className="p-3">

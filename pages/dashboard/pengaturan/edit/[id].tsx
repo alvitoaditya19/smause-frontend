@@ -89,7 +89,7 @@ export default function DetailEdit(props: UserDataStateTypes) {
           />
         }
         <div className="content">
-          <Header toggleNavbar={toggleNavbar} />
+          <Header toggleNavbar={toggleNavbar}imageProfile = {user.avatar}  />
           <section className="p-3">
             <div className="header">
             <h3 className="text-3xl text-black font-bold">Edit Sayuran</h3>

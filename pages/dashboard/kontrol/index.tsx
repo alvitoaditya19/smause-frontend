@@ -338,7 +338,7 @@ export default function Kontrol(props: UserDataStateTypes) {
 
         {/* Main Content */}
         <div className="content">
-          <Header toggleNavbar={toggleNavbar} isFilter={false} name={user.name} />
+          <Header toggleNavbar={toggleNavbar} isFilter={false} name={user.name}  imageProfile = {user.avatar} />
           <section className="p-3">
             <div className="header">
               <h3 className="text-3xl text-black font-bold">Kontrol Tanamanmu</h3>

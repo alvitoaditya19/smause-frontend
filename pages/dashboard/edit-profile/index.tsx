@@ -30,8 +30,14 @@ export interface JWTPayloadEditTypes{
   iat: number,
 }
 
-export default function EditProfile() {
-  const [user, setUser] = useState<UserLoginStateTypes>({
+interface UserDataStateTypes {
+  user: UserLoginStateTypes;
+}
+
+export default function EditProfile(props: UserDataStateTypes) {
+  const { user } = props;
+
+  const [userData, setUser] = useState<UserLoginStateTypes>({
     _id: '',
     name: '',
     email: '',
@@ -61,9 +67,9 @@ export default function EditProfile() {
       const payload: JWTPayloadEditTypes = jwtDecode(jwtToken);
       const userFromPayload: UserLoginStateTypes = payload.user;
 
-      if (userFromPayload.avatar == "") {
-        setImagePreview("/images/img_profile.png")
-      }
+      // if (userFromPayload.avatar == "") {
+        // setImagePreview("/images/img_profile.png")
+      // }
       setUser(userFromPayload);
     }
   }, []);
@@ -71,15 +77,15 @@ export default function EditProfile() {
   const onSubmit = async () => {
     const data = new FormData();
 
-    data.append('image', user.avatar);
-    data.append('name', user.name);
+    data.append('image', userData.avatar);
+    data.append('name', userData.name);
     data.append('username', user.username);
-    if(user.password !== undefined){
-     data.append('password', user.password);
+    if(userData.password !== undefined){
+     data.append('password', userData.password);
     }
 
 
-    const response = await updateProfile(data, user._id);
+    const response = await updateProfile(data, userData._id);
     if (response.error) {
       toast.error(response.message);
     } else {
@@ -112,7 +118,7 @@ export default function EditProfile() {
                         const img = event.target.files![0];
                         setImagePreview(URL.createObjectURL(img));
                         return setUser({
-                          ...user,
+                          ...userData,
                           avatar: img,
                         });
                       }}
@@ -123,9 +129,9 @@ export default function EditProfile() {
                   <Input
                     label="Nama"
                     
-                    value={user.name}
+                    value={userData.name}
                     onChange={(event) => setUser({
-                      ...user,
+                      ...userData,
                       name: event.target.value,
                     })}
                   />
@@ -136,9 +142,9 @@ export default function EditProfile() {
                     label="Email"
                     
                     status={true}
-                    value={user.email}
+                    value={userData.email}
                     onChange={(event) => setUser({
-                      ...user,
+                      ...userData,
                       email: event.target.value,
                     })}
                   />
@@ -147,9 +153,9 @@ export default function EditProfile() {
                   <Input
                     label="Username"
                     
-                    value={user.username}
+                    value={userData.username}
                     onChange={(event) => setUser({
-                      ...user,
+                      ...userData,
                       username: event.target.value,
                     })}
                   />
@@ -159,7 +165,7 @@ export default function EditProfile() {
                     label="Password"
                     typeInput={true}
                     onChange={(event) => setUser({
-                      ...user,
+                      ...userData,
                       password: event.target.value,
                     })}
                   />
@@ -190,4 +196,38 @@ export default function EditProfile() {
       </div>
     </div>
   );
+}
+
+interface GetServerSideProps {
+  req: {
+    cookies: {
+      token: string,
+    }
+  }
+}
+
+
+
+export async function getServerSideProps({ req }: GetServerSideProps) {
+  const { token } = req.cookies;
+  if (!token) {
+    return {
+      redirect: {
+        destination: '/sign-in',
+        permanent: false,
+      },
+    };
+  }
+
+  const jwtToken = Buffer.from(token, 'base64').toString('ascii');
+  const payload: JWTPayloadTypes = jwtDecode(jwtToken);
+
+  const userFromPayload = payload.user;
+  const IMG = process.env.NEXT_PUBLIC_IMG;
+  userFromPayload.avatar = `${IMG}/${userFromPayload.avatar}`;
+  return {
+    props: {
+      user: userFromPayload,
+    },
+  };
 }
