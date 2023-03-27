@@ -72,7 +72,7 @@ export default function AddVegetable(props: UserDataStateTypes) {
         }
         {/* Main Content */}
         <div className="content">
-          <Header toggleNavbar={toggleNavbar} imageProfile = {user.avatar} />
+          <Header toggleNavbar={toggleNavbar} imageProfile = {user.avatar}  name={user.name} />
           <section className="px-3">
             <div className="header">
               <h3 className="text-3xl text-black font-bold">Tambah Sayuran</h3>
@@ -92,7 +92,7 @@ export default function AddVegetable(props: UserDataStateTypes) {
                 type="text"
                 className="form-control text-lg form-user-control"
                 value={nameVegetable}
-                placeholder="Masukkan nama kamu"
+                placeholder="Masukkan nama sayuran"
                 onChange={(event) => setNameVegetable(event.target.value)}
               />
             </div>
@@ -107,7 +107,7 @@ export default function AddVegetable(props: UserDataStateTypes) {
                 type="number"
                 className="form-control text-lg form-user-control"
                 value={amountVegetable}
-                placeholder="Masukkan alamat email kamu"
+                placeholder="Masukkan jumlah sayuran"
                 onChange={(event) => setAmountVegetable(event.target.value)}
               />
             </div>
@@ -122,7 +122,7 @@ export default function AddVegetable(props: UserDataStateTypes) {
                 type="number"
                 className="form-control text-lg form-user-control"
                 value={amountHarvest}
-                placeholder="Masukkan username kamu"
+                placeholder="Masukkan jumlah panen sayuran"
                 onChange={(event) => setAmountHarvest(event.target.value)}
               />
             </div>

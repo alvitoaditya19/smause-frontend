@@ -192,6 +192,8 @@ export default function Udara(props: UserDataStateTypes) {
             filterBySearch={filterBySearch}
             isFilter
             imageProfile = {user.avatar} 
+            placeHolder="Cari Data Sensor Udara"
+
           />
           {/* <input id="search-box" onChange={filterBySearch} /> */}
           <section className="p-3">

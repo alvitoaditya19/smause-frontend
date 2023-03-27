@@ -195,6 +195,7 @@ export default function Tanah(props: UserDataStateTypes) {
             filterBySearch={filterBySearch}
             isFilter
             imageProfile = {user.avatar} 
+            placeHolder="Cari Data Sensor Tanah"
           />
           {/* <input id="search-box" onChange={filterBySearch} /> */}
           <section className="p-3">

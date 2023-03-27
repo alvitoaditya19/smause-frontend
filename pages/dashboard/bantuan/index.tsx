@@ -52,7 +52,7 @@ export default function Help(props: UserDataStateTypes) {
                 }
                 {/* Main Content */}
                 <div className="content">
-                    <Header toggleNavbar={toggleNavbar} imageProfile = {user.avatar}  filterBySearch={function (event: ChangeEvent<HTMLInputElement>): void {
+                    <Header toggleNavbar={toggleNavbar} imageProfile = {user.avatar}  name={user.name}  filterBySearch={function (event: ChangeEvent<HTMLInputElement>): void {
                         throw new Error("Function not implemented.");
                     }} isFilter={false} />
                     <div className="container">

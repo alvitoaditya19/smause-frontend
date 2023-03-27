@@ -208,6 +208,8 @@ export default function Air(props: UserDataStateTypes) {
             filterBySearch={filterBySearch}
             isFilter
             imageProfile = {user.avatar} 
+            placeHolder="Cari Data Sensor Air"
+
           />
           {/* <input id="search-box" onChange={filterBySearch} /> */}
           <section className="p-3">

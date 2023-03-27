@@ -9,9 +9,11 @@ export interface  HeaderProps {
   isFilter: boolean;
   name:string;
   imageProfile:string;
+  placeHolder:string;
+
 }
 
-export default function Header({ toggleNavbar,imageProfile, filterBySearch, isFilter, name }:Partial<HeaderProps>) {
+export default function Header({ toggleNavbar,imageProfile, filterBySearch, isFilter, name, placeHolder }:Partial<HeaderProps>) {
   const [filter, setFilter] = useState(false);
   const router = useRouter();
   const host : any = process.env.NEXT_PUBLIC_IMG;
@@ -25,7 +27,8 @@ export default function Header({ toggleNavbar,imageProfile, filterBySearch, isFi
         <div className="lg:flex justify-end  hidden mr-4">
           <input
             type="text"
-            placeholder="Search report or product"
+            // placeholder="Search report or product"
+            placeholder={placeHolder}
             className="search form-control"
             onChange={filterBySearch}
           />
@@ -42,7 +45,8 @@ export default function Header({ toggleNavbar,imageProfile, filterBySearch, isFi
         <div className="justify-end lg:hidden flex mb-4 mt-3">
           <input
             type="text"
-            placeholder="Search report or product"
+            // placeholder="Search report or product"
+            placeholder={placeHolder}
             className="search form-control block"
             onChange={filterBySearch}
           />

@@ -30,7 +30,7 @@ export default function User(props: UserDataStateTypes) {
   const [pageCount, setpageCount] = useState(0);
   const [totalData, setTotalData] = useState(0);
 
-  let limit = 1;
+  let limit = 5;
 
   const getDataUser = async () => {
     setIsLoading(true);
@@ -104,7 +104,7 @@ export default function User(props: UserDataStateTypes) {
         }
         {/* Main Content */}
         <div className="content">
-          <Header toggleNavbar={toggleNavbar} filterBySearch={filterBySearch} isFilter imageProfile = {user.avatar} />
+          <Header toggleNavbar={toggleNavbar} filterBySearch={filterBySearch} isFilter imageProfile = {user.avatar} placeHolder="Cari Nama Pengguna Aplikasi" />
           {/* <input id="search-box" onChange={filterBySearch} /> */}
           <section className="px-3">
             <div className="header justify-between flex-row items-center">

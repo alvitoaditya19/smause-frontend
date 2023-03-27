@@ -77,7 +77,7 @@ export default function AddUser(props: UserDataStateTypes) {
         }
         {/* Main Content */}
         <div className="content">
-          <Header toggleNavbar={toggleNavbar} imageProfile = {user.avatar} />
+          <Header toggleNavbar={toggleNavbar} imageProfile = {user.avatar}  name={user.name} />
           <section className="px-3">
             <div className="header">
               <h3 className="text-3xl text-black font-bold">Tambah Pengguna</h3>
