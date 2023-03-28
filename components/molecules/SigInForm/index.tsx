@@ -30,11 +30,7 @@ export default function SignInForm() {
         let decodedHeader: any = jwt_decode(token);
         let statusUser = decodedHeader.user.status;
 
-        if (statusUser == "user") {
-          toast.error('Anda tidak diizinkan untuk mengakses sistem dashboard ini', { position: "top-center" });
-
-          router.push('/not-found');
-        } else if (statusUser == "admin" || statusUser == "petani") {
+        if (statusUser == "admin" || statusUser == "petani") {
           toast.success('Login Berhasil', { position: "top-center" });
           // const { token } = response.data;
           const tokenBase64 = btoa(token);
@@ -42,6 +38,10 @@ export default function SignInForm() {
           localStorage.setItem('tokenAdmin', JSON.stringify(tokenBase64));
 
           router.push('/dashboard');
+        } else {
+          toast.error('Anda tidak diizinkan untuk mengakses sistem dashboard ini', { position: "top-center" });
+
+          router.push('/not-found');
         }
       }
     }
