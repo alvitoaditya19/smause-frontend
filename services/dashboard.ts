@@ -164,7 +164,7 @@ export async function SetAddSetting(data: Partial<SettingsTypes>) {
   });
 }
 
-export async function SetEditSetting(data:Partial<SettingsTypes>, id:ParsedUrlQuery) {
+export async function SetEditSetting(data:Partial<SettingsTypes>, id:string | string[] | undefined) {
   const url = `${ROOT_API}/${API_VERSION}/settings/edit/${id}`;
 
   return callAPI({

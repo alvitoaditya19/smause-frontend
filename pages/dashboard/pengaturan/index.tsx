@@ -10,6 +10,7 @@ import io from 'socket.io-client';
 import { Header, Sidebar } from "../../../components";
 import { DestroySetting, getAllDataSetting } from "../../../services/dashboard";
 import { JWTPayloadTypes, SettingsDataTypes, UserStateTypes } from "../../../services/data-types";
+import { CSVLink } from "react-csv";
 
 interface UserDataStateTypes {
   user: UserStateTypes;
@@ -88,6 +89,8 @@ export default function Setting(props: UserDataStateTypes) {
     const user = await getAllDataSetting(1, limit);
     setItems(user.data.data);
   };
+  const notifyDownload = () => toast.success("Berhasil download data sayuran");
+
   return (
     <>
       {/* Navbar */}
@@ -124,12 +127,14 @@ export default function Setting(props: UserDataStateTypes) {
                 <div className="btn bg-primary1 border-0 text-white rounded-full lg:inline block px-5">Tambah Sayuran</div>
               </Link>
               <div className="lg:flex">
-                <Link href="/dashboard/user/add-user" legacyBehavior>
-                  <div className="btn bg-primary1 border-0 text-white lg:mr-4 mr-0 lg:my-0 my-3 rounded-full px-5 lg:inline block">File CSV (Data Enkripsi)</div>
-                </Link>
-                <Link href="/dashboard/user/add-user" legacyBehavior>
-                  <div className="btn bg-primary1 border-0 text-white rounded-full px-5 lg:inline block">File CSV (Data Asli)</div>
-                </Link>
+                <CSVLink
+                  data={items}
+                  className="btn bg-primary1 border-0 text-white rounded-full px-5 lg:inline block lg:mr-4 mr-0"
+                  filename={"Users-data.csv"}
+                  onClick={notifyDownload}
+                >
+                  Download File CSV
+                </CSVLink>
               </div>
             </div>
           </section>

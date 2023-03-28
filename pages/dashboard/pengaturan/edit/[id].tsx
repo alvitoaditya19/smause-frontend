@@ -23,7 +23,7 @@ export default function DetailEdit(props: UserDataStateTypes) {
   const { user } = props;
 
   const router = useRouter();
-  const  id  : ParsedUrlQuery  = router.query;
+  const {id}  : ParsedUrlQuery  = router.query;
  
   const [nameVegetable, setNameVegetable] = useState("");
   const [amountVegetable, setAmountVegetable] = useState("");
@@ -42,6 +42,7 @@ export default function DetailEdit(props: UserDataStateTypes) {
       amountVegetable: amountVegetable,
       amountHarvest: amountHarvest,
     };
+    console.log("kenapa ini", data)
 
     const response = await SetEditSetting(data, id);
     if (response.error) {
@@ -54,7 +55,7 @@ export default function DetailEdit(props: UserDataStateTypes) {
   };
 
   const fetchData = async () => {
-    const data = await getDetailSetting(id.id)
+    const data = await getDetailSetting(id)
     setNameVegetable(data.data.nameVegetable)
     setAmountVegetable(data.data.amountVegetable)
     setAmountHarvest(data.data.amountHarvest)
@@ -113,10 +114,10 @@ export default function DetailEdit(props: UserDataStateTypes) {
             </div>
             <div className="form-label-input mt-8">
               <label
-                htmlFor="email"
+                htmlFor="jumlah"
                 className="form-label text-lg font-medium text-black mb-3 "
               >
-                Email Address
+                Jumlah Sayuran
               </label>
               <input
                 type="number"
@@ -128,10 +129,10 @@ export default function DetailEdit(props: UserDataStateTypes) {
             </div>
             <div className="form-label-input  mt-8">
               <label
-                htmlFor="username"
+                htmlFor="jumlahSayuran"
                 className="form-label text-lg font-medium text-black mb-3"
               >
-                Username
+                Jumlah Sayuran
               </label>
               <input
                 type="number"
