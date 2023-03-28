@@ -9,13 +9,13 @@ import io from 'socket.io-client';
 import { Header, Sidebar } from "../../../components";
 import { DestroyUser, GetUserData } from "../../../services/dashboard";
 import { JWTPayloadTypes, UserStateTypes } from "../../../services/data-types";
-
+import { CSVLink } from "react-csv";
 
 interface UserDataStateTypes {
   user: UserStateTypes;
 }
 
-const host : any = process.env.NEXT_PUBLIC_SOCKET;
+const host: any = process.env.NEXT_PUBLIC_SOCKET;
 const socket = io(host);
 
 export default function User(props: UserDataStateTypes) {
@@ -35,7 +35,7 @@ export default function User(props: UserDataStateTypes) {
   const getDataUser = async () => {
     setIsLoading(true);
 
-    const data: any = await GetUserData(1,limit);
+    const data: any = await GetUserData(1, limit);
     const dataUsers = data.data.data
     setIsLoading(false);
 
@@ -46,7 +46,7 @@ export default function User(props: UserDataStateTypes) {
 
   useEffect(() => {
     socket.on('dataMessaage', (data) => {
-      toast.error(`Nilai : ${data.nilai} | ${data.message}!!!!!!!`,{
+      toast.error(`Nilai : ${data.nilai} | ${data.message}!!!!!!!`, {
         theme: "colored",
       });
 
@@ -55,7 +55,7 @@ export default function User(props: UserDataStateTypes) {
   }, [limit]);
 
   const fetchComments = async (currentPage: any) => {
-    const data: any = await GetUserData(currentPage,limit);
+    const data: any = await GetUserData(currentPage, limit);
     return data.data.data;
 
   };
@@ -66,13 +66,13 @@ export default function User(props: UserDataStateTypes) {
     setItems(commentsFormServer);
   };
 
-  const filterBySearch = async(event: React.ChangeEvent<HTMLInputElement>) => {
+  const filterBySearch = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value;
     const data: any = await GetUserData(1, Infinity);
-    
-    let updatedList :any = [...data.data.data];
 
-    updatedList = updatedList.filter((item:any) => {
+    let updatedList: any = [...data.data.data];
+
+    updatedList = updatedList.filter((item: any) => {
       return (
         item.name.toString().toLowerCase().indexOf(query.toLowerCase()) !==
         -1
@@ -86,6 +86,8 @@ export default function User(props: UserDataStateTypes) {
     const user = await GetUserData(1, limit);
     setItems(user.data.data);
   };
+  const notifyDownload = () => toast.success("Berhasil download data pengguna aplikasi");
+
   return (
     <>
       {/* Navbar */}
@@ -104,7 +106,7 @@ export default function User(props: UserDataStateTypes) {
         }
         {/* Main Content */}
         <div className="content">
-          <Header toggleNavbar={toggleNavbar} filterBySearch={filterBySearch} isFilter imageProfile = {user.avatar} placeHolder="Cari Nama Pengguna Aplikasi" />
+          <Header toggleNavbar={toggleNavbar} filterBySearch={filterBySearch} isFilter imageProfile={user.avatar} placeHolder="Cari Nama Pengguna Aplikasi" />
           {/* <input id="search-box" onChange={filterBySearch} /> */}
           <section className="px-3">
             <div className="header justify-between flex-row items-center">
@@ -123,12 +125,14 @@ export default function User(props: UserDataStateTypes) {
                 <div className="btn bg-primary1 border-0 text-white rounded-full lg:inline block px-5">Tambah Pengguna</div>
               </Link>
               <div className="lg:flex">
-                <Link href="/dashboard/pengguna/add-user" legacyBehavior>
-                  <div className="btn bg-primary1 border-0 text-white lg:mr-4 mr-0 lg:my-0 my-3 rounded-full px-5 lg:inline block">File CSV (Data Enkripsi)</div>
-                </Link>
-                <Link href="/dashboard/pengguna/add-user" legacyBehavior>
-                  <div className="btn bg-primary1 border-0 text-white rounded-full px-5 lg:inline block">File CSV (Data Asli)</div>
-                </Link>
+                <CSVLink
+                  data={items}
+                  className="btn bg-primary1 border-0 text-white rounded-full px-5 lg:inline block lg:mr-4 mr-0"
+                  filename={"Users-data.csv"}
+                  onClick={notifyDownload}
+                >
+                  Download File CSV
+                </CSVLink>
               </div>
             </div>
           </section>
@@ -158,7 +162,7 @@ export default function User(props: UserDataStateTypes) {
                   </thead>
 
                   <tbody>
-                    
+
                     {items.map((item: UserStateTypes) => (
 
                       <tr key={item._id} className="align-items-center">

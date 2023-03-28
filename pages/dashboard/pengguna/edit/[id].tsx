@@ -41,7 +41,6 @@ export default function DetailEdit(props: UserDataStateTypes) {
 
   const options = [
     { value: "admin", label: "Admin" },
-    { value: "user", label: "User" },
     { value: "petani", label: "Petani" },
 
   ];
