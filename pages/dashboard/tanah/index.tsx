@@ -49,9 +49,9 @@ export default function Tanah(props: UserDataStateTypes) {
   const iv = '4567123212343219'; //16 karakter
 
   const submitToggle = async () => {
-    if(toggle == true){
+    if (toggle == true) {
       setItemsTable(itemsEnc)
-    }else if(toggle == false){
+    } else if (toggle == false) {
       setItemsTable(items)
     }
     setToggle(!toggle);
@@ -59,26 +59,26 @@ export default function Tanah(props: UserDataStateTypes) {
 
   const getValueSoils = useCallback(async () => {
     setIsLoading(true);
-    const data: any = await GetSoilsEnc(1,limit);
+    const data: any = await GetSoilsEnc(1, limit);
     const dataSoils = data.data.data
 
     setIsLoading(false);
 
-    const dataMap = data.data.data.map((soilDataMap:any, index:any) => {
-      const dataDecipher1 = createDecipheriv(cryptoAlgorithm , key, iv);
-      let decKelembapanTanah = dataDecipher1.update(soilDataMap.kelembapanTanah,  'hex', 'utf8');
+    const dataMap = data.data.data.map((soilDataMap: any, index: any) => {
+      const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decKelembapanTanah = dataDecipher1.update(soilDataMap.kelembapanTanah, 'hex', 'utf8');
       decKelembapanTanah += dataDecipher1.final('utf8');
 
-      const dataDecipher2 = createDecipheriv(cryptoAlgorithm , key, iv);
-      let decPhTanah = dataDecipher2.update(soilDataMap.phTanah,  'hex', 'utf8');
+      const dataDecipher2 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decPhTanah = dataDecipher2.update(soilDataMap.phTanah, 'hex', 'utf8');
       decPhTanah += dataDecipher2.final('utf8');
-    
+
 
       return {
         no: index + 1,
         id: soilDataMap.id,
         kelembapanTanah: decKelembapanTanah,
-        phTanah:decPhTanah,
+        phTanah: decPhTanah,
         date: soilDataMap.date,
         time: soilDataMap.time
       };
@@ -91,24 +91,24 @@ export default function Tanah(props: UserDataStateTypes) {
     setItemsTable(dataMap)
 
   }, [GetSoilsEnc]);
-  
-  const fetchComments = async (currentPage: any, limit:number) => {
-    const data: any = await GetSoilsEnc(currentPage,limit);
 
-    const dataMap = data.data.data.map((soilDataMap:any, index:any) => {
-      const dataDecipher1 = createDecipheriv(cryptoAlgorithm , key, iv);
-      let decKelembapanTanah = dataDecipher1.update(soilDataMap.kelembapanTanah,  'hex', 'utf8');
+  const fetchComments = async (currentPage: any, limit: number) => {
+    const data: any = await GetSoilsEnc(currentPage, limit);
+
+    const dataMap = data.data.data.map((soilDataMap: any, index: any) => {
+      const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decKelembapanTanah = dataDecipher1.update(soilDataMap.kelembapanTanah, 'hex', 'utf8');
       decKelembapanTanah += dataDecipher1.final('utf8');
 
-      const dataDecipher2 = createDecipheriv(cryptoAlgorithm , key, iv);
-      let decPhTanah = dataDecipher2.update(soilDataMap.phTanah,  'hex', 'utf8');
+      const dataDecipher2 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decPhTanah = dataDecipher2.update(soilDataMap.phTanah, 'hex', 'utf8');
       decPhTanah += dataDecipher2.final('utf8');
 
       return {
         no: index + 1,
         id: soilDataMap.id,
         kelembapanTanah: decKelembapanTanah,
-        phTanah:decPhTanah,
+        phTanah: decPhTanah,
         date: soilDataMap.date,
         time: soilDataMap.time
       };
@@ -117,37 +117,37 @@ export default function Tanah(props: UserDataStateTypes) {
   };
 
   const handlePageClick = async (data: any) => {
-    let currentPage  = data.selected + 1;
+    let currentPage = data.selected + 1;
     const commentsFormServer = await fetchComments(currentPage, limit);
     setItemsTable(commentsFormServer);
   };
 
-  const filterBySearch =async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const filterBySearch = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value;
     const data: any = await GetSoilsEnc(1, Infinity);
-    
-    let updatedList :any = [...data.data.data];
 
-    let dataMap = updatedList.map((soilDataMap:any, index:any) => {
-      const dataDecipher1 = createDecipheriv(cryptoAlgorithm , key, iv);
-      let decKelembapanTanah = dataDecipher1.update(soilDataMap.kelembapanTanah,  'hex', 'utf8');
+    let updatedList: any = [...data.data.data];
+
+    let dataMap = updatedList.map((soilDataMap: any, index: any) => {
+      const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decKelembapanTanah = dataDecipher1.update(soilDataMap.kelembapanTanah, 'hex', 'utf8');
       decKelembapanTanah += dataDecipher1.final('utf8');
 
-      const dataDecipher2 = createDecipheriv(cryptoAlgorithm , key, iv);
-      let decPhTanah = dataDecipher2.update(soilDataMap.phTanah,  'hex', 'utf8');
+      const dataDecipher2 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decPhTanah = dataDecipher2.update(soilDataMap.phTanah, 'hex', 'utf8');
       decPhTanah += dataDecipher2.final('utf8');
 
       return {
         no: index + 1,
         id: soilDataMap.id,
         kelembapanTanah: decKelembapanTanah,
-        phTanah:decPhTanah,
+        phTanah: decPhTanah,
         date: soilDataMap.date,
         time: soilDataMap.time
       };
     })
 
-    dataMap = dataMap.filter((item:any) => {
+    dataMap = dataMap.filter((item: any) => {
       return (
         item.date.toString().toLowerCase().indexOf(query.toLowerCase()) !==
         -1
@@ -158,8 +158,8 @@ export default function Tanah(props: UserDataStateTypes) {
   };
   const notifyDownload = () => toast.success("Berhasil download data tanah");
   const notifyDownloadEnc = () => toast.success("Berhasil download data tanah enkripsi");
- 
-  
+
+
   useEffect(() => {
     socket.on('dataMessaage', (data) => {
       toast.error(`Nilai : ${data.nilai} | ${data.message}!!!!!!!`, {
@@ -171,12 +171,12 @@ export default function Tanah(props: UserDataStateTypes) {
 
     getValueSoils();
   }, [limit]);
-  
+
   return (
     <>
       {/* Navbar */}
       <div className="dashboard d-flex">
-      {
+        {
           user.status == "admin" ? <Sidebar
             toggleViewMode={toggleViewMode}
             toggleNavbar={toggleNavbar}
@@ -194,7 +194,7 @@ export default function Tanah(props: UserDataStateTypes) {
             toggleNavbar={toggleNavbar}
             filterBySearch={filterBySearch}
             isFilter
-            imageProfile = {user.avatar} 
+            imageProfile={user.avatar}
             placeHolder="Cari Data Sensor Tanah"
           />
           {/* <input id="search-box" onChange={filterBySearch} /> */}
@@ -208,24 +208,24 @@ export default function Tanah(props: UserDataStateTypes) {
             </div>
           </section>
           <section className="mt-4 mb-10">
-          <div className="container-fluid lg:flex flex-none justify-between items-center">
+            <div className="container-fluid lg:flex flex-none justify-between items-center">
               <div>
-              <CSVLink
-                data={items}
-                className="btn bg-primary1 border-0 text-white rounded-full px-5 lg:inline block lg:mr-4 mr-0"
-                filename={"Temperature-data.csv"}
-                onClick={notifyDownload}
-              >
-                File CSV (Data Asli)
-              </CSVLink>
-              <CSVLink
-                data={itemsEnc}
-                className="btn bg-primary1 border-0 text-white rounded-full px-5 lg:inline block lg:mt-0 mt-3"
-                filename={"Temperature-data.csv"}
-                onClick={notifyDownloadEnc}
-              >
-                File CSV (Data Enkripsi)
-              </CSVLink>
+                <CSVLink
+                  data={items}
+                  className="btn bg-primary1 border-0 text-white rounded-full px-5 lg:inline block lg:mr-4 mr-0"
+                  filename={"Temperature-data.csv"}
+                  onClick={notifyDownload}
+                >
+                  File CSV (Data Asli)
+                </CSVLink>
+                <CSVLink
+                  data={itemsEnc}
+                  className="btn bg-primary1 border-0 text-white rounded-full px-5 lg:inline block lg:mt-0 mt-3"
+                  filename={"Temperature-data.csv"}
+                  onClick={notifyDownloadEnc}
+                >
+                  File CSV (Data Enkripsi)
+                </CSVLink>
               </div>
               <label className="inline-flex relative items-center cursor-pointer mb-0">
                 <input
@@ -266,10 +266,10 @@ export default function Tanah(props: UserDataStateTypes) {
                     </tr>
                   </thead>
                   <tbody>
-                  {itemstable.map((item:SoilDataTypes) => {
+                    {itemstable.map((item: SoilDataTypes) => {
                       return (
                         <tr key={item.id} className="align-items-center">
-                          <td>{item.no} </td>                       
+                          <td>{item.no} </td>
                           <td>{item.kelembapanTanah}</td>
                           <td>{item.phTanah}</td>
                           <td>{item.time}</td>
