@@ -19,8 +19,8 @@ interface UserDataStateTypes {
 }
 
 
-const host : any = process.env.NEXT_PUBLIC_SOCKET;
-const socket = io(host, {transports: ['websocket']});
+const host: any = process.env.NEXT_PUBLIC_SOCKET;
+const socket = io(host, { transports: ['websocket'] });
 
 export default function Dashboard(props: UserDataStateTypes) {
   const { user } = props;
@@ -43,6 +43,8 @@ export default function Dashboard(props: UserDataStateTypes) {
   const [dataGrapAirs, seDataGrapAirs] = useState([]);
   const [dataGrapWaters, seDataGrapWaters] = useState([]);
   const [dataGrapSoils, seDataGrapSoils] = useState([]);
+  const [dataGrapSoilKelems, seDataGrapSoilKelems] = useState([]);
+
 
   const [totalDataUser, setTotalDataUser] = useState(0);
 
@@ -80,12 +82,15 @@ export default function Dashboard(props: UserDataStateTypes) {
     setIsLoading(false);
     setTotalDataUser(getDataTotal.data.total)
   }
-  
+
   const getValueAirs = useCallback(async () => {
     setIsLoading(true);
     const data: any = await GetAirsEnc(1, Infinity);
     setIsLoading(false);
-
+   
+    if (data.data.data.length === 0) {
+      return setCelcius("0"),  setHumidity("0");
+    }
     const dataMapCel = data.data.data.slice(-1)[0].celcius
     const dataMapHum = data.data.data.slice(-1)[0].humidity
 
@@ -105,10 +110,12 @@ export default function Dashboard(props: UserDataStateTypes) {
     setIsLoading(true);
     const data: any = await GetWatersEnc(1, Infinity);
     setIsLoading(false);
-
-    const dataMapKetiA = data.data.data.slice(-1)[0].ketinggianAir
-    const dataMapOks = data.data.data.slice(-1)[0].oksigen
-    const dataMapKeruhA = data.data.data.slice(-1)[0].kekeruhanAir
+    if (data.data.data.length === 0) {
+      return   setKetinggianAir("0"), setOksigen("0"), setKekeruhanAir("0");
+    }
+    const dataMapKetiA = data.data.data.slice(-1)[0].ketinggianAir ?? "30039b4d60c8126a163c1805ba1882fb"
+    const dataMapOks = data.data.data.slice(-1)[0].oksigen ?? "30039b4d60c8126a163c1805ba1882fb"
+    const dataMapKeruhA = data.data.data.slice(-1)[0].kekeruhanAir ?? "30039b4d60c8126a163c1805ba1882fb"
 
 
     const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
@@ -134,8 +141,12 @@ export default function Dashboard(props: UserDataStateTypes) {
     const data: any = await GetSoilsEnc(1, Infinity);
     setIsLoading(false);
 
-    const dataMapKelemTa = data.data.data.slice(-1)[0].kelembapanTanah
-    const dataMapPHTa = data.data.data.slice(-1)[0].phTanah
+    if (data.data.data.length === 0) {
+      return setKelembapanTanah("0"),setPhTanah("0");
+    }
+
+    const dataMapKelemTa = data.data.dataSoilKelem.slice(-1)[0].kelembapanTanah
+    const dataMapPHTa = data.data.dataSoil.slice(-1)[0].phTanah
 
     const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
     let decKelembapanTanah = dataDecipher1.update(dataMapKelemTa, 'hex', 'utf8')
@@ -159,7 +170,7 @@ export default function Dashboard(props: UserDataStateTypes) {
 
     const dataMap = data.data.data
 
-    const dataMapDec = dataMap.slice(0,4).map((suhuDataMap: any, index: any) => {
+    const dataMapDec = dataMap.slice(0, 4).map((suhuDataMap: any, index: any) => {
       const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
       let decCelcius = dataDecipher1.update(suhuDataMap.celcius, 'hex', 'utf8')
       decCelcius += dataDecipher1.final('utf8');
@@ -177,6 +188,8 @@ export default function Dashboard(props: UserDataStateTypes) {
         time: suhuDataMap.time
       };
     })
+
+    console.log("kenapa ih", dataMapDec)
     seDataGrapAirs(dataMapDec);
   }, [GetAirsEnc]);
 
@@ -222,10 +235,10 @@ export default function Dashboard(props: UserDataStateTypes) {
 
     const dataMap = data.data.data
 
-    const dataMapDec = dataMap.slice(0, 4).map((watersDataMap: any, index: any) => {
-      const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
-      let decKelembapanTanah = dataDecipher1.update(watersDataMap.kelembapanTanah, 'hex', 'utf8')
-      decKelembapanTanah += dataDecipher1.final('utf8');
+    const dataMapDec = data.data.dataSoil.slice(0, 4).map((watersDataMap: any, index: any) => {
+      // const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
+      // let decKelembapanTanah = dataDecipher1.update(watersDataMap.kelembapanTanah, 'hex', 'utf8')
+      // decKelembapanTanah += dataDecipher1.final('utf8');
 
       const dataDecipher2 = createDecipheriv(cryptoAlgorithm, key, iv);
       let decPHTanah = dataDecipher2.update(watersDataMap.phTanah, 'hex', 'utf8')
@@ -234,13 +247,37 @@ export default function Dashboard(props: UserDataStateTypes) {
       return {
         no: index + 1,
         id: watersDataMap.id,
-        kelembapanTanah: decKelembapanTanah,
+        // kelembapanTanah: decKelembapanTanah,
         phTanah: decPHTanah,
         date: watersDataMap.date,
         time: watersDataMap.time
       };
     })
+
+    const dataMapKelemDec = data.data.dataSoilKelem.slice(0, 4).map((watersDataMap: any, index: any) => {
+      const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decKelembapanTanah = dataDecipher1.update(watersDataMap.kelembapanTanah, 'hex', 'utf8')
+      decKelembapanTanah += dataDecipher1.final('utf8');
+
+      // const dataDecipher2 = createDecipheriv(cryptoAlgorithm, key, iv);
+      // let decPHTanah = dataDecipher2.update(watersDataMap.phTanah, 'hex', 'utf8')
+      // decPHTanah += dataDecipher2.final('utf8');
+
+      return {
+        no: index + 1,
+        id: watersDataMap.id,
+        kelembapanTanah: decKelembapanTanah,
+        // phTanah: decPHTanah,
+        date: watersDataMap.date,
+        time: watersDataMap.time
+      };
+    })
+
+    console.log("sasa", dataMapDec)
+    console.log("safsokfpsa", dataMapKelemDec)
+
     seDataGrapSoils(dataMapDec);
+    seDataGrapSoilKelems(dataMapKelemDec)
   }, [GetSoilsEnc]);
 
   useEffect(() => {
@@ -256,24 +293,34 @@ export default function Dashboard(props: UserDataStateTypes) {
     });
 
     socket.on('dataCardTanah', (data) => {
-      setKelembapanTanah(data[0].kelembapanTanah);
+      // console.log("dadatada", data)
+      // setKelembapanTanah(data[0].kelembapanTanah);
       setPhTanah(data[0].phTanah)
+    });
+
+    socket.on('dataCardTanahKelem', (data) => {
+      // console.log("dadatada", data)
+      setKelembapanTanah(data[0].kelembapanTanah);
+      // setPhTanah(data[0].phTanah)
     });
     socket.on('dataGraphAir', (data) => {
       seDataGrapWaters(data);
-      
+
     });
     socket.on('dataGraphUdara', (data) => {
       seDataGrapAirs(data);
-      
+
     });
     socket.on('dataGraphTanah', (data) => {
       seDataGrapSoils(data);
-      
+    });
+
+    socket.on('dataGraphTanahKelem', (data) => {
+      seDataGrapSoilKelems(data);
     });
 
     socket.on('dataMessaage', (data) => {
-      toast.error(`Nilai : ${data.nilai} | ${data.message}!!!!!!!`,{
+      toast.error(`Nilai : ${data.nilai} | ${data.message}!!!!!!!`, {
         theme: "colored",
       });
 
@@ -322,12 +369,12 @@ export default function Dashboard(props: UserDataStateTypes) {
 
         {/* Main Content */}
         <div className="content">
-          <Header toggleNavbar={toggleNavbar} isFilter={false} name={user.name} imageProfile = {user.avatar}/>
+          <Header toggleNavbar={toggleNavbar} isFilter={false} name={user.name} imageProfile={user.avatar} />
           <section className="px-3">
             <div className="header">
               <h3 className="text-3xl text-black font-bold">Dashboard</h3>
               <p className=" text-base text-grey2 mt-2">Kelola data tanaman sebaik mungkin</p>
-   
+
               <div className="lg:pt-10 pt-8">
                 <div className="flex flex-wrap justify-start items-center -mx-3">
                   <SummaryCard isLoading={isLoading} title="Pengguna" total={totalDataUser} icon={<IcUser />} />
@@ -371,10 +418,10 @@ export default function Dashboard(props: UserDataStateTypes) {
                 <Chart data={dataGrapWaters} title="Ketinggian Air" focusX="ketinggianAir" focusY="time" />
               </div>
               <div className="w-1/2 px-3 lg:mb-0 mb-4 lg:mt-8 mt-4">
-                <Chart data={dataGrapSoils} title="Kelembapan Tanah" focusX="kelembapanTanah" focusY="time" />
+                <Chart data={dataGrapSoils} title="Kelembapan Tanah" focusX="phTanah" focusY="time" />
               </div>
               <div className="w-1/2 px-3 lg:mb-0 mb-4 lg:mt-8 mt-4">
-                <Chart data={dataGrapSoils} title="PH Tanah" focusX="phTanah" focusY="time" />
+                <Chart data={dataGrapSoilKelems} title="PH Tanah" focusX="kelembapanTanah" focusY="time" />
               </div>
             </div>
           </section>
@@ -417,5 +464,3 @@ export async function getServerSideProps({ req }: GetServerSideProps) {
     },
   };
 }
-
-

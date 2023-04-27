@@ -36,6 +36,10 @@ export default function Tanah(props: UserDataStateTypes) {
 
   const [items, setItems] = useState([]);
   const [itemsEnc, setItemsEnc] = useState([]);
+
+  const [itemCSVs, setItemCSVs] = useState([]);
+  const [itemEncCSVs, setItemEncCSVs] = useState([]);
+
   const [itemstable, setItemsTable] = useState([]);
 
   const [totalData, setTotalData] = useState(0);
@@ -60,15 +64,22 @@ export default function Tanah(props: UserDataStateTypes) {
   const getValueSoils = useCallback(async () => {
     setIsLoading(true);
     const data: any = await GetSoilsEnc(1, limit);
-    const dataSoils = data.data.data
+    const dataConvertCSV: any = await GetSoilsEnc(1, Infinity);
+    // console.log("datasoils", dataSoilKelems)
+    const dataSoils = data.data.dataSoil
+    const dataSoilKelems = data.data.dataSoilKelem
+
+    const dataConvertCSVSoils = dataConvertCSV.data.dataSoil
+    const dataConvertCSVSoilKelems = dataConvertCSV.data.dataSoilKelem
+
+    const allData : any = [...dataSoils, ...dataSoilKelems]
+
+    const allDataConvertCSV : any = [...dataConvertCSVSoils, ...dataConvertCSVSoilKelems]
 
     setIsLoading(false);
 
-    const dataMap = data.data.data.map((soilDataMap: any, index: any) => {
-      const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
-      let decKelembapanTanah = dataDecipher1.update(soilDataMap.kelembapanTanah, 'hex', 'utf8');
-      decKelembapanTanah += dataDecipher1.final('utf8');
 
+    const dataMap = dataSoils.map((soilDataMap: any, index: any) => {
       const dataDecipher2 = createDecipheriv(cryptoAlgorithm, key, iv);
       let decPhTanah = dataDecipher2.update(soilDataMap.phTanah, 'hex', 'utf8');
       decPhTanah += dataDecipher2.final('utf8');
@@ -77,8 +88,50 @@ export default function Tanah(props: UserDataStateTypes) {
       return {
         no: index + 1,
         id: soilDataMap.id,
-        kelembapanTanah: decKelembapanTanah,
         phTanah: decPhTanah,
+        date: soilDataMap.date,
+        time: soilDataMap.time
+      };
+    })
+
+    const dataMapKelem = dataSoilKelems.map((soilDataMap: any, index: any) => {
+      const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decKelembapanTanah = dataDecipher1.update(soilDataMap.kelembapanTanah, 'hex', 'utf8');
+      decKelembapanTanah += dataDecipher1.final('utf8');
+
+      return {
+        no: index + 1,
+        id: soilDataMap.id,
+        kelembapanTanah: decKelembapanTanah,
+        date: soilDataMap.date,
+        time: soilDataMap.time
+      };
+    })
+
+    const dataMapConvertCSV = dataConvertCSVSoils.map((soilDataMap: any, index: any) => {
+      const dataDecipher2 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decPhTanah = dataDecipher2.update(soilDataMap.phTanah, 'hex', 'utf8');
+      decPhTanah += dataDecipher2.final('utf8');
+
+
+      return {
+        no: index + 1,
+        id: soilDataMap.id,
+        phTanah: decPhTanah,
+        date: soilDataMap.date,
+        time: soilDataMap.time
+      };
+    })
+
+    const dataMapKelemConvertCSV = dataConvertCSVSoilKelems.map((soilDataMap: any, index: any) => {
+      const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decKelembapanTanah = dataDecipher1.update(soilDataMap.kelembapanTanah, 'hex', 'utf8');
+      decKelembapanTanah += dataDecipher1.final('utf8');
+
+      return {
+        no: index + 1,
+        id: soilDataMap.id,
+        kelembapanTanah: decKelembapanTanah,
         date: soilDataMap.date,
         time: soilDataMap.time
       };
@@ -86,34 +139,58 @@ export default function Tanah(props: UserDataStateTypes) {
     setTotalData(data.data.total)
     setpageCount(Math.ceil(data.data.total / limit));
 
-    setItemsEnc(dataSoils)
-    setItems(dataMap);
-    setItemsTable(dataMap)
+    const allDataEnc : any = [...dataMap, ...dataMapKelem]
+    
+    const allDataConvertCSVEnc : any = [...dataMapConvertCSV, ...dataMapKelemConvertCSV]
+    
+    
+    setItemsEnc(allData)
+    setItems(allDataEnc);
+    setItemsTable(allDataEnc)
+
+    setItemCSVs(allDataConvertCSVEnc)
+    setItemEncCSVs(allDataConvertCSV)
 
   }, [GetSoilsEnc]);
 
   const fetchComments = async (currentPage: any, limit: number) => {
     const data: any = await GetSoilsEnc(currentPage, limit);
 
-    const dataMap = data.data.data.map((soilDataMap: any, index: any) => {
-      const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
-      let decKelembapanTanah = dataDecipher1.update(soilDataMap.kelembapanTanah, 'hex', 'utf8');
-      decKelembapanTanah += dataDecipher1.final('utf8');
+    const dataSoils = data.data.dataSoil
+    const dataSoilKelems = data.data.dataSoilKelem
 
+    const dataMap = dataSoils.map((soilDataMap: any, index: any) => {
       const dataDecipher2 = createDecipheriv(cryptoAlgorithm, key, iv);
       let decPhTanah = dataDecipher2.update(soilDataMap.phTanah, 'hex', 'utf8');
       decPhTanah += dataDecipher2.final('utf8');
 
+
       return {
         no: index + 1,
         id: soilDataMap.id,
-        kelembapanTanah: decKelembapanTanah,
         phTanah: decPhTanah,
         date: soilDataMap.date,
         time: soilDataMap.time
       };
     })
-    return dataMap;
+
+    const dataMapKelem = dataSoilKelems.map((soilDataMap: any, index: any) => {
+      const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decKelembapanTanah = dataDecipher1.update(soilDataMap.kelembapanTanah, 'hex', 'utf8');
+      decKelembapanTanah += dataDecipher1.final('utf8');
+
+      return {
+        no: index + 1,
+        id: soilDataMap.id,
+        kelembapanTanah: decKelembapanTanah,
+        date: soilDataMap.date,
+        time: soilDataMap.time
+      };
+    })
+
+    
+    const allDataEnc : any = [...dataMap, ...dataMapKelem]
+    return allDataEnc;
   };
 
   const handlePageClick = async (data: any) => {
@@ -128,32 +205,52 @@ export default function Tanah(props: UserDataStateTypes) {
 
     let updatedList: any = [...data.data.data];
 
-    let dataMap = updatedList.map((soilDataMap: any, index: any) => {
-      const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
-      let decKelembapanTanah = dataDecipher1.update(soilDataMap.kelembapanTanah, 'hex', 'utf8');
-      decKelembapanTanah += dataDecipher1.final('utf8');
+    // let updatedList1: any = [...data.data.dataSoil];
+    // let updatedList2: any = [...data.data.dataSoilKelem];
 
-      const dataDecipher2 = createDecipheriv(cryptoAlgorithm, key, iv);
-      let decPhTanah = dataDecipher2.update(soilDataMap.phTanah, 'hex', 'utf8');
-      decPhTanah += dataDecipher2.final('utf8');
 
-      return {
-        no: index + 1,
-        id: soilDataMap.id,
-        kelembapanTanah: decKelembapanTanah,
-        phTanah: decPhTanah,
-        date: soilDataMap.date,
-        time: soilDataMap.time
-      };
-    })
+    // let dataMapPH = updatedList1.map((soilDataMap: any, index: any) => {
 
-    dataMap = dataMap.filter((item: any) => {
+    //   const dataDecipher2 = createDecipheriv(cryptoAlgorithm, key, iv);
+    //   let decPhTanah = dataDecipher2.update(soilDataMap.phTanah, 'hex', 'utf8');
+    //   decPhTanah += dataDecipher2.final('utf8');
+
+    //   return {
+    //     no: index + 1,
+    //     id: soilDataMap.id,
+    //     phTanah: decPhTanah,
+    //     date: soilDataMap.date,
+    //     time: soilDataMap.time
+    //   };
+    // })
+
+    // let dataMapkelem = updatedList2.map((soilDataMap: any, index: any) => {
+    //   const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
+    //   let decKelembapanTanah = dataDecipher1.update(soilDataMap.kelembapanTanah, 'hex', 'utf8');
+    //   decKelembapanTanah += dataDecipher1.final('utf8');
+
+    //   return {
+    //     no: index + 1,
+    //     id: soilDataMap.id,
+    //     kelembapanTanah: decKelembapanTanah,
+    //     date: soilDataMap.date,
+    //     time: soilDataMap.time
+    //   };
+    // })
+
+    // let dataMap: any = [...dataMapPH, ...dataMapkelem];
+    // console.log("aoskoas1", dataMap )
+
+
+    updatedList = updatedList.filter((item: any) => {
       return (
         item.date.toString().toLowerCase().indexOf(query.toLowerCase()) !==
         -1
       );
     });
-    setItemsTable(dataMap);
+
+    console.log("kenaa", updatedList)
+    setItemsTable(updatedList);
 
   };
   const notifyDownload = () => toast.success("Berhasil download data tanah");
@@ -211,17 +308,17 @@ export default function Tanah(props: UserDataStateTypes) {
             <div className="container-fluid lg:flex flex-none justify-between items-center">
               <div>
                 <CSVLink
-                  data={items}
+                  data={itemCSVs}
                   className="btn bg-primary1 border-0 text-white rounded-full px-5 lg:inline block lg:mr-4 mr-0"
-                  filename={"Temperature-data.csv"}
+                  filename={"Soils-data.csv"}
                   onClick={notifyDownload}
                 >
                   File CSV (Data Asli)
                 </CSVLink>
                 <CSVLink
-                  data={itemsEnc}
+                  data={itemEncCSVs}
                   className="btn bg-primary1 border-0 text-white rounded-full px-5 lg:inline block lg:mt-0 mt-3"
-                  filename={"Temperature-data.csv"}
+                  filename={"Soils-enc-data.csv"}
                   onClick={notifyDownloadEnc}
                 >
                   File CSV (Data Enkripsi)

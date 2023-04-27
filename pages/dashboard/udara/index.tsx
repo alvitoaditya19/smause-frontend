@@ -33,6 +33,10 @@ export default function Udara(props: UserDataStateTypes) {
 
   const [items, setItems] = useState([]);
   const [itemsEnc, setItemsEnc] = useState([]);
+
+  const [itemCSVs, setItemCSVs] = useState([]);
+  const [itemEncCSVs, setItemEncCSVs] = useState([]);
+
   const [itemstable, setItemsTable] = useState([]);
 
   const [totalData, setTotalData] = useState(0);
@@ -57,11 +61,33 @@ export default function Udara(props: UserDataStateTypes) {
   const getValueAirs = useCallback(async () => {
     setIsLoading(true);
     const data: any = await GetAirsEnc(1, limit);
+    const dataConvertCSV: any = await GetAirsEnc(1, Infinity);
+
     const dataAirs = data.data.data
 
     setIsLoading(false);
 
     const dataMap = data.data.data.map((soilDataMap: any, index: any) => {
+      const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decCelcius = dataDecipher1.update(soilDataMap.celcius, 'hex', 'utf8');
+      decCelcius += dataDecipher1.final('utf8');
+
+      const dataDecipher2 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decHumidity = dataDecipher2.update(soilDataMap.humidity, 'hex', 'utf8');
+      decHumidity += dataDecipher2.final('utf8');
+
+
+      return {
+        no: index + 1,
+        id: soilDataMap.id,
+        celcius: decCelcius,
+        humidity: decHumidity,
+        date: soilDataMap.date,
+        time: soilDataMap.time
+      };
+    })
+
+    const dataCSVMap = dataConvertCSV.data.data.map((soilDataMap: any, index: any) => {
       const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
       let decCelcius = dataDecipher1.update(soilDataMap.celcius, 'hex', 'utf8');
       decCelcius += dataDecipher1.final('utf8');
@@ -87,6 +113,9 @@ export default function Udara(props: UserDataStateTypes) {
     setItems(dataMap);
 
     setItemsTable(dataMap)
+
+    setItemCSVs(dataCSVMap)
+    setItemEncCSVs(dataConvertCSV.data.data)
 
   }, [GetAirsEnc]);
 
@@ -209,7 +238,7 @@ export default function Udara(props: UserDataStateTypes) {
             <div className="container-fluid lg:flex flex-none justify-between items-center">
               <div>
                 <CSVLink
-                  data={items}
+                  data={itemCSVs}
                   className="btn bg-primary1 border-0 text-white rounded-full px-5 lg:inline block lg:mr-4 mr-0"
                   filename={"Temperature-data.csv"}
                   onClick={notifyDownload}
@@ -217,7 +246,7 @@ export default function Udara(props: UserDataStateTypes) {
                   File CSV (Data Asli)
                 </CSVLink>
                 <CSVLink
-                  data={itemsEnc}
+                  data={itemEncCSVs}
                   className="btn bg-primary1 border-0 text-white rounded-full px-5 lg:inline block lg:mt-0 mt-3"
                   filename={"Temperature-data.csv"}
                   onClick={notifyDownloadEnc}

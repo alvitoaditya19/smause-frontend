@@ -34,6 +34,10 @@ export default function Air(props: UserDataStateTypes) {
 
   const [items, setItems] = useState([]);
   const [itemsEnc, setItemsEnc] = useState([]);
+
+  const [itemCSVs, setItemCSVs] = useState([]);
+  const [itemEncCSVs, setItemEncCSVs] = useState([]);
+
   const [itemstable, setItemsTable] = useState([]);
 
   const [totalData, setTotalData] = useState(0);
@@ -58,11 +62,37 @@ export default function Air(props: UserDataStateTypes) {
   const getValueWaters = useCallback(async () => {
     setIsLoading(true);
     const data: any = await GetWatersEnc(1, limit);
+    const dataConvertCSV: any = await GetWatersEnc(1, Infinity);
+
     const dataWaters = data.data.data
 
     setIsLoading(false);
 
     const dataMap = data.data.data.map((waterDataMap: any, index: any) => {
+      const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decKetinngianAir = dataDecipher1.update(waterDataMap.ketinggianAir, 'hex', 'utf8');
+      decKetinngianAir += dataDecipher1.final('utf8');
+
+      const dataDecipher2 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decOksigen = dataDecipher2.update(waterDataMap.oksigen, 'hex', 'utf8');
+      decOksigen += dataDecipher2.final('utf8');
+
+      const dataDecipher3 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decKeruhAir = dataDecipher3.update(waterDataMap.kekeruhanAir, 'hex', 'utf8')
+      decKeruhAir += dataDecipher3.final('utf8');
+
+      return {
+        no: index + 1,
+        id: waterDataMap.id,
+        ketinggianAir: decKetinngianAir,
+        oksigen: decOksigen,
+        kekeruhanAir: decKeruhAir,
+        date: waterDataMap.date,
+        time: waterDataMap.time
+      };
+    })
+
+    const dataCSVMap =  dataConvertCSV.data.data.map((waterDataMap: any, index: any) => {
       const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
       let decKetinngianAir = dataDecipher1.update(waterDataMap.ketinggianAir, 'hex', 'utf8');
       decKetinngianAir += dataDecipher1.final('utf8');
@@ -92,6 +122,9 @@ export default function Air(props: UserDataStateTypes) {
     setItems(dataMap);
 
     setItemsTable(dataMap)
+
+    setItemCSVs(dataCSVMap)
+    setItemEncCSVs(dataConvertCSV.data.data)
   }, [GetWatersEnc]);
 
   const fetchComments = async (currentPage: any, limit: number) => {
@@ -225,7 +258,7 @@ export default function Air(props: UserDataStateTypes) {
             <div className="container-fluid lg:flex flex-none justify-between items-center">
               <div>
                 <CSVLink
-                  data={items}
+                  data={itemCSVs}
                   className="btn bg-primary1 border-0 text-white rounded-full px-5 lg:inline block lg:mr-4 mr-0"
                   filename={"Waters-data.csv"}
                   onClick={notifyDownload}
@@ -233,7 +266,7 @@ export default function Air(props: UserDataStateTypes) {
                   File CSV (Data Asli)
                 </CSVLink>
                 <CSVLink
-                  data={itemsEnc}
+                  data={itemEncCSVs}
                   className="btn bg-primary1 border-0 text-white rounded-full px-5 lg:inline block lg:mt-0 mt-3"
                   filename={"Waters-Enc-data.csv"}
                   onClick={notifyDownloadEnc}
