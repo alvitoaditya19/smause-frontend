@@ -86,8 +86,15 @@ export default function Setting(props: UserDataStateTypes) {
 
   const deleteSetting = async (id: string) => {
     DestroySetting(id);
-    const user = await getAllDataSetting(1, limit);
-    setItems(user.data.data);
+    toast.error("Berhasil menghapus data sayuran");
+    const data = await getAllDataSetting(1, limit);
+
+    const dataSettings = data.data.data
+
+    setIsLoading(false);
+    setTotalData(data.data.total)
+    setpageCount(Math.ceil(data.data.total / limit));
+    setItems(dataSettings);
   };
   const notifyDownload = () => toast.success("Berhasil download data sayuran");
 

@@ -83,8 +83,12 @@ export default function User(props: UserDataStateTypes) {
 
   const deleteUser = async (id: string) => {
     DestroyUser(id);
-    const user = await GetUserData(1, limit);
-    setItems(user.data.data);
+    const data: any = await GetUserData(1, limit);
+    const dataUsers = data.data.data
+
+    setTotalData(data.data.total)
+    setpageCount(Math.ceil(data.data.total / limit));
+    setItems(dataUsers);
   };
   const notifyDownload = () => toast.success("Berhasil download data pengguna aplikasi");
 
