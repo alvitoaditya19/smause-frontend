@@ -83,6 +83,8 @@ export default function User(props: UserDataStateTypes) {
 
   const deleteUser = async (id: string) => {
     DestroyUser(id);
+    toast.error("Berhasil menghapus data pengguna");
+
     const data: any = await GetUserData(1, limit);
     const dataUsers = data.data.data
 
