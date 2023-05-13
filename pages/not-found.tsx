@@ -10,9 +10,7 @@ export default function NotFound() {
       <div className="container">
         <div className=" flex h-screen">
           <div className="m-auto text-center justify-center">
-            <div data-aos="zoom-in">
-              <Image src="/images/not-found.png" className="img-fluid inline" height={320} width={370} alt='robot' />
-            </div>
+              <Image src="/images/not-found.png" className="img-fluid inline" height={320} width={370} alt='robotss' />
             <h1 className="title-home-page font-semibold mt-3">
               Halaman Tidak Ditemukan!!!
             </h1>
