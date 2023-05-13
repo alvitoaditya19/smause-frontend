@@ -66,7 +66,7 @@ export default function Help(props: UserDataStateTypes) {
                                     Silahkan hubungi admin utama dengan <br />
                                     menekan tombol dibawah ini
                                 </h1>
-                                <Link href='/sign-in' legacyBehavior>
+                                <Link href='https://wa.me/+6282297145285' legacyBehavior>
                                     <a className="btn btn-get-started">
                                         Hubungi Admin
                                     </a>

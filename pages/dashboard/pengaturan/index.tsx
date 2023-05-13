@@ -90,8 +90,6 @@ export default function Setting(props: UserDataStateTypes) {
     const data = await getAllDataSetting(1, limit);
 
     const dataSettings = data.data.data
-
-    setIsLoading(false);
     setTotalData(data.data.total)
     setpageCount(Math.ceil(data.data.total / limit));
     setItems(dataSettings);

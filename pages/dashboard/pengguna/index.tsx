@@ -92,6 +92,7 @@ export default function User(props: UserDataStateTypes) {
     setpageCount(Math.ceil(data.data.total / limit));
     setItems(dataUsers);
   };
+
   const notifyDownload = () => toast.success("Berhasil download data pengguna aplikasi");
 
   return (
