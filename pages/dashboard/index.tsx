@@ -387,13 +387,13 @@ export default function Dashboard(props: UserDataStateTypes) {
                 <div className="w-full px-2 lg:mb-0 mb-4">
                   <h1 className="text-2xl font-semibold text-black lg:mb-2 mb-0">Pemantauan Data</h1>
                   <div className="flex flex-wrap justify-start items-center -mx-4">
-                    <CardMonitor value={celcius} isLoading={isLoading} title="Suhu" margin="mr-12" />
-                    <CardMonitor value={humidity} isLoading={isLoading} title="Kelembapan Udara" />
-                    <CardMonitor value={kekeruhanAir} isLoading={isLoading} title="Sensor TDS" />
-                    <CardMonitor value={oksigen} isLoading={isLoading} title="Sensor Oksigen" />
-                    <CardMonitor value={ketinggianAir} isLoading={isLoading} title="Ketinggian Air" />
-                    <CardMonitor value={kelembapanTanah} isLoading={isLoading} title="Kelembapan Tanah" />
-                    <CardMonitor value={phTanah} isLoading={isLoading} title="PH Tanah" />
+                    <CardMonitor value={celcius} isLoading={isLoading} title="Suhu" margin="mr-12" satuan="Celcius" />
+                    <CardMonitor value={humidity} isLoading={isLoading} title="Kelembapan Udara"satuan="RH" />
+                    <CardMonitor value={kekeruhanAir} isLoading={isLoading} title="Sensor TDS" satuan="mg/l"/>
+                    <CardMonitor value={oksigen} isLoading={isLoading} title="Sensor Oksigen" satuan="LPM"/>
+                    <CardMonitor value={ketinggianAir} isLoading={isLoading} title="Ketinggian Air"  satuan="cm"/>
+                    <CardMonitor value={kelembapanTanah} isLoading={isLoading} title="Kelembapan Tanah"  satuan="RH"/>
+                    <CardMonitor value={phTanah} isLoading={isLoading} title="PH Tanah" satuan="PH"/>
                   </div>
                 </div>
               </div>

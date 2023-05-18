@@ -5,7 +5,7 @@ import cx from "classnames";
 import Image from "next/image";
 
 
-export default function CardMonitor({ value, isLoading, title, margin }: any) {
+export default function CardMonitor({ value, isLoading, title, margin, satuan }: any) {
   const classItem = cx({
     "bg-background2 p-5 rounded-2xl mt-4": true,
     margin
@@ -33,7 +33,7 @@ export default function CardMonitor({ value, isLoading, title, margin }: any) {
               ) : (
                 <div className="lg:text-3xl text-xl font-medium text-primary1">{value}</div>
               )}
-              <div className="text-grey2 text-sm font-medium">Celcius</div>
+              <div className="text-grey2 text-sm font-medium">{satuan}</div>
             </div>
           </div>
         </div>
