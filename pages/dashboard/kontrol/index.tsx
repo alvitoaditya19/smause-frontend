@@ -42,7 +42,7 @@ export default function Kontrol(props: UserDataStateTypes) {
   };
 
   const submitLamp1 = async () => {
-    const dataControl = await GetControl();
+    const dataControl = await GetControl(user.id);
 
     const data = {
       lamp1: lamp1,
@@ -62,7 +62,7 @@ export default function Kontrol(props: UserDataStateTypes) {
     }
   };
   const getStatusLamp1 = useCallback(async () => {
-    const data = await GetControl();
+    const data = await GetControl(user.id);
 
     if (data.data.lamp1 == "ON") {
       setDataLamp1(true);
@@ -72,7 +72,7 @@ export default function Kontrol(props: UserDataStateTypes) {
   }, [GetControl]);
 
   const submitLamp2 = async () => {
-    const dataControl = await GetControl();
+    const dataControl = await GetControl(user.id);
 
     const data = {
       lamp2: lamp2,
@@ -98,7 +98,9 @@ export default function Kontrol(props: UserDataStateTypes) {
     }
   };
   const getStatusLamp2 = useCallback(async () => {
-    const data = await GetControl();
+    const data = await GetControl(user.id);
+console.log("kenapa ihsndoshfoshfs", data)
+console.log("kenapa af", user.id)
 
     if (data.data.lamp2 == "ON") {
       setDataLamp2(true);
@@ -108,7 +110,7 @@ export default function Kontrol(props: UserDataStateTypes) {
   }, [GetControl]);
 
   const submitPump1 = async () => {
-    const dataControl = await GetControl();
+    const dataControl = await GetControl(user.id);
 
     const data = {
       pump1: pump1,
@@ -129,7 +131,7 @@ export default function Kontrol(props: UserDataStateTypes) {
     }
   };
   const getStatusPump1 = useCallback(async () => {
-    const data = await GetControl();
+    const data = await GetControl(user.id);
 
     if (data.data.pump1 == "ON") {
       setDataPump1(true);
@@ -139,7 +141,7 @@ export default function Kontrol(props: UserDataStateTypes) {
   }, [GetControl]);
 
   const submitPump2 = async () => {
-    const dataControl = await GetControl();
+    const dataControl = await GetControl(user.id);
 
     const data = {
       pump2: pump2,
@@ -160,7 +162,7 @@ export default function Kontrol(props: UserDataStateTypes) {
     }
   };
   const getStatusPump2 = useCallback(async () => {
-    const data = await GetControl();
+    const data = await GetControl(user.id);
 
     if (data.data.pump2 == "ON") {
       setDataPump2(true);
@@ -169,7 +171,7 @@ export default function Kontrol(props: UserDataStateTypes) {
     }
   }, [GetControl]);
   const submitValve = async () => {
-    const dataControl = await GetControl();
+    const dataControl = await GetControl(user.id);
 
     const data = {
       valve: valve,
@@ -190,7 +192,7 @@ export default function Kontrol(props: UserDataStateTypes) {
     }
   };
   const getStatusValve = useCallback(async () => {
-    const data = await GetControl();
+    const data = await GetControl(user.id);
 
     if (data.data.valve == "ON") {
       setDataValve(true);
@@ -200,7 +202,7 @@ export default function Kontrol(props: UserDataStateTypes) {
   }, [GetControl]);
 
   const submitBlend = async () => {
-    const dataControl = await GetControl();
+    const dataControl = await GetControl(user.id);
 
     const data = {
       blend: blend,
@@ -222,7 +224,7 @@ export default function Kontrol(props: UserDataStateTypes) {
   };
 
   const getStatusBlend = useCallback(async () => {
-    const data = await GetControl();
+    const data = await GetControl(user.id);
 
     if (data.data.blend == "ON") {
       setDataBlend(true);
@@ -258,7 +260,7 @@ export default function Kontrol(props: UserDataStateTypes) {
     }
   };
   const getStatusStatus = useCallback(async () => {
-    const data = await GetControl();
+    const data = await GetControl(user.id);
 
     if (data.data.statusControl == "ON") {
       setDisabled(true);

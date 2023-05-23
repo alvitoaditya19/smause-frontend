@@ -1,7 +1,7 @@
 import { ParsedUrlQuery } from "querystring";
 
 export interface UserStateTypes {
-  _id: string;
+  id: string;
   name: string;
   email: string;
   username: string;

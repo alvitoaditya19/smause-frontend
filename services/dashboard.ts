@@ -73,8 +73,8 @@ export async function SetEditUser(data:Partial<UserStateTypes>, id:string | stri
   });
 }
 
-export async function GetControl() {
-  const url = `${ROOT_API}/${API_VERSION}/controls`;
+export async function GetControl(userId:Partial<String>) {
+  const url = `${ROOT_API}/${API_VERSION}/controls/${userId}`;
 
   return callAPI({
     url,
@@ -94,8 +94,8 @@ export async function SetControl(data :Partial<ControlTypes>) {
   });
 }
 
-export async function GetAirsEnc(currentPage:Partial<number>, limit:Partial<number>) {
-  const url = `${ROOT_API}/${API_VERSION}/temperatures/encrypt?page=${currentPage}&limit=${limit}`;
+export async function GetAirsEnc(userId:Partial<String>, currentPage:Partial<number>, limit:Partial<number>) {
+  const url = `${ROOT_API}/${API_VERSION}/temperatures/encrypt/${userId}?page=${currentPage}&limit=${limit}`;
 
   return callAPI({
     url,

@@ -60,8 +60,8 @@ export default function Udara(props: UserDataStateTypes) {
 
   const getValueAirs = useCallback(async () => {
     setIsLoading(true);
-    const data: any = await GetAirsEnc(1, limit);
-    const dataConvertCSV: any = await GetAirsEnc(1, Infinity);
+    const data: any = await GetAirsEnc(user.id,1, limit);
+    const dataConvertCSV: any = await GetAirsEnc(user.id,1, Infinity);
 
     const dataAirs = data.data.data
 
@@ -120,7 +120,7 @@ export default function Udara(props: UserDataStateTypes) {
   }, [GetAirsEnc]);
 
   const fetchComments = async (currentPage: any, limit: number) => {
-    const data: any = await GetAirsEnc(currentPage, limit);
+    const data: any = await GetAirsEnc(user.id,currentPage, limit);
 
     const dataMap = data.data.data.map((soilDataMap: any, index: any) => {
       const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
@@ -151,7 +151,7 @@ export default function Udara(props: UserDataStateTypes) {
 
   const filterBySearch = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value;
-    const data: any = await GetAirsEnc(1, Infinity);
+    const data: any = await GetAirsEnc(user.id,1, Infinity);
 
     let updatedList: any = [...data.data.data];
 
@@ -187,6 +187,7 @@ export default function Udara(props: UserDataStateTypes) {
   const notifyDownloadEnc = () => toast.success("Berhasil download data udara enkripsi");
 
   useEffect(() => {
+
     socket.on('dataMessaage', (data) => {
       toast.error(`Nilai : ${data.nilai} | ${data.message}!!!!!!!`, {
         theme: "colored",

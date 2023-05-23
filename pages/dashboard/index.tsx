@@ -85,7 +85,7 @@ export default function Dashboard(props: UserDataStateTypes) {
 
   const getValueAirs = useCallback(async () => {
     setIsLoading(true);
-    const data: any = await GetAirsEnc(1, Infinity);
+    const data: any = await GetAirsEnc(user.id, 1, Infinity);
     setIsLoading(false);
    
     if (data.data.data.length === 0) {
@@ -165,7 +165,7 @@ export default function Dashboard(props: UserDataStateTypes) {
   const getValueGraphAirs = useCallback(async () => {
     setIsLoading(true);
 
-    const data: any = await GetAirsEnc(1, Infinity);
+    const data: any = await GetAirsEnc(user.id, 1, Infinity);
     setIsLoading(false);
 
     const dataMap = data.data.data
@@ -282,6 +282,8 @@ export default function Dashboard(props: UserDataStateTypes) {
 
   useEffect(() => {
     socket.on('dataCardAir', (data) => {
+
+      console.log("pioooooooooooooooooo", data)
       setOksigen(data[0].oksigen);
       setKekeruhanAir(data[0].kekeruhanAir)
       setKetinggianAir(data[0].ketinggianAir)
@@ -305,6 +307,8 @@ export default function Dashboard(props: UserDataStateTypes) {
     });
     socket.on('dataGraphAir', (data) => {
       seDataGrapWaters(data);
+      console.log("pioooooooooooooooooo", data)
+
 
     });
     socket.on('dataGraphUdara', (data) => {
