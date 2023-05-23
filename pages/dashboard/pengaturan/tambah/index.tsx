@@ -31,6 +31,7 @@ export default function AddVegetable(props: UserDataStateTypes) {
 
   const onSubmit = async () => {
     const data : Partial<SettingsTypes> = {
+      userId:user.id,
       nameVegetable: nameVegetable,
       amountVegetable: amountVegetable,
       amountHarvest: amountHarvest,

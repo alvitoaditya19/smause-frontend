@@ -108,7 +108,7 @@ export default function Dashboard(props: UserDataStateTypes) {
 
   const getValueWaters = useCallback(async () => {
     setIsLoading(true);
-    const data: any = await GetWatersEnc(1, Infinity);
+    const data: any = await GetWatersEnc(user.id,1, Infinity);
     setIsLoading(false);
     if (data.data.data.length === 0) {
       return   setKetinggianAir("0"), setOksigen("0"), setKekeruhanAir("0");
@@ -196,7 +196,7 @@ export default function Dashboard(props: UserDataStateTypes) {
   const getValueGraphWaters = useCallback(async () => {
     setIsLoading(true);
 
-    const data: any = await GetWatersEnc(1, Infinity);
+    const data: any = await GetWatersEnc(user.id,1, Infinity);
     setIsLoading(false);
 
     const dataMap = data.data.data

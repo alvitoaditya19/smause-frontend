@@ -38,7 +38,7 @@ export default function Setting(props: UserDataStateTypes) {
 
   const getContent = async () => {
     setIsLoading(true);
-    const data = await getAllDataSetting(1, limit);
+    const data = await getAllDataSetting(user.id,1, limit);
     const dataSettings = data.data.data
 
     setIsLoading(false);
@@ -59,7 +59,7 @@ export default function Setting(props: UserDataStateTypes) {
 
 
   const fetchComments = async (currentPage: any, limit: number) => {
-    const data: any = await getAllDataSetting(currentPage, limit);
+    const data: any = await getAllDataSetting(user.id,currentPage, limit);
 
     return data.data.data;
   };
@@ -72,7 +72,7 @@ export default function Setting(props: UserDataStateTypes) {
 
   const filterBySearch = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value;
-    const data: any = await getAllDataSetting(1, Infinity);
+    const data: any = await getAllDataSetting(user.id,1, Infinity);
     let updatedList: any = [...data.data.data];
 
     updatedList = updatedList.filter((item: any) => {
@@ -87,7 +87,7 @@ export default function Setting(props: UserDataStateTypes) {
   const deleteSetting = async (id: string) => {
     DestroySetting(id);
     toast.error("Berhasil menghapus data sayuran");
-    const data = await getAllDataSetting(1, limit);
+    const data = await getAllDataSetting(user.id,1, limit);
 
     const dataSettings = data.data.data
     setTotalData(data.data.total)

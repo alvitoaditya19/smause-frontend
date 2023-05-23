@@ -83,8 +83,8 @@ export async function GetControl(userId:Partial<String>) {
   });
 }
 
-export async function SetControl(data :Partial<ControlTypes>) {
-  const url = `${ROOT_API}/${API_VERSION}/controls`;
+export async function SetControl(data :Partial<ControlTypes>,userId:Partial<String>) {
+  const url = `${ROOT_API}/${API_VERSION}/controls/${userId}`;
 
   return callAPI({
     url,
@@ -104,8 +104,8 @@ export async function GetAirsEnc(userId:Partial<String>, currentPage:Partial<num
   });
 }
 
-export async function GetWatersEnc(currentPage:Partial<number>, limit:Partial<number>) {
-  const url = `${ROOT_API}/${API_VERSION}/waters/encrypt?page=${currentPage}&limit=${limit}`;
+export async function GetWatersEnc(userId:Partial<String>,currentPage:Partial<number>, limit:Partial<number>) {
+  const url = `${ROOT_API}/${API_VERSION}/waters/encrypt/${userId}?page=${currentPage}&limit=${limit}`;
 
   return callAPI({
     url,
@@ -133,8 +133,8 @@ export async function GetAllDataTemperature() {
   return axiosResponse.data;
 }
 
-export async function getAllDataSetting(currentPage:Partial<number>, limit:Partial<number>) {
-  const url = `${ROOT_API}/${API_VERSION}/settings?page=${currentPage}&limit=${limit}`;
+export async function getAllDataSetting(userId:Partial<String>,currentPage:Partial<number>, limit:Partial<number>) {
+  const url = `${ROOT_API}/${API_VERSION}/settings/${userId}?page=${currentPage}&limit=${limit}`;
 
   return callAPI({
     url,
@@ -143,8 +143,8 @@ export async function getAllDataSetting(currentPage:Partial<number>, limit:Parti
   });
 }
 
-export async function getDetailSetting(id:string | string[] | undefined) {
-  const url = `${ROOT_API}/${API_VERSION}/settings/${id}`;
+export async function getDetailSetting(userId:Partial<String>,id:string | string[] | undefined) {
+  const url = `${ROOT_API}/${API_VERSION}/settings/${userId}/${id}`;
 
   return callAPI({
     url,
@@ -164,8 +164,8 @@ export async function SetAddSetting(data: Partial<SettingsTypes>) {
   });
 }
 
-export async function SetEditSetting(data:Partial<SettingsTypes>, id:string | string[] | undefined) {
-  const url = `${ROOT_API}/${API_VERSION}/settings/edit/${id}`;
+export async function SetEditSetting(userId:Partial<String>,data:Partial<SettingsTypes>, id:string | string[] | undefined) {
+  const url = `${ROOT_API}/${API_VERSION}/settings/edit/${userId}/${id}`;
 
   return callAPI({
     url,

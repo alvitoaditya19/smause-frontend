@@ -61,9 +61,9 @@ export default function Air(props: UserDataStateTypes) {
 
   const getValueWaters = useCallback(async () => {
     setIsLoading(true);
-    const data: any = await GetWatersEnc(1, limit);
-    const dataConvertCSV: any = await GetWatersEnc(1, Infinity);
-
+    const data: any = await GetWatersEnc(user.id,1, limit);
+    const dataConvertCSV: any = await GetWatersEnc(user.id,1, Infinity);
+console.log("air data", data)
     const dataWaters = data.data.data
 
     setIsLoading(false);
@@ -128,7 +128,7 @@ export default function Air(props: UserDataStateTypes) {
   }, [GetWatersEnc]);
 
   const fetchComments = async (currentPage: any, limit: number) => {
-    const data: any = await GetWatersEnc(currentPage, limit);
+    const data: any = await GetWatersEnc(user.id,currentPage, limit);
 
     const dataMap = data.data.data.map((waterDataMap: any, index: any) => {
       const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
@@ -165,7 +165,7 @@ export default function Air(props: UserDataStateTypes) {
 
   const filterBySearch = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value;
-    const data: any = await GetWatersEnc(1, Infinity);
+    const data: any = await GetWatersEnc(user.id,1, Infinity);
 
     let updatedList: any = [...data.data.data];
 

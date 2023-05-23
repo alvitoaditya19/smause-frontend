@@ -53,7 +53,7 @@ export default function Kontrol(props: UserDataStateTypes) {
       status: dataControl.data.status
     };
 
-    const response = await SetControl(dataValue);
+    const response = await SetControl(dataValue, user.id);
 
     if (response.error) {
       toast.error(response.message);
@@ -83,7 +83,7 @@ export default function Kontrol(props: UserDataStateTypes) {
       status: dataControl.data.status
     };
 
-    const response = await SetControl(dataValue);
+    const response = await SetControl(dataValue, user.id);
 
     if (response.error) {
       toast.error(response.message);
@@ -99,8 +99,6 @@ export default function Kontrol(props: UserDataStateTypes) {
   };
   const getStatusLamp2 = useCallback(async () => {
     const data = await GetControl(user.id);
-console.log("kenapa ihsndoshfoshfs", data)
-console.log("kenapa af", user.id)
 
     if (data.data.lamp2 == "ON") {
       setDataLamp2(true);
@@ -122,7 +120,7 @@ console.log("kenapa af", user.id)
 
     };
 
-    const response = await SetControl(dataValue);
+    const response = await SetControl(dataValue, user.id);
 
     if (response.error) {
       toast.error(response.message);
@@ -153,7 +151,7 @@ console.log("kenapa af", user.id)
 
     };
 
-    const response = await SetControl(dataValue);
+    const response = await SetControl(dataValue, user.id);
 
     if (response.error) {
       toast.error(response.message);
@@ -183,7 +181,7 @@ console.log("kenapa af", user.id)
 
     };
 
-    const response = await SetControl(dataValue);
+    const response = await SetControl(dataValue, user.id);
 
     if (response.error) {
       toast.error(response.message);
@@ -214,7 +212,7 @@ console.log("kenapa af", user.id)
 
     };
 
-    const response = await SetControl(dataValue);
+    const response = await SetControl(dataValue, user.id);
 
     if (response.error) {
       toast.error(response.message);
@@ -242,7 +240,7 @@ console.log("kenapa af", user.id)
       statusControl: data.statusControl === true ? "OFF" : "ON",
     };
 
-    const response = await SetControl(dataValue);
+    const response = await SetControl(dataValue, user.id);
 
     if (response.error) {
       toast.error(response.message);
@@ -261,7 +259,8 @@ console.log("kenapa af", user.id)
   };
   const getStatusStatus = useCallback(async () => {
     const data = await GetControl(user.id);
-
+console.log("aoshaiohsa", data
+)
     if (data.data.statusControl == "ON") {
       setDisabled(true);
 

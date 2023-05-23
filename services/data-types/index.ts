@@ -28,6 +28,7 @@ export interface ControlTypes{
 export interface SettingsTypes {
   id: string | ParsedUrlQuery;
   no: number;
+  userId:string,
   nameVegetable: string;
   amountVegetable: string;
   amountHarvest: string;

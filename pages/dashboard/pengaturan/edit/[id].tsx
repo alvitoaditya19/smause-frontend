@@ -44,7 +44,7 @@ export default function DetailEdit(props: UserDataStateTypes) {
     };
     console.log("kenapa ini", data)
 
-    const response = await SetEditSetting(data, id);
+    const response = await SetEditSetting(user.id,data, id);
     if (response.error) {
       toast.error(response.message);
     } else {
@@ -55,7 +55,7 @@ export default function DetailEdit(props: UserDataStateTypes) {
   };
 
   const fetchData = async () => {
-    const data = await getDetailSetting(id)
+    const data = await getDetailSetting(user.id,id)
     setNameVegetable(data.data.nameVegetable)
     setAmountVegetable(data.data.amountVegetable)
     setAmountHarvest(data.data.amountHarvest)
