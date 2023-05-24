@@ -57,9 +57,11 @@ export default function EditProfile(props: UserDataStateTypes) {
 
   useEffect(() => {
     socket.on('dataMessaage', (data) => {
-      toast.error(`Nilai : ${data.nilai} | ${data.message}!!!!!!!`,{
-        theme: "colored",
-      });
+      if (data.userId === user._id) {
+        toast.error(`Nilai : ${data.data.nilai} | ${data.data.message}!!!!!!!`, {
+          theme: "colored",
+        });
+      }
     });
     const token = Cookies.get('token');
     if (token) {

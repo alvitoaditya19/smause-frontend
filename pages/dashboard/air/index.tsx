@@ -63,7 +63,7 @@ export default function Air(props: UserDataStateTypes) {
     setIsLoading(true);
     const data: any = await GetWatersEnc(user.id,1, limit);
     const dataConvertCSV: any = await GetWatersEnc(user.id,1, Infinity);
-console.log("air data", data)
+
     const dataWaters = data.data.data
 
     setIsLoading(false);
@@ -159,7 +159,7 @@ console.log("air data", data)
   const handlePageClick = async (data: any) => {
     let currentPage = data.selected + 1;
     const commentsFormServer = await fetchComments(currentPage, limit);
-    console.log("asasasa", commentsFormServer)
+   
     setItemsTable(commentsFormServer);
   };
 
@@ -207,10 +207,11 @@ console.log("air data", data)
 
   useEffect(() => {
     socket.on('dataMessaage', (data) => {
-      toast.error(`Nilai : ${data.nilai} | ${data.message}!!!!!!!`, {
-        theme: "colored",
-      });
-
+      if (data.userId === user.id) {
+        toast.error(`Nilai : ${data.data.nilai} | ${data.data.message}!!!!!!!`, {
+          theme: "colored",
+        });
+      }
     });
     setToggle(true)
 

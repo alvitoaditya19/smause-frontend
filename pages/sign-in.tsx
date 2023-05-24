@@ -13,11 +13,6 @@ const socket = io(host);
 
 export default function SignIn() {
   useEffect(() => {
-    socket.on('dataMessaage', (data) => {
-      toast.error(`Nilai : ${data.nilai} | ${data.message}!!!!!!!`,{
-        theme: "colored",
-      });
-    });
     AOS.init(); 
   }, []);
   return (

@@ -10,11 +10,6 @@ const host : any = process.env.NEXT_PUBLIC_SOCKET;
 const socket = io(host);
 
 export default function Home() {
-  socket.on('dataMessaage', (data) => {
-    toast.error(`Nilai : ${data.nilai} | ${data.message}!!!!!!!`,{
-      theme: "colored",
-    });
-  });
   useEffect(() => {
     AOS.init(); 
   }, []);
@@ -41,7 +36,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <h1>halo</h1>
     </>
   );
 }

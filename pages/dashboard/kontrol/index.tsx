@@ -254,13 +254,11 @@ export default function Kontrol(props: UserDataStateTypes) {
         setDisabled(false);
 
       }
-      console.log("oadpad", dataValue.statusControl)
+      
     }
   };
   const getStatusStatus = useCallback(async () => {
     const data = await GetControl(user.id);
-console.log("aoshaiohsa", data
-)
     if (data.data.statusControl == "ON") {
       setDisabled(true);
 
@@ -306,10 +304,11 @@ console.log("aoshaiohsa", data
 
   useEffect(() => {
     socket.on('dataMessaage', (data) => {
-      toast.error(`Nilai : ${data.nilai} | ${data.message}!!!!!!!`, {
-        theme: "colored",
-      });
-
+      if (data.userId === user.id) {
+        toast.error(`Nilai : ${data.data.nilai} | ${data.data.message}!!!!!!!`, {
+          theme: "colored",
+        });
+      }
     });
     getStatusLamp1()
     getStatusLamp2()

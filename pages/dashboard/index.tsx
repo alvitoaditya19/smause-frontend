@@ -60,14 +60,14 @@ export default function Dashboard(props: UserDataStateTypes) {
   const totalVege = async () => {
     setIsLoading(true);
 
-    const getDataTotal = await getAllDataSetting(1, Infinity);
+    const getDataTotal = await getAllDataSetting(user.id,1, Infinity);
     setIsLoading(false);
     setTotalVegetable(getDataTotal.data.totalVegetable)
   }
   const totalHarvs = async () => {
     setIsLoading(true);
 
-    const getDataTotal = await getAllDataSetting(1, Infinity);
+    const getDataTotal = await getAllDataSetting(user.id,1, Infinity);
     setIsLoading(false);
     settotalHarvest(getDataTotal.data.totalHarvest)
   }
@@ -188,8 +188,6 @@ export default function Dashboard(props: UserDataStateTypes) {
         time: suhuDataMap.time
       };
     })
-
-    console.log("kenapa ih", dataMapDec)
     seDataGrapAirs(dataMapDec);
   }, [GetAirsEnc]);
 
@@ -273,8 +271,6 @@ export default function Dashboard(props: UserDataStateTypes) {
       };
     })
 
-    console.log("sasa", dataMapDec)
-    console.log("safsokfpsa", dataMapKelemDec)
 
     seDataGrapSoils(dataMapDec);
     seDataGrapSoilKelems(dataMapKelemDec)
@@ -282,52 +278,61 @@ export default function Dashboard(props: UserDataStateTypes) {
 
   useEffect(() => {
     socket.on('dataCardAir', (data) => {
-
-      console.log("pioooooooooooooooooo", data)
-      setOksigen(data[0].oksigen);
-      setKekeruhanAir(data[0].kekeruhanAir)
-      setKetinggianAir(data[0].ketinggianAir)
+      if (data.userId === user.id) {
+        setOksigen(data.data[0].oksigen);
+        setKekeruhanAir(data.data[0].kekeruhanAir)
+        setKetinggianAir(data.data[0].ketinggianAir)
+      }
     });
 
     socket.on('dataCardUdara', (data) => {
-      setHumidity(data[0].humidity);
-      setCelcius(data[0].celcius)
+      if (data.userId === user.id) {
+        setHumidity(data.data[0].humidity);
+        setCelcius(data.data[0].celcius)
+      }
     });
 
     socket.on('dataCardTanah', (data) => {
-      // console.log("dadatada", data)
       // setKelembapanTanah(data[0].kelembapanTanah);
-      setPhTanah(data[0].phTanah)
+      if (data.userId === user.id) {
+        setPhTanah(data.data[0].phTanah)
+      }
     });
 
     socket.on('dataCardTanahKelem', (data) => {
-      // console.log("dadatada", data)
-      setKelembapanTanah(data[0].kelembapanTanah);
-      // setPhTanah(data[0].phTanah)
+      if (data.userId === user.id) {
+        setKelembapanTanah(data.data[0].kelembapanTanah);
+        // setPhTanah(data[0].phTanah)
+      }
     });
     socket.on('dataGraphAir', (data) => {
-      seDataGrapWaters(data);
-      console.log("pioooooooooooooooooo", data)
-
-
+      if (data.userId === user.id) {
+        seDataGrapWaters(data.data);
+      }
     });
     socket.on('dataGraphUdara', (data) => {
-      seDataGrapAirs(data);
-
+      if (data.userId === user.id) {
+        seDataGrapAirs(data.data);
+      }
     });
     socket.on('dataGraphTanah', (data) => {
-      seDataGrapSoils(data);
+      if (data.userId === user.id) {
+        seDataGrapSoils(data.data);
+      }
     });
 
     socket.on('dataGraphTanahKelem', (data) => {
-      seDataGrapSoilKelems(data);
+      if (data.userId === user.id) {
+        seDataGrapSoilKelems(data.data);
+      }
     });
 
     socket.on('dataMessaage', (data) => {
-      toast.error(`Nilai : ${data.nilai} | ${data.message}!!!!!!!`, {
-        theme: "colored",
-      });
-
+      if (data.userId === user.id) {
+        toast.error(`Nilai : ${data.data.nilai} | ${data.data.message}!!!!!!!`, {
+          theme: "colored",
+        });
+      }
     });
 
     totalVege()
@@ -381,7 +386,10 @@ export default function Dashboard(props: UserDataStateTypes) {
 
               <div className="lg:pt-10 pt-8">
                 <div className="flex flex-wrap justify-start items-center -mx-3">
-                  <SummaryCard isLoading={isLoading} title="Pengguna" total={totalDataUser} icon={<IcUser />} />
+                  {
+                    user.status === "admin"?<SummaryCard isLoading={isLoading} title="Pengguna" total={totalDataUser} icon={<IcUser />} /> : <div></div>
+                  }
+                  
                   <SummaryCard isLoading={isLoading} title="Semua Tanaman" total={totalHarvest} icon={<IcVegetable />} />
                   <SummaryCard isLoading={isLoading} title="Panen Sayuran" total={totalVegetable} icon={<IcHarvest />} />
                 </div>

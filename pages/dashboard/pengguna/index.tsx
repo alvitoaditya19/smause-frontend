@@ -46,10 +46,11 @@ export default function User(props: UserDataStateTypes) {
 
   useEffect(() => {
     socket.on('dataMessaage', (data) => {
-      toast.error(`Nilai : ${data.nilai} | ${data.message}!!!!!!!`, {
-        theme: "colored",
-      });
-
+      if (data.userId === user.id) {
+        toast.error(`Nilai : ${data.data.nilai} | ${data.data.message}!!!!!!!`, {
+          theme: "colored",
+        });
+      }
     });
     getDataUser();
   }, [limit]);
@@ -172,19 +173,19 @@ export default function User(props: UserDataStateTypes) {
 
                     {items.map((item: UserStateTypes) => (
 
-                      <tr key={item._id} className="align-items-center">
+                      <tr key={item.id} className="align-items-center">
                         <td>{item.no} </td>
                         <td>{item.email}</td>
                         <td>{item.name}</td>
                         <td>{item.username}</td>
                         <td>{item.status}</td>
                         <td>
-                          <Link href={`/dashboard/pengguna/edit/${item._id}`} legacyBehavior  >
+                          <Link href={`/dashboard/pengguna/edit/${item.id}`} legacyBehavior  >
                             <a className="btn-edit-user">Edit</a>
                           </Link>
 
                           <button
-                            onClick={() => deleteUser(item._id)}
+                            onClick={() => deleteUser(item.id)}
                             className="btn-delete-user"
                           >
                             Delete

@@ -93,9 +93,11 @@ export default function DetailEdit(props: UserDataStateTypes) {
 
   useEffect(() => {
     socket.on('dataMessaage', (data) => {
-      toast.error(`Nilai : ${data.nilai} | ${data.message}!!!!!!!`,{
-        theme: "colored",
-      });
+      if (data.userId === user.id) {
+        toast.error(`Nilai : ${data.data.nilai} | ${data.data.message}!!!!!!!`, {
+          theme: "colored",
+        });
+      }
     });
     if (!id) {
       return;

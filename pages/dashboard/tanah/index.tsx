@@ -249,7 +249,6 @@ export default function Tanah(props: UserDataStateTypes) {
       );
     });
 
-    console.log("kenaa", updatedList)
     setItemsTable(updatedList);
 
   };
@@ -259,10 +258,11 @@ export default function Tanah(props: UserDataStateTypes) {
 
   useEffect(() => {
     socket.on('dataMessaage', (data) => {
-      toast.error(`Nilai : ${data.nilai} | ${data.message}!!!!!!!`, {
-        theme: "colored",
-      });
-
+      if (data.userId === user.id) {
+        toast.error(`Nilai : ${data.data.nilai} | ${data.data.message}!!!!!!!`, {
+          theme: "colored",
+        });
+      }
     });
     setToggle(true)
 
