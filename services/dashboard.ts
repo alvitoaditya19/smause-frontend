@@ -114,8 +114,8 @@ export async function GetWatersEnc(userId:Partial<String>,currentPage:Partial<nu
   });
 }
 
-export async function GetSoilsEnc(currentPage:Partial<number>, limit:Partial<number>) {
-  const url = `${ROOT_API}/${API_VERSION}/soils/encrypt?page=${currentPage}&limit=${limit}`;
+export async function GetSoilsEnc(userId:Partial<String>, currentPage:Partial<number>, limit:Partial<number>) {
+  const url = `${ROOT_API}/${API_VERSION}/soils/encrypt/${userId}?page=${currentPage}&limit=${limit}`;
 
   return callAPI({
     url,

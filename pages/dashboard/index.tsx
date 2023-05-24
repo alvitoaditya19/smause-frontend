@@ -138,7 +138,7 @@ export default function Dashboard(props: UserDataStateTypes) {
 
   const getValueSoils = useCallback(async () => {
     setIsLoading(true);
-    const data: any = await GetSoilsEnc(1, Infinity);
+    const data: any = await GetSoilsEnc(user.id,1, Infinity);
     setIsLoading(false);
 
     if (data.data.data.length === 0) {
@@ -228,7 +228,7 @@ export default function Dashboard(props: UserDataStateTypes) {
   const getValueGraphSoils = useCallback(async () => {
     setIsLoading(true);
 
-    const data: any = await GetSoilsEnc(1, Infinity);
+    const data: any = await GetSoilsEnc(user.id,1, Infinity);
     setIsLoading(false);
 
     const dataMap = data.data.data
@@ -430,10 +430,10 @@ export default function Dashboard(props: UserDataStateTypes) {
                 <Chart data={dataGrapWaters} title="Ketinggian Air" focusX="ketinggianAir" focusY="time" />
               </div>
               <div className="w-1/2 px-3 lg:mb-0 mb-4 lg:mt-8 mt-4">
-                <Chart data={dataGrapSoils} title="Kelembapan Tanah" focusX="phTanah" focusY="time" />
+                <Chart data={dataGrapSoils} title="phTanah" focusX="phTanah" focusY="time" />
               </div>
               <div className="w-1/2 px-3 lg:mb-0 mb-4 lg:mt-8 mt-4">
-                <Chart data={dataGrapSoilKelems} title="PH Tanah" focusX="kelembapanTanah" focusY="time" />
+                <Chart data={dataGrapSoilKelems} title="Kelembapan Tanah" focusX="kelembapanTanah" focusY="time" />
               </div>
             </div>
           </section>

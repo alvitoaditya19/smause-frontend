@@ -63,8 +63,8 @@ export default function Tanah(props: UserDataStateTypes) {
 
   const getValueSoils = useCallback(async () => {
     setIsLoading(true);
-    const data: any = await GetSoilsEnc(1, limit);
-    const dataConvertCSV: any = await GetSoilsEnc(1, Infinity);
+    const data: any = await GetSoilsEnc(user.id,1, limit);
+    const dataConvertCSV: any = await GetSoilsEnc(user.id,1, Infinity);
     // console.log("datasoils", dataSoilKelems)
     const dataSoils = data.data.dataSoil
     const dataSoilKelems = data.data.dataSoilKelem
@@ -154,7 +154,7 @@ export default function Tanah(props: UserDataStateTypes) {
   }, [GetSoilsEnc]);
 
   const fetchComments = async (currentPage: any, limit: number) => {
-    const data: any = await GetSoilsEnc(currentPage, limit);
+    const data: any = await GetSoilsEnc(user.id,currentPage, limit);
 
     const dataSoils = data.data.dataSoil
     const dataSoilKelems = data.data.dataSoilKelem
@@ -201,7 +201,7 @@ export default function Tanah(props: UserDataStateTypes) {
 
   const filterBySearch = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value;
-    const data: any = await GetSoilsEnc(1, Infinity);
+    const data: any = await GetSoilsEnc(user.id,1, Infinity);
 
     let updatedList: any = [...data.data.data];
 
