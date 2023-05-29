@@ -57,7 +57,7 @@ export default function DetailEdit(props: UserDataStateTypes) {
       status: status,
     };
 
-    const response = await SetEditUser(data, id);
+    const response = await SetEditUser(data, user.id);
     if (response.error) {
       toast.error(response.message);
     } else {
@@ -83,7 +83,7 @@ export default function DetailEdit(props: UserDataStateTypes) {
   };
 
   const fetchData = async () => {
-    const data = await getDetailUser(id)
+    const data = await getDetailUser(user.id)
     setName(data.data.name)
     setEmail(data.data.email)
     setUsername(data.data.username)
