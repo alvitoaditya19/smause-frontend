@@ -1,4 +1,5 @@
 import { ParsedUrlQuery } from "querystring";
+import { StringLiteral } from "typescript";
 
 export interface UserStateTypes {
   id: string;
@@ -61,6 +62,17 @@ export interface TemperatureDataTypes {
 export interface WaterDataTypes {
   id: string;
   no: number;
+  ketinggianAir: string;
+  oksigen: string;
+  kekeruhanAir: string;
+  time:string;
+  date:string;
+}
+
+export interface WaterDataAllTypes {
+  id: string;
+  no: number;
+  name:string;
   ketinggianAir: string;
   oksigen: string;
   kekeruhanAir: string;

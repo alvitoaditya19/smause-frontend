@@ -9,8 +9,8 @@ import ReactPaginate from "react-paginate";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Header, Sidebar } from "../../../components";
-import { GetUserData, GetWatersEnc } from "../../../services/dashboard";
-import { JWTPayloadTypes, UserStateTypes, WaterDataTypes } from "../../../services/data-types";
+import { GetAllWatersEnc, GetUserData, GetWatersEnc } from "../../../services/dashboard";
+import { JWTPayloadTypes, UserStateTypes, WaterDataAllTypes, WaterDataTypes } from "../../../services/data-types";
 import io from 'socket.io-client';
 
 
@@ -54,19 +54,25 @@ export default function Air(props: UserDataStateTypes) {
   const iv = '4567123212343219'; //16 karakter
 
   const submitToggle = async () => {
-    if(toggle == true){
+    if (toggle == true) {
       setItemsTable(itemsEnc)
-    }else if(toggle == false){
+    } else if (toggle == false) {
       setItemsTable(items)
     }
     setToggle(!toggle);
   }
 
   const getValueWaters = useCallback(async () => {
+    let data;
+    let dataConvertCSV;
     setIsLoading(true);
-    const data: any = await GetWatersEnc(user.id,1, limit);
-    const dataConvertCSV: any = await GetWatersEnc(user.id,1, Infinity);
-
+    if (user.status == "admin") {
+      data = await GetAllWatersEnc(1, limit);
+      dataConvertCSV = await GetAllWatersEnc(1, Infinity);
+    } else {
+      data = await GetWatersEnc(user.id, 1, limit);
+      dataConvertCSV = await GetWatersEnc(user.id, 1, Infinity);
+    }
     const dataWaters = data.data.data
 
     setIsLoading(false);
@@ -87,6 +93,7 @@ export default function Air(props: UserDataStateTypes) {
       return {
         no: index + 1,
         id: waterDataMap.id,
+        name: waterDataMap.name !== "" ? waterDataMap.name : "No Name",
         ketinggianAir: decKetinngianAir,
         oksigen: decOksigen,
         kekeruhanAir: decKeruhAir,
@@ -95,7 +102,7 @@ export default function Air(props: UserDataStateTypes) {
       };
     })
 
-    const dataCSVMap =  dataConvertCSV.data.data.map((waterDataMap: any, index: any) => {
+    const dataCSVMap = dataConvertCSV.data.data.map((waterDataMap: any, index: any) => {
       const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
       let decKetinngianAir = dataDecipher1.update(waterDataMap.ketinggianAir, 'hex', 'utf8');
       decKetinngianAir += dataDecipher1.final('utf8');
@@ -111,6 +118,8 @@ export default function Air(props: UserDataStateTypes) {
       return {
         no: index + 1,
         id: waterDataMap.id,
+        name: waterDataMap.name !== "" ? waterDataMap.name : "No Name",
+
         ketinggianAir: decKetinngianAir,
         oksigen: decOksigen,
         kekeruhanAir: decKeruhAir,
@@ -131,7 +140,15 @@ export default function Air(props: UserDataStateTypes) {
   }, [GetWatersEnc]);
 
   const fetchComments = async (currentPage: any, limit: number) => {
-    const data: any = await GetWatersEnc(user.id,currentPage, limit);
+    let data;
+
+    setIsLoading(true);
+    if (user.status == "admin") {
+      data = await GetAllWatersEnc(currentPage, limit);
+    } else {
+      data = await GetWatersEnc(user.id, currentPage, limit);
+    }
+    setIsLoading(false);
 
     const dataMap = data.data.data.map((waterDataMap: any, index: any) => {
       const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
@@ -149,6 +166,8 @@ export default function Air(props: UserDataStateTypes) {
       return {
         no: index + 1,
         id: waterDataMap.id,
+        name: waterDataMap.name !== "" ? waterDataMap.name : "No Name",
+
         ketinggianAir: decKetinngianAir,
         oksigen: decOksigen,
         kekeruhanAir: decKeruhAir,
@@ -162,13 +181,21 @@ export default function Air(props: UserDataStateTypes) {
   const handlePageClick = async (data: any) => {
     let currentPage = data.selected + 1;
     const commentsFormServer = await fetchComments(currentPage, limit);
-   
+
     setItemsTable(commentsFormServer);
   };
 
   const filterBySearch = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value;
-    const data: any = await GetWatersEnc(user.id,1, Infinity);
+    let data;
+
+    setIsLoading(true);
+    if (user.status == "admin") {
+      data = await GetAllWatersEnc(1, limit);
+    } else {
+      data = await GetWatersEnc(user.id, 1, limit);
+    }
+    setIsLoading(false);
 
     let updatedList: any = [...data.data.data];
 
@@ -206,7 +233,7 @@ export default function Air(props: UserDataStateTypes) {
 
   };
 
-    const handleInputChange = (event: any) => {
+  const handleInputChange = (event: any) => {
     const value = event.target.value;
     setInputValue(value);
     filterItems(value);
@@ -214,13 +241,17 @@ export default function Air(props: UserDataStateTypes) {
 
   const handleItemClick = async (item: any) => {
     setIsLoading(true);
-    const dataWater: any = await GetWatersEnc(item.id, 1, Infinity);
-    setIsLoading(false);
-    const dataMapGraphWater = dataWater.data.data
+    const data: any = await GetWatersEnc(item.id,1, limit);
+    const dataCSV: any = await GetWatersEnc(item.id,1, Infinity);
 
-    const dataMapKetiA = dataWater.data.data.slice(-1)[0]?.ketinggianAir ?? "30039b4d60c8126a163c1805ba1882fb"
-    const dataMapOks = dataWater.data.data.slice(-1)[0]?.oksigen ?? "30039b4d60c8126a163c1805ba1882fb"
-    const dataMapKeruhA = dataWater.data.data.slice(-1)[0]?.kekeruhanAir ?? "30039b4d60c8126a163c1805ba1882fb"
+    setIsLoading(false);
+    const dataMapGraphWater = data.data.data
+    const dataMapGraphWaterCSV = dataCSV.data.data
+
+
+    const dataMapKetiA = data.data.data.slice(-1)[0]?.ketinggianAir ?? "30039b4d60c8126a163c1805ba1882fb"
+    const dataMapOks = data.data.data.slice(-1)[0]?.oksigen ?? "30039b4d60c8126a163c1805ba1882fb"
+    const dataMapKeruhA = data.data.data.slice(-1)[0]?.kekeruhanAir ?? "30039b4d60c8126a163c1805ba1882fb"
 
 
     // DATA AIR
@@ -240,18 +271,19 @@ export default function Air(props: UserDataStateTypes) {
       const dataDecipherWater1 = createDecipheriv(cryptoAlgorithm, key, iv);
       let decKetinggianAir = dataDecipherWater1.update(watersDataMap.ketinggianAir, 'hex', 'utf8');
       decKetinggianAir += dataDecipherWater1.final('utf8');
-    
+
       const dataDecipherWater2 = createDecipheriv(cryptoAlgorithm, key, iv);
       let decOksigen = dataDecipherWater2.update(watersDataMap.oksigen, 'hex', 'utf8');
       decOksigen += dataDecipherWater2.final('utf8');
-    
+
       const dataDecipherWater3 = createDecipheriv(cryptoAlgorithm, key, iv);
       let decKeruhAir = dataDecipherWater3.update(watersDataMap.kekeruhanAir, 'hex', 'utf8');
       decKeruhAir += dataDecipherWater3.final('utf8');
-    
+
       return {
         no: index + 1,
         id: watersDataMap.id,
+        name: watersDataMap.name !== "" ? watersDataMap.name : "No Name",
         ketinggianAir: decKetinggianAir,
         oksigen: decOksigen,
         kekeruhanAir: decKeruhAir,
@@ -260,12 +292,47 @@ export default function Air(props: UserDataStateTypes) {
       };
     }).slice(0, 4);
 
-    
+    const dataMapDecCSVWater = dataMapGraphWaterCSV.map((watersDataMap: any, index: any) => {
+      const dataDecipherWater1 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decKetinggianAir = dataDecipherWater1.update(watersDataMap.ketinggianAir, 'hex', 'utf8');
+      decKetinggianAir += dataDecipherWater1.final('utf8');
 
+      const dataDecipherWater2 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decOksigen = dataDecipherWater2.update(watersDataMap.oksigen, 'hex', 'utf8');
+      decOksigen += dataDecipherWater2.final('utf8');
+
+      const dataDecipherWater3 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decKeruhAir = dataDecipherWater3.update(watersDataMap.kekeruhanAir, 'hex', 'utf8');
+      decKeruhAir += dataDecipherWater3.final('utf8');
+
+      return {
+        no: index + 1,
+        id: watersDataMap.id,
+        name: watersDataMap.name !== "" ? watersDataMap.name : "No Name",
+        ketinggianAir: decKetinggianAir,
+        oksigen: decOksigen,
+        kekeruhanAir: decKeruhAir,
+        date: watersDataMap.date,
+        time: watersDataMap.time
+      };
+    }).slice(0, 4);
+    console.log("dataMapDecCSVWater", dataMapDecCSVWater)
     setInputValue(item.name);
     setFilteredItems([]);
-  
 
+    setTotalData(data.data.total)
+    setpageCount(Math.ceil(data.data.total / limit));
+
+    setItemsEnc(data)
+
+    console.log("firstdadad",data)
+
+    setItems(dataMapDecWater);
+
+    setItemsTable(dataMapDecWater)
+
+    setItemCSVs(dataMapDecCSVWater)
+    setItemEncCSVs(dataCSV.data.data)
   };
 
   const filterItems = async (value: any) => {
@@ -322,7 +389,7 @@ export default function Air(props: UserDataStateTypes) {
             toggleNavbar={toggleNavbar}
             filterBySearch={filterBySearch}
             isFilter
-            imageProfile = {user.avatar} 
+            imageProfile={user.avatar}
             placeHolder="Cari Data Sensor Air"
 
           />
@@ -333,31 +400,31 @@ export default function Air(props: UserDataStateTypes) {
                 <h3 className="text-3xl text-black font-bold">Air</h3>
                 <p className=" text-base text-grey2 mt-1">Kelola data tanaman sebaik mungkin</p>
               </div>
-                            {
-                  user.status === "admin" ? <div className="">
-                    <h3 className="mb-2 text-xl text-black font-bold">Pencarian Data Petani</h3>
-                    <div className="relative">
-                      <input
-                        type="search"
-                        className="block w-full min-w-0 flex-auto rounded border border-solid border-neutral-300 bg-transparent bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3] focus:border-primary focus:text-neutral-700 focus:shadow-[inset_0_0_0_1px_rgb(59,113,202)] focus:outline-none dark:border-neutral-600 dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:focus:border-primary"
-                        id="exampleSearch"
-                        placeholder="Ketikan nama petani"
-                        value={inputValue}
-                        onChange={handleInputChange}
-                      />
+              {
+                user.status === "admin" ? <div className="">
+                  <h3 className="mb-2 text-xl text-black font-bold">Pencarian Data Petani</h3>
+                  <div className="relative">
+                    <input
+                      type="search"
+                      className="block w-full min-w-0 flex-auto rounded border border-solid border-neutral-300 bg-transparent bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3] focus:border-primary focus:text-neutral-700 focus:shadow-[inset_0_0_0_1px_rgb(59,113,202)] focus:outline-none dark:border-neutral-600 dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:focus:border-primary"
+                      id="exampleSearch"
+                      placeholder="Ketikan nama petani"
+                      value={inputValue}
+                      onChange={handleInputChange}
+                    />
 
-                      {inputValue.trim() !== '' && filteredItems.length > 0 && (
-                        <ul className="mt-2 absolute bg-white rounded-xl w-full px-2 py-1">
-                          {filteredItems.map((item: any, index) => (
-                            <li key={item.id} onClick={() => handleItemClick(item)} style={{ cursor: 'pointer' }} className='pb-1'>
-                              {item.name}
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                  </div> : <div></div>
-                }
+                    {inputValue.trim() !== '' && filteredItems.length > 0 && (
+                      <ul className="mt-2 absolute bg-white rounded-xl w-full px-2 py-1">
+                        {filteredItems.map((item: any, index) => (
+                          <li key={item.id} onClick={() => handleItemClick(item)} style={{ cursor: 'pointer' }} className='pb-1'>
+                            {item.name}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </div> : <div></div>
+              }
               <h3 className="text-base text-grey2 mt-1">Total : {totalData}</h3>
             </div>
           </section>
@@ -413,6 +480,9 @@ export default function Air(props: UserDataStateTypes) {
                   <thead>
                     <tr>
                       <th scope="col">No</th>
+                      {
+                        user.status == "admin" ? <th scope="col">Nama</th> : ""
+                      }
                       <th scope="col">Ketinggian Air</th>
                       <th scope="col">Oksigen</th>
                       <th scope="col">Kekeruhan Air</th>
@@ -421,10 +491,13 @@ export default function Air(props: UserDataStateTypes) {
                     </tr>
                   </thead>
                   <tbody>
-                    {itemstable.map((item: WaterDataTypes) => {
+                    {itemstable.map((item: WaterDataAllTypes) => {
                       return (
                         <tr key={item.id} className="align-items-center">
                           <td>{item.no} </td>
+                          {
+                            user.status == "admin" ? <td>{item.name} </td> : ""
+                          }
                           <td>{item.ketinggianAir}</td>
                           <td>{item.oksigen}</td>
                           <td>{item.kekeruhanAir}</td>
