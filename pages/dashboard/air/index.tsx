@@ -9,7 +9,7 @@ import ReactPaginate from "react-paginate";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Header, Sidebar } from "../../../components";
-import { GetWatersEnc } from "../../../services/dashboard";
+import { GetUserData, GetWatersEnc } from "../../../services/dashboard";
 import { JWTPayloadTypes, UserStateTypes, WaterDataTypes } from "../../../services/data-types";
 import io from 'socket.io-client';
 
@@ -43,6 +43,9 @@ export default function Air(props: UserDataStateTypes) {
   const [totalData, setTotalData] = useState(0);
 
   const [pageCount, setpageCount] = useState(0);
+  const [inputValue, setInputValue] = useState('');
+
+  const [filteredItems, setFilteredItems] = useState([]);
 
   let limit = 5;
 
@@ -202,6 +205,84 @@ export default function Air(props: UserDataStateTypes) {
     setItemsTable(dataMap);
 
   };
+
+    const handleInputChange = (event: any) => {
+    const value = event.target.value;
+    setInputValue(value);
+    filterItems(value);
+  };
+
+  const handleItemClick = async (item: any) => {
+    setIsLoading(true);
+    const dataWater: any = await GetWatersEnc(item.id, 1, Infinity);
+    setIsLoading(false);
+    const dataMapGraphWater = dataWater.data.data
+
+    const dataMapKetiA = dataWater.data.data.slice(-1)[0]?.ketinggianAir ?? "30039b4d60c8126a163c1805ba1882fb"
+    const dataMapOks = dataWater.data.data.slice(-1)[0]?.oksigen ?? "30039b4d60c8126a163c1805ba1882fb"
+    const dataMapKeruhA = dataWater.data.data.slice(-1)[0]?.kekeruhanAir ?? "30039b4d60c8126a163c1805ba1882fb"
+
+
+    // DATA AIR
+    const dataDecipherWater1 = createDecipheriv(cryptoAlgorithm, key, iv);
+    let decKetinggianAir = dataDecipherWater1.update(dataMapKetiA, 'hex', 'utf8')
+    decKetinggianAir += dataDecipherWater1.final('utf8');
+
+    const dataDecipherWater2 = createDecipheriv(cryptoAlgorithm, key, iv);
+    let decOksigen = dataDecipherWater2.update(dataMapOks, 'hex', 'utf8')
+    decOksigen += dataDecipherWater2.final('utf8');
+
+    const dataDecipherWater3 = createDecipheriv(cryptoAlgorithm, key, iv);
+    let decKeruhAir = dataDecipherWater3.update(dataMapKeruhA, 'hex', 'utf8')
+    decKeruhAir += dataDecipherWater3.final('utf8');
+
+    const dataMapDecWater = dataMapGraphWater.map((watersDataMap: any, index: any) => {
+      const dataDecipherWater1 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decKetinggianAir = dataDecipherWater1.update(watersDataMap.ketinggianAir, 'hex', 'utf8');
+      decKetinggianAir += dataDecipherWater1.final('utf8');
+    
+      const dataDecipherWater2 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decOksigen = dataDecipherWater2.update(watersDataMap.oksigen, 'hex', 'utf8');
+      decOksigen += dataDecipherWater2.final('utf8');
+    
+      const dataDecipherWater3 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decKeruhAir = dataDecipherWater3.update(watersDataMap.kekeruhanAir, 'hex', 'utf8');
+      decKeruhAir += dataDecipherWater3.final('utf8');
+    
+      return {
+        no: index + 1,
+        id: watersDataMap.id,
+        ketinggianAir: decKetinggianAir,
+        oksigen: decOksigen,
+        kekeruhanAir: decKeruhAir,
+        date: watersDataMap.date,
+        time: watersDataMap.time
+      };
+    }).slice(0, 4);
+
+    
+
+    setInputValue(item.name);
+    setFilteredItems([]);
+  
+
+  };
+
+  const filterItems = async (value: any) => {
+    const data = await GetUserData(1, Infinity);
+    const dataUsers = data.data.data.map((userItem: any) => {
+      return {
+        id: userItem._id,
+        name: userItem.name,
+      };
+    });
+
+    const filtered = dataUsers.filter((item: any) =>
+      item.name.toLowerCase().includes(String(value).toLowerCase())
+    );
+    setFilteredItems(filtered);
+  };
+
   const notifyDownload = () => toast.success("Berhasil download data air");
   const notifyDownloadEnc = () => toast.success("Berhasil download data air enkripsi");
 
@@ -252,6 +333,31 @@ export default function Air(props: UserDataStateTypes) {
                 <h3 className="text-3xl text-black font-bold">Air</h3>
                 <p className=" text-base text-grey2 mt-1">Kelola data tanaman sebaik mungkin</p>
               </div>
+                            {
+                  user.status === "admin" ? <div className="">
+                    <h3 className="mb-2 text-xl text-black font-bold">Pencarian Data Petani</h3>
+                    <div className="relative">
+                      <input
+                        type="search"
+                        className="block w-full min-w-0 flex-auto rounded border border-solid border-neutral-300 bg-transparent bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3] focus:border-primary focus:text-neutral-700 focus:shadow-[inset_0_0_0_1px_rgb(59,113,202)] focus:outline-none dark:border-neutral-600 dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:focus:border-primary"
+                        id="exampleSearch"
+                        placeholder="Ketikan nama petani"
+                        value={inputValue}
+                        onChange={handleInputChange}
+                      />
+
+                      {inputValue.trim() !== '' && filteredItems.length > 0 && (
+                        <ul className="mt-2 absolute bg-white rounded-xl w-full px-2 py-1">
+                          {filteredItems.map((item: any, index) => (
+                            <li key={item.id} onClick={() => handleItemClick(item)} style={{ cursor: 'pointer' }} className='pb-1'>
+                              {item.name}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  </div> : <div></div>
+                }
               <h3 className="text-base text-grey2 mt-1">Total : {totalData}</h3>
             </div>
           </section>

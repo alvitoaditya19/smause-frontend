@@ -4,7 +4,7 @@ import jwtDecode from 'jwt-decode';
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import { use, useCallback, useEffect, useState } from "react";
+import { SetStateAction, use, useCallback, useEffect, useState } from "react";
 import { CardMonitor, Header, Sidebar, SummaryCard } from "../../components";
 import { IcHarvest, IcUser, IcVegetable } from "../../public/Icon";
 
@@ -26,27 +26,35 @@ export default function Dashboard(props: UserDataStateTypes) {
   const { user } = props;
 
   const [totalVegetable, setTotalVegetable] = useState(0);
-
-
   const [totalHarvest, settotalHarvest] = useState(0);
 
   const [isLoading, setIsLoading] = useState(false);
   const [toggleViewMode, setToggleViewMode] = useState(false);
+
   const [celcius, setCelcius] = useState("");
   const [humidity, setHumidity] = useState("");
+  const [decDataCelcius, setDecCelcius] = useState("");
+  const [decDataHumidity, setDecHumidity] = useState("");
+
   const [ketinggianAir, setKetinggianAir] = useState("");
   const [oksigen, setOksigen] = useState("");
   const [kekeruhanAir, setKekeruhanAir] = useState("");
   const [kelembapanTanah, setKelembapanTanah] = useState("");
   const [phTanah, setPhTanah] = useState("");
 
-  const [dataGrapAirs, seDataGrapAirs] = useState([]);
+  const [dataGrapAirs, setDataGrapAirs] = useState([]);
   const [dataGrapWaters, seDataGrapWaters] = useState([]);
   const [dataGrapSoils, seDataGrapSoils] = useState([]);
   const [dataGrapSoilKelems, seDataGrapSoilKelems] = useState([]);
 
-
   const [totalDataUser, setTotalDataUser] = useState(0);
+
+  const [inputValue, setInputValue] = useState('');
+
+  const [filteredItems, setFilteredItems] = useState([]);
+  // const [allDataUser, setAllDataUser] = useState([]);
+
+
 
   const WAIT_TIME = 5000;
   const cryptoAlgorithm = 'aes-128-cbc';
@@ -60,14 +68,14 @@ export default function Dashboard(props: UserDataStateTypes) {
   const totalVege = async () => {
     setIsLoading(true);
 
-    const getDataTotal = await getAllDataSetting(user.id,1, Infinity);
+    const getDataTotal = await getAllDataSetting(user.id, 1, Infinity);
     setIsLoading(false);
     setTotalVegetable(getDataTotal.data.totalVegetable)
   }
   const totalHarvs = async () => {
     setIsLoading(true);
 
-    const getDataTotal = await getAllDataSetting(user.id,1, Infinity);
+    const getDataTotal = await getAllDataSetting(user.id, 1, Infinity);
     setIsLoading(false);
     settotalHarvest(getDataTotal.data.totalHarvest)
   }
@@ -87,9 +95,9 @@ export default function Dashboard(props: UserDataStateTypes) {
     setIsLoading(true);
     const data: any = await GetAirsEnc(user.id, 1, Infinity);
     setIsLoading(false);
-   
+
     if (data.data.data.length === 0) {
-      return setCelcius("0"),  setHumidity("0");
+      return setCelcius("0"), setHumidity("0"), setDecCelcius("0"), setDecHumidity("0");
     }
     const dataMapCel = data.data.data.slice(-1)[0].celcius
     const dataMapHum = data.data.data.slice(-1)[0].humidity
@@ -104,14 +112,15 @@ export default function Dashboard(props: UserDataStateTypes) {
 
     setCelcius(decCelcius);
     setHumidity(decHumidity);
+
   }, [GetAirsEnc]);
 
   const getValueWaters = useCallback(async () => {
     setIsLoading(true);
-    const data: any = await GetWatersEnc(user.id,1, Infinity);
+    const data: any = await GetWatersEnc(user.id, 1, Infinity);
     setIsLoading(false);
     if (data.data.data.length === 0) {
-      return   setKetinggianAir("0"), setOksigen("0"), setKekeruhanAir("0");
+      return setKetinggianAir("0"), setOksigen("0"), setKekeruhanAir("0");
     }
     const dataMapKetiA = data.data.data.slice(-1)[0].ketinggianAir ?? "30039b4d60c8126a163c1805ba1882fb"
     const dataMapOks = data.data.data.slice(-1)[0].oksigen ?? "30039b4d60c8126a163c1805ba1882fb"
@@ -138,11 +147,11 @@ export default function Dashboard(props: UserDataStateTypes) {
 
   const getValueSoils = useCallback(async () => {
     setIsLoading(true);
-    const data: any = await GetSoilsEnc(user.id,1, Infinity);
+    const data: any = await GetSoilsEnc(user.id, 1, Infinity);
     setIsLoading(false);
 
     if (data.data.data.length === 0) {
-      return setKelembapanTanah("0"),setPhTanah("0");
+      return setKelembapanTanah("0"), setPhTanah("0");
     }
 
     const dataMapKelemTa = data.data.dataSoilKelem.slice(-1)[0].kelembapanTanah
@@ -188,18 +197,18 @@ export default function Dashboard(props: UserDataStateTypes) {
         time: suhuDataMap.time
       };
     })
-    seDataGrapAirs(dataMapDec);
+    setDataGrapAirs(dataMapDec);
   }, [GetAirsEnc]);
 
   const getValueGraphWaters = useCallback(async () => {
     setIsLoading(true);
 
-    const data: any = await GetWatersEnc(user.id,1, Infinity);
+    const data: any = await GetWatersEnc(user.id, 1, Infinity);
     setIsLoading(false);
 
     const dataMap = data.data.data
 
-    const dataMapDec = dataMap.slice(-4).map((watersDataMap: any, index: any) => {
+    const dataMapDec = dataMap.slice(0, 4).map((watersDataMap: any, index: any) => {
       const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
       let decKetinggianAir = dataDecipher1.update(watersDataMap.ketinggianAir, 'hex', 'utf8')
       decKetinggianAir += dataDecipher1.final('utf8');
@@ -228,7 +237,7 @@ export default function Dashboard(props: UserDataStateTypes) {
   const getValueGraphSoils = useCallback(async () => {
     setIsLoading(true);
 
-    const data: any = await GetSoilsEnc(user.id,1, Infinity);
+    const data: any = await GetSoilsEnc(user.id, 1, Infinity);
     setIsLoading(false);
 
     const dataMap = data.data.data
@@ -276,7 +285,209 @@ export default function Dashboard(props: UserDataStateTypes) {
     seDataGrapSoilKelems(dataMapKelemDec)
   }, [GetSoilsEnc]);
 
+  const getDataUser = async () => {
+    setIsLoading(true);
+
+    const data: any = await GetUserData(1, Infinity);
+    const dataUsers = data.data.data.map((user: any) => {
+      return {
+        id: user._id,
+        name: user.name
+      };
+    });
+    setIsLoading(false);
+    setFilteredItems(dataUsers)
+
+    filterItems(dataUsers);
+  };
+
+
+  // const items = ["Item 1", "Item 2", "Item 3", "Another Item"];
+
+  const handleInputChange = (event: any) => {
+    const value = event.target.value;
+    setInputValue(value);
+    filterItems(value);
+  };
+
+  const handleItemClick = async (item: any) => {
+    setIsLoading(true);
+    const dataAir: any = await GetAirsEnc(item.id, 1, Infinity);
+    const dataWater: any = await GetWatersEnc(item.id, 1, Infinity);
+    const dataSoil: any = await GetSoilsEnc(item.id, 1, Infinity);
+
+    setIsLoading(false);
+    const dataMapGraphAir = dataAir.data.data
+    const dataMapGraphWater = dataWater.data.data
+    const dataMapGraphSoil = dataSoil.data.dataSoil
+    const dataMapGraphSoilKelems = dataSoil.data.dataSoilKelem
+
+    if (dataAir.data.data.length === 0) {
+       setCelcius("0"), setHumidity("0"),setDataGrapAirs([]);
+    }
+    if (dataWater.data.data.length === 0) {
+       setKetinggianAir("0"), setOksigen("0"), setKekeruhanAir("0"),seDataGrapWaters([]);
+    }
+    if (dataSoil.data.dataSoil.length === 0) {
+      setKelembapanTanah("0");
+   }
+    if (dataSoil.data.dataSoilKelem.length === 0) {
+      setPhTanah("0");
+  }
+  
+    const dataMapCel = dataAir.data.data.slice(-1)[0]?.celcius ?? "30039b4d60c8126a163c1805ba1882fb";
+    const dataMapHum = dataAir.data.data.slice(-1)[0]?.humidity ?? "30039b4d60c8126a163c1805ba1882fb"
+
+    const dataMapKetiA = dataWater.data.data.slice(-1)[0]?.ketinggianAir ?? "30039b4d60c8126a163c1805ba1882fb"
+    const dataMapOks = dataWater.data.data.slice(-1)[0]?.oksigen ?? "30039b4d60c8126a163c1805ba1882fb"
+    const dataMapKeruhA = dataWater.data.data.slice(-1)[0]?.kekeruhanAir ?? "30039b4d60c8126a163c1805ba1882fb"
+
+    const dataMapPhTanah = dataMapGraphSoil.slice(-1)[0]?.phTanah ?? "30039b4d60c8126a163c1805ba1882fb"
+    const dataMapKelem = dataMapGraphSoilKelems.slice(-1)[0]?.kelembapanTanah ?? "30039b4d60c8126a163c1805ba1882fb"
+   
+    // DATA UDARA
+    const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
+    let decCelcius = dataDecipher1.update(dataMapCel, 'hex', 'utf8')
+    decCelcius += dataDecipher1.final('utf8');
+
+    const dataDecipher2 = createDecipheriv(cryptoAlgorithm, key, iv);
+    let decHumidity = dataDecipher2.update(dataMapHum, 'hex', 'utf8')
+    decHumidity += dataDecipher2.final('utf8');
+
+    const dataMapDecAir = dataMapGraphAir.slice(0, 4).map((suhuDataMap: any, index: any) => {
+      const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decCelcius = dataDecipher1.update(suhuDataMap.celcius, 'hex', 'utf8')
+      decCelcius += dataDecipher1.final('utf8');
+
+      const dataDecipher2 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decHumidity = dataDecipher2.update(suhuDataMap.humidity, 'hex', 'utf8')
+      decHumidity += dataDecipher2.final('utf8');
+
+      return {
+        no: index + 1,
+        id: suhuDataMap.id,
+        celcius: decCelcius,
+        humidity: decHumidity,
+        date: suhuDataMap.date,
+        time: suhuDataMap.time
+      };
+    })
+
+    // DATA AIR
+    const dataDecipherWater1 = createDecipheriv(cryptoAlgorithm, key, iv);
+    let decKetinggianAir = dataDecipherWater1.update(dataMapKetiA, 'hex', 'utf8')
+    decKetinggianAir += dataDecipherWater1.final('utf8');
+
+    const dataDecipherWater2 = createDecipheriv(cryptoAlgorithm, key, iv);
+    let decOksigen = dataDecipherWater2.update(dataMapOks, 'hex', 'utf8')
+    decOksigen += dataDecipherWater2.final('utf8');
+
+    const dataDecipherWater3 = createDecipheriv(cryptoAlgorithm, key, iv);
+    let decKeruhAir = dataDecipherWater3.update(dataMapKeruhA, 'hex', 'utf8')
+    decKeruhAir += dataDecipherWater3.final('utf8');
+
+    const dataMapDecWater = dataMapGraphWater.map((watersDataMap: any, index: any) => {
+      const dataDecipherWater1 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decKetinggianAir = dataDecipherWater1.update(watersDataMap.ketinggianAir, 'hex', 'utf8');
+      decKetinggianAir += dataDecipherWater1.final('utf8');
+    
+      const dataDecipherWater2 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decOksigen = dataDecipherWater2.update(watersDataMap.oksigen, 'hex', 'utf8');
+      decOksigen += dataDecipherWater2.final('utf8');
+    
+      const dataDecipherWater3 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decKeruhAir = dataDecipherWater3.update(watersDataMap.kekeruhanAir, 'hex', 'utf8');
+      decKeruhAir += dataDecipherWater3.final('utf8');
+    
+      return {
+        no: index + 1,
+        id: watersDataMap.id,
+        ketinggianAir: decKetinggianAir,
+        oksigen: decOksigen,
+        kekeruhanAir: decKeruhAir,
+        date: watersDataMap.date,
+        time: watersDataMap.time
+      };
+    }).slice(0, 4);
+
+    // TANAH
+    const dataDecipherSoil1 = createDecipheriv(cryptoAlgorithm, key, iv);
+    let decPHTanah = dataDecipherSoil1.update(dataMapPhTanah, 'hex', 'utf8')
+    decPHTanah += dataDecipherSoil1.final('utf8');
+
+    const dataDecipherSoil2 = createDecipheriv(cryptoAlgorithm, key, iv);
+    let decKelembapanTanah = dataDecipherSoil2.update(dataMapKelem, 'hex', 'utf8')
+    decKelembapanTanah += dataDecipherSoil2.final('utf8');
+
+    const dataMapSoilDec = dataSoil.data.dataSoil.slice(0, 4).map((watersDataMap: any, index: any) => {
+      const dataDecipher2 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decPHTanah = dataDecipher2.update(watersDataMap.phTanah, 'hex', 'utf8')
+      decPHTanah += dataDecipher2.final('utf8');
+
+      return {
+        no: index + 1,
+        id: watersDataMap.id,
+        phTanah: decPHTanah,
+        date: watersDataMap.date,
+        time: watersDataMap.time
+      };
+    })
+
+    const dataMapKelemDec = dataSoil.data.dataSoilKelem.slice(0, 4).map((watersDataMap: any, index: any) => {
+      const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decKelembapanTanah = dataDecipher1.update(watersDataMap.kelembapanTanah, 'hex', 'utf8')
+      decKelembapanTanah += dataDecipher1.final('utf8');
+
+      return {
+        no: index + 1,
+        id: watersDataMap.id,
+        kelembapanTanah: decKelembapanTanah,
+        date: watersDataMap.date,
+        time: watersDataMap.time
+      };
+    })
+
+    setInputValue(item.name);
+    setFilteredItems([]);
+    const getDataTotalVege = await getAllDataSetting(item.id, 1, Infinity);
+    setTotalVegetable(getDataTotalVege.data.totalVegetable)
+    settotalHarvest(getDataTotalVege.data.totalHarvest)
+
+    setCelcius(decCelcius);
+    setHumidity(decHumidity);
+    setDataGrapAirs(dataMapDecAir);
+
+    setKetinggianAir(decKetinggianAir);
+    setOksigen(decOksigen);
+    setKekeruhanAir(decKeruhAir);
+    seDataGrapWaters(dataMapDecWater);
+
+    setKelembapanTanah(decKelembapanTanah);
+    setPhTanah(decPHTanah);
+    seDataGrapSoils(dataMapSoilDec);
+    seDataGrapSoilKelems(dataMapKelemDec)
+
+  };
+
+  const filterItems = async (value: any) => {
+    const data = await GetUserData(1, Infinity);
+    const dataUsers = data.data.data.map((userItem: any) => {
+      return {
+        id: userItem._id,
+        name: userItem.name,
+      };
+    });
+
+    const filtered = dataUsers.filter((item: any) =>
+      item.name.toLowerCase().includes(String(value).toLowerCase())
+    );
+    setFilteredItems(filtered);
+  };
+
   useEffect(() => {
+
+    getDataUser();
+
     socket.on('dataCardAir', (data) => {
       if (data.userId === user.id) {
         setOksigen(data.data[0].oksigen);
@@ -312,7 +523,7 @@ export default function Dashboard(props: UserDataStateTypes) {
     });
     socket.on('dataGraphUdara', (data) => {
       if (data.userId === user.id) {
-        seDataGrapAirs(data.data);
+        setDataGrapAirs(data.data);
       }
     });
     socket.on('dataGraphTanah', (data) => {
@@ -357,8 +568,6 @@ export default function Dashboard(props: UserDataStateTypes) {
     // return () => clearInterval(id);,, {transports: ['websocket']}
   }, []);
 
-
-
   return (
     <>
       {/* Navbar */}
@@ -381,15 +590,43 @@ export default function Dashboard(props: UserDataStateTypes) {
           <Header toggleNavbar={toggleNavbar} isFilter={false} name={user.name} imageProfile={user.avatar} />
           <section className="px-3">
             <div className="header">
-              <h3 className="text-3xl text-black font-bold">Dashboard</h3>
-              <p className=" text-base text-grey2 mt-2">Kelola data tanaman sebaik mungkin</p>
+              <div className="flex flex-wrap justify-between items-center">
+                <div className="">
+                  <h3 className="text-3xl text-black font-bold">Dashboard</h3>
+                  <p className=" text-base text-grey2 mt-2">Kelola data tanaman sebaik mungkin</p>
+                </div>
+                {
+                  user.status === "admin" ? <div className="">
+                    <h3 className="mb-2 text-xl text-black font-bold">Pencarian Data Petani</h3>
+                    <div className="relative">
+                      <input
+                        type="search"
+                        className="block w-full min-w-0 flex-auto rounded border border-solid border-neutral-300 bg-transparent bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3] focus:border-primary focus:text-neutral-700 focus:shadow-[inset_0_0_0_1px_rgb(59,113,202)] focus:outline-none dark:border-neutral-600 dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:focus:border-primary"
+                        id="exampleSearch"
+                        placeholder="Ketikan nama petani"
+                        value={inputValue}
+                        onChange={handleInputChange}
+                      />
 
+                      {inputValue.trim() !== '' && filteredItems.length > 0 && (
+                        <ul className="mt-2 absolute bg-white rounded-xl w-full px-2 py-1">
+                          {filteredItems.map((item: any, index) => (
+                            <li key={item.id} onClick={() => handleItemClick(item)} style={{ cursor: 'pointer' }} className='pb-1'>
+                              {item.name}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  </div> : <div></div>
+                }
+              </div>
               <div className="lg:pt-10 pt-8">
                 <div className="flex flex-wrap justify-start items-center -mx-3">
                   {
-                    user.status === "admin"?<SummaryCard isLoading={isLoading} title="Pengguna" total={totalDataUser} icon={<IcUser />} /> : <div></div>
+                    user.status === "admin" ? <SummaryCard isLoading={isLoading} title="Pengguna" total={totalDataUser} icon={<IcUser />} /> : <div></div>
                   }
-                  
+
                   <SummaryCard isLoading={isLoading} title="Semua Tanaman" total={totalHarvest} icon={<IcVegetable />} />
                   <SummaryCard isLoading={isLoading} title="Panen Sayuran" total={totalVegetable} icon={<IcHarvest />} />
                 </div>
@@ -400,12 +637,12 @@ export default function Dashboard(props: UserDataStateTypes) {
                   <h1 className="text-2xl font-semibold text-black lg:mb-2 mb-0">Pemantauan Data</h1>
                   <div className="flex flex-wrap justify-start items-center -mx-4">
                     <CardMonitor value={celcius} isLoading={isLoading} title="Suhu" margin="mr-12" satuan="Celcius" />
-                    <CardMonitor value={humidity} isLoading={isLoading} title="Kelembapan Udara"satuan="RH" />
-                    <CardMonitor value={kekeruhanAir} isLoading={isLoading} title="Sensor TDS" satuan="mg/l"/>
-                    <CardMonitor value={oksigen} isLoading={isLoading} title="Sensor Oksigen" satuan="LPM"/>
-                    <CardMonitor value={ketinggianAir} isLoading={isLoading} title="Ketinggian Air"  satuan="cm"/>
-                    <CardMonitor value={kelembapanTanah} isLoading={isLoading} title="Kelembapan Tanah"  satuan="RH"/>
-                    <CardMonitor value={phTanah} isLoading={isLoading} title="PH Tanah" satuan="PH"/>
+                    <CardMonitor value={humidity} isLoading={isLoading} title="Kelembapan Udara" satuan="RH" />
+                    <CardMonitor value={kekeruhanAir} isLoading={isLoading} title="Sensor TDS" satuan="mg/l" />
+                    <CardMonitor value={oksigen} isLoading={isLoading} title="Sensor Oksigen" satuan="LPM" />
+                    <CardMonitor value={ketinggianAir} isLoading={isLoading} title="Ketinggian Air" satuan="cm" />
+                    <CardMonitor value={kelembapanTanah} isLoading={isLoading} title="Kelembapan Tanah" satuan="RH" />
+                    <CardMonitor value={phTanah} isLoading={isLoading} title="PH Tanah" satuan="PH" />
                   </div>
                 </div>
               </div>
