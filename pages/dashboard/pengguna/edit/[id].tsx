@@ -57,7 +57,7 @@ export default function DetailEdit(props: UserDataStateTypes) {
       status: status,
     };
 
-    const response = await SetEditUser(data, user.id);
+    const response = await SetEditUser(data, id);
     if (response.error) {
       toast.error(response.message);
     } else {
@@ -83,7 +83,7 @@ export default function DetailEdit(props: UserDataStateTypes) {
   };
 
   const fetchData = async () => {
-    const data = await getDetailUser(user.id)
+    const data = await getDetailUser(id)
     setName(data.data.name)
     setEmail(data.data.email)
     setUsername(data.data.username)
@@ -200,7 +200,7 @@ export default function DetailEdit(props: UserDataStateTypes) {
                 }}
                 onChange={handleChange}
                 options={options}
-                className="form-user-control"
+                className="form-user-control  text-lg font-medium text-black"
               />
             </div>
             <div className="mt-8 d-flex flex-row-reverse">

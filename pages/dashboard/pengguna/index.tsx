@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import io from 'socket.io-client';
 import { Header, Sidebar } from "../../../components";
 import { DestroyUser, GetUserData } from "../../../services/dashboard";
-import { JWTPayloadTypes, UserStateTypes } from "../../../services/data-types";
+import { JWTPayloadTypes, UserStateEditTypes, UserStateTypes } from "../../../services/data-types";
 import { CSVLink } from "react-csv";
 
 interface UserDataStateTypes {
@@ -42,6 +42,8 @@ export default function User(props: UserDataStateTypes) {
     setTotalData(data.data.total)
     setpageCount(Math.ceil(data.data.total / limit));
     setItems(dataUsers);
+    console.log("items", dataUsers)
+
   };
 
   useEffect(() => {
@@ -171,21 +173,21 @@ export default function User(props: UserDataStateTypes) {
 
                   <tbody>
 
-                    {items.map((item: UserStateTypes) => (
+                    {items.map((item: UserStateEditTypes) => (
 
-                      <tr key={item.id} className="align-items-center">
+                      <tr key={item._id} className="align-items-center">
                         <td>{item.no} </td>
                         <td>{item.email}</td>
                         <td>{item.name}</td>
                         <td>{item.username}</td>
                         <td>{item.status}</td>
                         <td>
-                          <Link href={`/dashboard/pengguna/edit/${item.id}`} legacyBehavior  >
+                          <Link href={`/dashboard/pengguna/edit/${item._id}`} legacyBehavior  >
                             <a className="btn-edit-user">Edit</a>
                           </Link>
 
                           <button
-                            onClick={() => deleteUser(item.id)}
+                            onClick={() => deleteUser(item._id)}
                             className="btn-delete-user"
                           >
                             Delete

@@ -10,6 +10,15 @@ export interface UserStateTypes {
   avatar: any;
   no: number;
 }
+export interface UserStateEditTypes {
+  _id: string;
+  name: string;
+  email: string;
+  username: string;
+  status: string;
+  avatar: any;
+  no: number;
+}
 
 export interface JWTPayloadTypes{
   user:UserStateTypes,
