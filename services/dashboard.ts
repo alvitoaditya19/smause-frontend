@@ -103,6 +103,15 @@ export async function GetAirsEnc(userId:Partial<String>, currentPage:Partial<num
     token: true,
   });
 }
+export async function GetAllAirsEnc( currentPage:Partial<number>, limit:Partial<number>) {
+  const url = `${ROOT_API}/${API_VERSION}/temperatures/all?page=${currentPage}&limit=${limit}`;
+
+  return callAPI({
+    url,
+    method: 'GET',
+    token: true,
+  });
+}
 
 export async function GetWatersEnc(userId:Partial<String>,currentPage:Partial<number>, limit:Partial<number>) {
   const url = `${ROOT_API}/${API_VERSION}/waters/encrypt/${userId}?page=${currentPage}&limit=${limit}`;
@@ -133,7 +142,15 @@ export async function GetSoilsEnc(userId:Partial<String>, currentPage:Partial<nu
     token: true,
   });
 }
+export async function GetAllSoilsEnc(currentPage:Partial<number>, limit:Partial<number>) {
+  const url = `${ROOT_API}/${API_VERSION}/soils/all?page=${currentPage}&limit=${limit}`;
 
+  return callAPI({
+    url,
+    method: 'GET',
+    token: true,
+  });
+}
 export async function GetAllDataTemperature() {
   const URL = `temperatures`;
 
@@ -152,8 +169,17 @@ export async function getAllDataSetting(userId:Partial<String>,currentPage:Parti
     token: true,
   });
 }
+export async function getAllDataUserSetting(currentPage:Partial<number>, limit:Partial<number>) {
+  const url = `${ROOT_API}/${API_VERSION}/settings/all?page=${currentPage}&limit=${limit}`;
 
-export async function getDetailSetting(userId:Partial<String>,id:string | string[] | undefined) {
+  return callAPI({
+    url,
+    method: 'GET',
+    token: true,
+  });
+}
+
+export async function getDetailSetting(userId:any,id:string | string[] | undefined) {
   const url = `${ROOT_API}/${API_VERSION}/settings/${userId}/${id}`;
 
   return callAPI({

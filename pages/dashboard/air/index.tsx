@@ -241,8 +241,8 @@ export default function Air(props: UserDataStateTypes) {
 
   const handleItemClick = async (item: any) => {
     setIsLoading(true);
-    const data: any = await GetWatersEnc(item.id,1, limit);
-    const dataCSV: any = await GetWatersEnc(item.id,1, Infinity);
+    const data: any = await GetWatersEnc(item.id, 1, limit);
+    const dataCSV: any = await GetWatersEnc(item.id, 1, Infinity);
 
     setIsLoading(false);
     const dataMapGraphWater = data.data.data
@@ -283,7 +283,7 @@ export default function Air(props: UserDataStateTypes) {
       return {
         no: index + 1,
         id: watersDataMap.id,
-        name: watersDataMap.name !== "" ? watersDataMap.name : "No Name",
+
         ketinggianAir: decKetinggianAir,
         oksigen: decOksigen,
         kekeruhanAir: decKeruhAir,
@@ -308,7 +308,6 @@ export default function Air(props: UserDataStateTypes) {
       return {
         no: index + 1,
         id: watersDataMap.id,
-        name: watersDataMap.name !== "" ? watersDataMap.name : "No Name",
         ketinggianAir: decKetinggianAir,
         oksigen: decOksigen,
         kekeruhanAir: decKeruhAir,
@@ -316,7 +315,6 @@ export default function Air(props: UserDataStateTypes) {
         time: watersDataMap.time
       };
     }).slice(0, 4);
-    console.log("dataMapDecCSVWater", dataMapDecCSVWater)
     setInputValue(item.name);
     setFilteredItems([]);
 
@@ -325,7 +323,7 @@ export default function Air(props: UserDataStateTypes) {
 
     setItemsEnc(data)
 
-    console.log("firstdadad",data)
+
 
     setItems(dataMapDecWater);
 

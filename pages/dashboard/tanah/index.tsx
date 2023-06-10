@@ -11,8 +11,8 @@ import ReactPaginate from "react-paginate";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Header, Sidebar } from "../../../components";
-import { JWTPayloadTypes, SoilDataTypes, UserStateTypes } from "../../../services/data-types";
-import { GetSoilsEnc } from "../../../services/dashboard";
+import { JWTPayloadTypes, SoilDataAllTypes, SoilDataTypes, UserStateTypes } from "../../../services/data-types";
+import { GetAllSoilsEnc, GetSoilsEnc, GetUserData } from "../../../services/dashboard";
 import io from 'socket.io-client';
 
 interface UserDataStateTypes {
@@ -45,6 +45,9 @@ export default function Tanah(props: UserDataStateTypes) {
   const [totalData, setTotalData] = useState(0);
 
   const [pageCount, setpageCount] = useState(0);
+  const [inputValue, setInputValue] = useState('');
+
+  const [filteredItems, setFilteredItems] = useState([]);
 
   let limit = 5;
 
@@ -62,10 +65,18 @@ export default function Tanah(props: UserDataStateTypes) {
   }
 
   const getValueSoils = useCallback(async () => {
+    let data;
+    let dataConvertCSV;
     setIsLoading(true);
-    const data: any = await GetSoilsEnc(user.id,1, limit);
-    const dataConvertCSV: any = await GetSoilsEnc(user.id,1, Infinity);
-    // console.log("datasoils", dataSoilKelems)
+    if (user.status == "admin") {
+      data = await GetAllSoilsEnc(1, limit);
+      dataConvertCSV = await GetAllSoilsEnc(1, Infinity);
+    } else {
+      data = await GetSoilsEnc(user.id, 1, limit);
+      dataConvertCSV = await GetSoilsEnc(user.id, 1, Infinity);
+    }
+    setIsLoading(false);
+
     const dataSoils = data.data.dataSoil
     const dataSoilKelems = data.data.dataSoilKelem
 
@@ -76,9 +87,6 @@ export default function Tanah(props: UserDataStateTypes) {
 
     const allDataConvertCSV : any = [...dataConvertCSVSoils, ...dataConvertCSVSoilKelems]
 
-    setIsLoading(false);
-
-
     const dataMap = dataSoils.map((soilDataMap: any, index: any) => {
       const dataDecipher2 = createDecipheriv(cryptoAlgorithm, key, iv);
       let decPhTanah = dataDecipher2.update(soilDataMap.phTanah, 'hex', 'utf8');
@@ -88,6 +96,7 @@ export default function Tanah(props: UserDataStateTypes) {
       return {
         no: index + 1,
         id: soilDataMap.id,
+        name: soilDataMap.name !== "" ? soilDataMap.name : "No Name",
         phTanah: decPhTanah,
         date: soilDataMap.date,
         time: soilDataMap.time
@@ -102,6 +111,7 @@ export default function Tanah(props: UserDataStateTypes) {
       return {
         no: index + 1,
         id: soilDataMap.id,
+        name: soilDataMap.name !== "" ? soilDataMap.name : "No Name",
         kelembapanTanah: decKelembapanTanah,
         date: soilDataMap.date,
         time: soilDataMap.time
@@ -117,6 +127,7 @@ export default function Tanah(props: UserDataStateTypes) {
       return {
         no: index + 1,
         id: soilDataMap.id,
+        name: soilDataMap.name !== "" ? soilDataMap.name : "No Name",
         phTanah: decPhTanah,
         date: soilDataMap.date,
         time: soilDataMap.time
@@ -131,6 +142,7 @@ export default function Tanah(props: UserDataStateTypes) {
       return {
         no: index + 1,
         id: soilDataMap.id,
+        name: soilDataMap.name !== "" ? soilDataMap.name : "No Name",
         kelembapanTanah: decKelembapanTanah,
         date: soilDataMap.date,
         time: soilDataMap.time
@@ -154,8 +166,14 @@ export default function Tanah(props: UserDataStateTypes) {
   }, [GetSoilsEnc]);
 
   const fetchComments = async (currentPage: any, limit: number) => {
-    const data: any = await GetSoilsEnc(user.id,currentPage, limit);
-
+    let data;
+    setIsLoading(true);
+    if (user.status == "admin") {
+      data = await GetAllSoilsEnc(1, limit);
+    } else {
+      data = await GetSoilsEnc(user.id, 1, limit);
+    }
+    setIsLoading(false);
     const dataSoils = data.data.dataSoil
     const dataSoilKelems = data.data.dataSoilKelem
 
@@ -168,6 +186,7 @@ export default function Tanah(props: UserDataStateTypes) {
       return {
         no: index + 1,
         id: soilDataMap.id,
+        name: soilDataMap.name !== "" ? soilDataMap.name : "No Name",
         phTanah: decPhTanah,
         date: soilDataMap.date,
         time: soilDataMap.time
@@ -182,6 +201,7 @@ export default function Tanah(props: UserDataStateTypes) {
       return {
         no: index + 1,
         id: soilDataMap.id,
+        name: soilDataMap.name !== "" ? soilDataMap.name : "No Name",
         kelembapanTanah: decKelembapanTanah,
         date: soilDataMap.date,
         time: soilDataMap.time
@@ -201,7 +221,15 @@ export default function Tanah(props: UserDataStateTypes) {
 
   const filterBySearch = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value;
-    const data: any = await GetSoilsEnc(user.id,1, Infinity);
+    let data;
+
+    setIsLoading(true);
+    if (user.status == "admin") {
+      data = await GetAllSoilsEnc(1, limit);
+    } else {
+      data = await GetSoilsEnc(user.id, 1, limit);
+    }
+    setIsLoading(false);
 
     let updatedList: any = [...data.data.data];
 
@@ -252,6 +280,83 @@ export default function Tanah(props: UserDataStateTypes) {
     setItemsTable(updatedList);
 
   };
+  const handleInputChange = (event: any) => {
+    const value = event.target.value;
+    setInputValue(value);
+    filterItems(value);
+  };
+
+  const handleItemClick = async (item: any) => {
+    setIsLoading(true);
+    const data: any = await GetSoilsEnc(item.id,1, limit);
+    const dataCSV: any = await GetSoilsEnc(item.id,1, Infinity);
+
+    setIsLoading(false);
+    const dataMapGraphSoil = data.data.dataSoil
+    const dataMapGraphSoilKelems = data.data.dataSoilKelem
+
+    const dataMapSoilDec = dataMapGraphSoil.map((soilDataMap: any, index: any) => {
+      const dataDecipher2 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decPHTanah = dataDecipher2.update(soilDataMap.phTanah, 'hex', 'utf8')
+      decPHTanah += dataDecipher2.final('utf8');
+
+      return {
+        no: index + 1,
+        id: soilDataMap.id,
+        name: soilDataMap.name !== "" ? soilDataMap.name : "No Name",
+
+        phTanah: decPHTanah,
+        date: soilDataMap.date,
+        time: soilDataMap.time
+      };
+    }).slice(0, 4)
+
+    const dataMapSoilKelemDec = dataMapGraphSoilKelems.map((soilDataMap: any, index: any) => {
+      const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decKelembapanTanah = dataDecipher1.update(soilDataMap.kelembapanTanah, 'hex', 'utf8');
+      decKelembapanTanah += dataDecipher1.final('utf8');
+
+      return {
+        no: index + 1,
+        id: soilDataMap.id,
+        name: soilDataMap.name !== "" ? soilDataMap.name : "No Name",
+        kelembapanTanah: decKelembapanTanah,
+        date: soilDataMap.date,
+        time: soilDataMap.time
+      };
+    }).slice(0, 4)
+    const allDataEnc : any = [...dataMapSoilDec, ...dataMapSoilKelemDec]
+
+
+    setInputValue(item.name);
+    setFilteredItems([]);
+
+    setTotalData(data.data.total)
+    setpageCount(Math.ceil(data.data.total / limit));
+
+    setItemsEnc(data)
+
+    setItems(allDataEnc);
+
+    setItemsTable(allDataEnc)
+
+    setItemEncCSVs(dataCSV.data.data)
+  };
+
+  const filterItems = async (value: any) => {
+    const data = await GetUserData(1, Infinity);
+    const dataUsers = data.data.data.map((userItem: any) => {
+      return {
+        id: userItem._id,
+        name: userItem.name,
+      };
+    });
+
+    const filtered = dataUsers.filter((item: any) =>
+      item.name.toLowerCase().includes(String(value).toLowerCase())
+    );
+    setFilteredItems(filtered);
+  };
   const notifyDownload = () => toast.success("Berhasil download data tanah");
   const notifyDownloadEnc = () => toast.success("Berhasil download data tanah enkripsi");
 
@@ -301,6 +406,31 @@ export default function Tanah(props: UserDataStateTypes) {
                 <h3 className="text-3xl text-black font-bold">Tanah</h3>
                 <p className=" text-base text-grey2 mt-1">Kelola data tanaman sebaik mungkin</p>
               </div>
+              {
+                user.status === "admin" ? <div className="">
+                  <h3 className="mb-2 text-xl text-black font-bold">Pencarian Data Petani</h3>
+                  <div className="relative">
+                    <input
+                      type="search"
+                      className="block w-full min-w-0 flex-auto rounded border border-solid border-neutral-300 bg-transparent bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3] focus:border-primary focus:text-neutral-700 focus:shadow-[inset_0_0_0_1px_rgb(59,113,202)] focus:outline-none dark:border-neutral-600 dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:focus:border-primary"
+                      id="exampleSearch"
+                      placeholder="Ketikan nama petani"
+                      value={inputValue}
+                      onChange={handleInputChange}
+                    />
+
+                    {inputValue.trim() !== '' && filteredItems.length > 0 && (
+                      <ul className="mt-2 absolute bg-white rounded-xl w-full px-2 py-1">
+                        {filteredItems.map((item: any, index) => (
+                          <li key={item.id} onClick={() => handleItemClick(item)} style={{ cursor: 'pointer' }} className='pb-1'>
+                            {item.name}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </div> : <div></div>
+              }
               <h3 className="text-base text-grey2 mt-1">Total : {totalData}</h3>
             </div>
           </section>
@@ -356,6 +486,9 @@ export default function Tanah(props: UserDataStateTypes) {
                   <thead>
                     <tr>
                       <th scope="col">No</th>
+                      {
+                        user.status == "admin" ? <th scope="col">Nama</th> : ""
+                      }
                       <th scope="col">Kelembapan Tanah</th>
                       <th scope="col">PH Tanah</th>
                       <th scope="col">Time</th>
@@ -363,10 +496,13 @@ export default function Tanah(props: UserDataStateTypes) {
                     </tr>
                   </thead>
                   <tbody>
-                    {itemstable.map((item: SoilDataTypes) => {
+                    {itemstable.map((item: SoilDataAllTypes) => {
                       return (
                         <tr key={item.id} className="align-items-center">
                           <td>{item.no} </td>
+                          {
+                            user.status == "admin" ? <td>{item.name} </td> : ""
+                          }
                           <td>{item.kelembapanTanah}</td>
                           <td>{item.phTanah}</td>
                           <td>{item.time}</td>

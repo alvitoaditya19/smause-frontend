@@ -30,6 +30,7 @@ export interface SettingsTypes {
   id: string | ParsedUrlQuery;
   no: number;
   userId:string,
+  name:string,
   nameVegetable: string;
   amountVegetable: string;
   amountHarvest: string;
@@ -38,6 +39,15 @@ export interface SettingsTypes {
 export interface SettingsDataTypes {
   _id: string;
   no: number;
+  nameVegetable: string;
+  amountVegetable: string;
+  amountHarvest: string;
+}
+export interface SettingsAllDataTypes {
+  _id: string;
+  no: number;
+  name:string
+
   nameVegetable: string;
   amountVegetable: string;
   amountHarvest: string;
@@ -53,6 +63,16 @@ export interface LoginTypes {
 export interface TemperatureDataTypes {
   id: string;
   no: number;
+  celcius: string;
+  humidity: string;
+  time:string;
+  date:string;
+}
+export interface TemperatureDataAllTypes {
+  id: string;
+  no: number;
+  name:string;
+
   celcius: string;
   humidity: string;
   time:string;
@@ -88,3 +108,15 @@ export interface SoilDataTypes {
   time:string;
   date:string;
 }
+
+export interface SoilDataAllTypes {
+  id: string;
+  no: number;
+  name:string;
+
+  kelembapanTanah: string;
+  phTanah: string;
+  time:string;
+  date:string;
+}
+

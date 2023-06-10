@@ -8,8 +8,8 @@ import ReactPaginate from "react-paginate";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Header, Sidebar } from "../../../components";
-import { GetAirsEnc } from "../../../services/dashboard";
-import { JWTPayloadTypes, TemperatureDataTypes, UserStateTypes } from "../../../services/data-types";
+import { GetAirsEnc, GetAllAirsEnc, GetUserData } from "../../../services/dashboard";
+import { JWTPayloadTypes, TemperatureDataAllTypes, TemperatureDataTypes, UserStateTypes } from "../../../services/data-types";
 import io from 'socket.io-client';
 
 
@@ -42,6 +42,10 @@ export default function Udara(props: UserDataStateTypes) {
   const [totalData, setTotalData] = useState(0);
 
   const [pageCount, setpageCount] = useState(0);
+  const [inputValue, setInputValue] = useState('');
+
+  const [filteredItems, setFilteredItems] = useState([]);
+
 
   let limit = 5;
 
@@ -59,10 +63,16 @@ export default function Udara(props: UserDataStateTypes) {
   }
 
   const getValueAirs = useCallback(async () => {
+    let data;
+    let dataConvertCSV;
     setIsLoading(true);
-    const data: any = await GetAirsEnc(user.id,1, limit);
-    const dataConvertCSV: any = await GetAirsEnc(user.id,1, Infinity);
-
+    if (user.status == "admin") {
+      data = await GetAllAirsEnc(1, limit);
+      dataConvertCSV = await GetAllAirsEnc(1, Infinity);
+    } else {
+      data = await GetAirsEnc(user.id, 1, limit);
+      dataConvertCSV = await GetAirsEnc(user.id, 1, Infinity);
+    }
     const dataAirs = data.data.data
 
     setIsLoading(false);
@@ -80,6 +90,8 @@ export default function Udara(props: UserDataStateTypes) {
       return {
         no: index + 1,
         id: soilDataMap.id,
+        name: soilDataMap.name !== "" ? soilDataMap.name : "No Name",
+
         celcius: decCelcius,
         humidity: decHumidity,
         date: soilDataMap.date,
@@ -100,6 +112,8 @@ export default function Udara(props: UserDataStateTypes) {
       return {
         no: index + 1,
         id: soilDataMap.id,
+        name: soilDataMap.name !== "" ? soilDataMap.name : "No Name",
+
         celcius: decCelcius,
         humidity: decHumidity,
         date: soilDataMap.date,
@@ -120,7 +134,15 @@ export default function Udara(props: UserDataStateTypes) {
   }, [GetAirsEnc]);
 
   const fetchComments = async (currentPage: any, limit: number) => {
-    const data: any = await GetAirsEnc(user.id,currentPage, limit);
+    let data;
+
+    setIsLoading(true);
+    if (user.status == "admin") {
+      data = await GetAllAirsEnc(currentPage, limit);
+    } else {
+      data = await GetAirsEnc(user.id, currentPage, limit);
+    }
+    setIsLoading(false);
 
     const dataMap = data.data.data.map((soilDataMap: any, index: any) => {
       const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
@@ -134,6 +156,8 @@ export default function Udara(props: UserDataStateTypes) {
       return {
         no: index + 1,
         id: soilDataMap.id,
+        name: soilDataMap.name !== "" ? soilDataMap.name : "No Name",
+
         celcius: decCelcius,
         humidity: decHumidity,
         date: soilDataMap.date,
@@ -151,7 +175,15 @@ export default function Udara(props: UserDataStateTypes) {
 
   const filterBySearch = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value;
-    const data: any = await GetAirsEnc(user.id,1, Infinity);
+    let data;
+
+    setIsLoading(true);
+    if (user.status == "admin") {
+      data = await GetAllAirsEnc(1, limit);
+    } else {
+      data = await GetAirsEnc(user.id, 1, limit);
+    }
+    setIsLoading(false);
 
     let updatedList: any = [...data.data.data];
 
@@ -182,6 +214,102 @@ export default function Udara(props: UserDataStateTypes) {
     });
     setItemsTable(dataMap);
 
+  };
+
+  const handleInputChange = (event: any) => {
+    const value = event.target.value;
+    setInputValue(value);
+    filterItems(value);
+  };
+
+  const handleItemClick = async (item: any) => {
+    setIsLoading(true);
+    const data: any = await GetAirsEnc(item.id,1, limit);
+    const dataCSV: any = await GetAirsEnc(item.id,1, Infinity);
+
+    setIsLoading(false);
+    const dataMapGraphAir = data.data.data
+    const dataMapGraphAirCSV = dataCSV.data.data
+
+    const dataMapCel = data.data.data.slice(-1)[0]?.celcius ?? "30039b4d60c8126a163c1805ba1882fb";
+    const dataMapHum = data.data.data.slice(-1)[0]?.humidity ?? "30039b4d60c8126a163c1805ba1882fb"
+
+    // DATA AIR
+    const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
+    let decCelcius = dataDecipher1.update(dataMapCel, 'hex', 'utf8')
+    decCelcius += dataDecipher1.final('utf8');
+
+    const dataDecipher2 = createDecipheriv(cryptoAlgorithm, key, iv);
+    let decHumidity = dataDecipher2.update(dataMapHum, 'hex', 'utf8')
+    decHumidity += dataDecipher2.final('utf8');
+
+    const dataMapDecAir = dataMapGraphAir.map((suhuDataMap: any, index: any) => {
+      const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decCelcius = dataDecipher1.update(suhuDataMap.celcius, 'hex', 'utf8')
+      decCelcius += dataDecipher1.final('utf8');
+
+      const dataDecipher2 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decHumidity = dataDecipher2.update(suhuDataMap.humidity, 'hex', 'utf8')
+      decHumidity += dataDecipher2.final('utf8');
+
+      return {
+        no: index + 1,
+        id: suhuDataMap.id,
+        celcius: decCelcius,
+        humidity: decHumidity,
+        date: suhuDataMap.date,
+        time: suhuDataMap.time
+      };
+    }).slice(0, 4)
+
+    const dataMapDecCSVAir = dataMapGraphAirCSV.map((suhuDataMap: any, index: any) => {
+      const dataDecipher1 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decCelcius = dataDecipher1.update(suhuDataMap.celcius, 'hex', 'utf8')
+      decCelcius += dataDecipher1.final('utf8');
+
+      const dataDecipher2 = createDecipheriv(cryptoAlgorithm, key, iv);
+      let decHumidity = dataDecipher2.update(suhuDataMap.humidity, 'hex', 'utf8')
+      decHumidity += dataDecipher2.final('utf8');
+
+      return {
+        no: index + 1,
+        id: suhuDataMap.id,
+        celcius: decCelcius,
+        humidity: decHumidity,
+        date: suhuDataMap.date,
+        time: suhuDataMap.time
+      };
+    }).slice(0, 4);
+
+    setInputValue(item.name);
+    setFilteredItems([]);
+
+    setTotalData(data.data.total)
+    setpageCount(Math.ceil(data.data.total / limit));
+
+    setItemsEnc(data)
+
+    setItems(dataMapDecAir);
+
+    setItemsTable(dataMapDecAir)
+
+    setItemCSVs(dataMapDecCSVAir)
+    setItemEncCSVs(dataCSV.data.data)
+  };
+
+  const filterItems = async (value: any) => {
+    const data = await GetUserData(1, Infinity);
+    const dataUsers = data.data.data.map((userItem: any) => {
+      return {
+        id: userItem._id,
+        name: userItem.name,
+      };
+    });
+
+    const filtered = dataUsers.filter((item: any) =>
+      item.name.toLowerCase().includes(String(value).toLowerCase())
+    );
+    setFilteredItems(filtered);
   };
   const notifyDownload = () => toast.success("Berhasil download data udara");
   const notifyDownloadEnc = () => toast.success("Berhasil download data udara enkripsi");
@@ -233,6 +361,31 @@ export default function Udara(props: UserDataStateTypes) {
                 <h3 className="text-3xl text-black font-bold">Udara</h3>
                 <p className=" text-base text-grey2 mt-1">Kelola data tanaman sebaik mungkin</p>
               </div>
+              {
+                user.status === "admin" ? <div className="">
+                  <h3 className="mb-2 text-xl text-black font-bold">Pencarian Data Petani</h3>
+                  <div className="relative">
+                    <input
+                      type="search"
+                      className="block w-full min-w-0 flex-auto rounded border border-solid border-neutral-300 bg-transparent bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3] focus:border-primary focus:text-neutral-700 focus:shadow-[inset_0_0_0_1px_rgb(59,113,202)] focus:outline-none dark:border-neutral-600 dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:focus:border-primary"
+                      id="exampleSearch"
+                      placeholder="Ketikan nama petani"
+                      value={inputValue}
+                      onChange={handleInputChange}
+                    />
+
+                    {inputValue.trim() !== '' && filteredItems.length > 0 && (
+                      <ul className="mt-2 absolute bg-white rounded-xl w-full px-2 py-1">
+                        {filteredItems.map((item: any, index) => (
+                          <li key={item.id} onClick={() => handleItemClick(item)} style={{ cursor: 'pointer' }} className='pb-1'>
+                            {item.name}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </div> : <div></div>
+              }
               <h3 className="text-base text-grey2 mt-1">Total : {totalData}</h3>
             </div>
           </section>
@@ -288,6 +441,9 @@ export default function Udara(props: UserDataStateTypes) {
                   <thead>
                     <tr>
                       <th scope="col">No</th>
+                      {
+                        user.status == "admin" ? <th scope="col">Nama</th> : ""
+                      }
                       <th scope="col">Celcius</th>
                       <th scope="col">Humidity</th>
                       <th scope="col">Time</th>
@@ -295,10 +451,13 @@ export default function Udara(props: UserDataStateTypes) {
                     </tr>
                   </thead>
                   <tbody>
-                    {itemstable.map((item: TemperatureDataTypes) => {
+                    {itemstable.map((item: TemperatureDataAllTypes) => {
                       return (
                         <tr key={item.id} className="align-items-center">
                           <td>{item.no} </td>
+                          {
+                            user.status == "admin" ? <td>{item.name} </td> : ""
+                          }
                           <td>{item.celcius}</td>
                           <td>{item.humidity}</td>
                           <td>{item.time}</td>

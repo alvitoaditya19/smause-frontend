@@ -9,7 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 import io from 'socket.io-client';
 
 import { Header, Sidebar } from "../../../../components";
-import { getDetailSetting, SetEditSetting } from "../../../../services/dashboard";
+import { getAllDataUserSetting, getDetailSetting, GetUserData, SetEditSetting } from "../../../../services/dashboard";
 import { JWTPayloadTypes, SettingsTypes, UserStateTypes } from "../../../../services/data-types";
 
 interface UserDataStateTypes {
@@ -37,14 +37,22 @@ export default function DetailEdit(props: UserDataStateTypes) {
 
 
   const onSubmit = async () => {
+    let response;
+    const dataVege = await getAllDataUserSetting(1, Infinity);
+
     const data : Partial<SettingsTypes> = {
       nameVegetable: nameVegetable,
       amountVegetable: amountVegetable,
       amountHarvest: amountHarvest,
     };
+    const userItem = dataVege.data.data.find((item: any) => item._id === id);
+  
+    if (user.status === "admin") {
+      response = await SetEditSetting(userItem.userId,data, id);
+    } else {
+      response = await SetEditSetting(user.id,data, id);
+    }
 
-
-    const response = await SetEditSetting(user.id,data, id);
     if (response.error) {
       toast.error(response.message);
     } else {
@@ -55,11 +63,21 @@ export default function DetailEdit(props: UserDataStateTypes) {
   };
 
   const fetchData = async () => {
-    const data = await getDetailSetting(user.id,id)
-    setNameVegetable(data.data.nameVegetable)
-    setAmountVegetable(data.data.amountVegetable)
-    setAmountHarvest(data.data.amountHarvest)
-  }
+    let data;
+    const dataVege = await getAllDataUserSetting(1, Infinity);
+  
+    const userItem = dataVege.data.data.find((item: any) => item._id === id);
+  
+    if (user.status === "admin") {
+      data = await getDetailSetting(userItem.userId, id);
+    } else {
+      data = await getDetailSetting(user.id, id);
+    }
+  
+    setNameVegetable(data.data.nameVegetable);
+    setAmountVegetable(data.data.amountVegetable);
+    setAmountHarvest(data.data.amountHarvest);
+  };
   
   useEffect( () => {
     socket.on('dataMessaage', (data) => {
