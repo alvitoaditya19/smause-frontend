@@ -106,7 +106,12 @@ export default function Setting(props: UserDataStateTypes) {
 
 
   const fetchComments = async (currentPage: any, limit: number) => {
-    const data: any = await getAllDataSetting(user.id, currentPage, limit);
+    let data;
+    if (user.status == "admin") {
+      data = await getAllDataUserSetting(currentPage, limit);
+    } else {
+      data = await getAllDataSetting(user.id, currentPage, limit);
+    }
 
     return data.data.data;
   };
@@ -119,7 +124,12 @@ export default function Setting(props: UserDataStateTypes) {
 
   const filterBySearch = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value;
-    const data: any = await getAllDataSetting(user.id, 1, Infinity);
+    let data;
+    if (user.status == "admin") {
+      data = await getAllDataUserSetting(1, limit);
+    } else {
+      data = await getAllDataSetting(user.id, 1, limit);
+    }
     let updatedList: any = [...data.data.data];
 
     updatedList = updatedList.filter((item: any) => {

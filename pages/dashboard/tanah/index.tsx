@@ -169,9 +169,9 @@ export default function Tanah(props: UserDataStateTypes) {
     let data;
     setIsLoading(true);
     if (user.status == "admin") {
-      data = await GetAllSoilsEnc(1, limit);
+      data = await GetAllSoilsEnc(currentPage, limit);
     } else {
-      data = await GetSoilsEnc(user.id, 1, limit);
+      data = await GetSoilsEnc(user.id, currentPage, limit);
     }
     setIsLoading(false);
     const dataSoils = data.data.dataSoil
@@ -222,6 +222,14 @@ export default function Tanah(props: UserDataStateTypes) {
   const filterBySearch = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value;
     let data;
+
+    setIsLoading(true);
+    if (user.status == "admin") {
+      data = await GetAllSoilsEnc(1, limit);
+    } else {
+      data = await GetSoilsEnc(user.id, 1, limit);
+    }
+    setIsLoading(false);
 
     setIsLoading(true);
     if (user.status == "admin") {
