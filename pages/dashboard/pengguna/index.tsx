@@ -42,7 +42,6 @@ export default function User(props: UserDataStateTypes) {
     setTotalData(data.data.total)
     setpageCount(Math.ceil(data.data.total / limit));
     setItems(dataUsers);
-    console.log("items", dataUsers)
 
   };
 

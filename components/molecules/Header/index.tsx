@@ -1,22 +1,23 @@
-import React, { ChangeEventHandler, MouseEventHandler, useState } from "react";
+import React, { ChangeEventHandler, MouseEventHandler, useEffect, useState } from "react";
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/router';
 import Link from "next/link";
 
-export interface  HeaderProps {
+export interface HeaderProps {
   toggleNavbar: MouseEventHandler<HTMLButtonElement>;
   filterBySearch: ChangeEventHandler<HTMLInputElement>;
   isFilter: boolean;
-  name:string;
-  imageProfile:string;
-  placeHolder:string;
+  name: string;
+  imageProfile: string;
+  placeHolder: string;
 
 }
 
-export default function Header({ toggleNavbar,imageProfile, filterBySearch, isFilter, name, placeHolder }:Partial<HeaderProps>) {
+export default function Header({ toggleNavbar, imageProfile, filterBySearch, isFilter, name, placeHolder }: Partial<HeaderProps>) {
   const [filter, setFilter] = useState(false);
   const router = useRouter();
-  const host : any = process.env.NEXT_PUBLIC_IMG;
+
+  const host: any = process.env.NEXT_PUBLIC_IMG;
 
 
   let search;
@@ -24,45 +25,46 @@ export default function Header({ toggleNavbar,imageProfile, filterBySearch, isFi
 
   if (isFilter) {
     search = (
-        <div className="lg:flex justify-end  hidden mr-4">
-          <input
-            type="text"
-            // placeholder="Search report or product"
-            placeholder={placeHolder}
-            className="search form-control"
-            onChange={filterBySearch}
-          />
-          <button
-            className="btn btn-search flex justify-center items-center p-0"
-            type="button"
-          >
-            <img src="/Icon/ic_search.svg" width="20px" height="20px" />
-          </button>
-        </div>  
+      <div className="lg:flex justify-end  hidden mr-4">
+        <input
+          type="text"
+          // placeholder="Search report or product"
+          placeholder={placeHolder}
+          className="search form-control"
+          onChange={filterBySearch}
+        />
+        <button
+          className="btn btn-search flex justify-center items-center p-0"
+          type="button"
+        >
+          <img src="/Icon/ic_search.svg" width="20px" height="20px" />
+        </button>
+      </div>
     );
 
     searchResponsive = (
-        <div className="justify-end lg:hidden flex mb-4 mt-3">
-          <input
-            type="text"
-            // placeholder="Search report or product"
-            placeholder={placeHolder}
-            className="search form-control block"
-            onChange={filterBySearch}
-          />
-          <button
-            className="btn btn-search flex justify-center items-center p-0"
-            type="button"
-          >
-            <img src="/Icon/ic_search.svg" width="20px" height="20px" />
-          </button>
-        </div>    
+      <div className="justify-end lg:hidden flex mb-4 mt-3">
+        <input
+          type="text"
+          // placeholder="Search report or product"
+          placeholder={placeHolder}
+          className="search form-control block"
+          onChange={filterBySearch}
+        />
+        <button
+          className="btn btn-search flex justify-center items-center p-0"
+          type="button"
+        >
+          <img src="/Icon/ic_search.svg" width="20px" height="20px" />
+        </button>
+      </div>
     );
-  } else{
-    search=<div>
+  } else {
+    search = <div>
       <h1></h1>
     </div>
   }
+
 
   const onLogout = () => {
     Cookies.remove('token');
@@ -82,7 +84,7 @@ export default function Header({ toggleNavbar,imageProfile, filterBySearch, isFi
           <div className="search-bar-profile gap-md-4 mt-3 mt-md-0 font-medium">
             {search}
             {
-              !isFilter ? <h1 className="truncate lg:w-full w-24">Hi, {name}</h1> :""
+              !isFilter ? <h1 className="truncate lg:w-full w-24">Hi, {name}</h1> : ""
             }
             <div className="dropdown">
               <button
@@ -93,9 +95,9 @@ export default function Header({ toggleNavbar,imageProfile, filterBySearch, isFi
                 aria-expanded="false"
               >
                 <img
-                  src= {imageProfile !== host ? imageProfile : "/images/img_profile.png"}
+                  src={imageProfile === `${host}/undefined` ? "/images/img_profile.png" : imageProfile}
                   alt="Photo Profile"
-                  className="avatar "
+                  className="avatar"
                 />
               </button>
               <ul
@@ -107,18 +109,18 @@ export default function Header({ toggleNavbar,imageProfile, filterBySearch, isFi
                     Dashboard
                   </a>
                 </Link>
-                <Link  href="/dashboard/edit-profile" legacyBehavior>
+                <Link href="/dashboard/edit-profile" legacyBehavior>
                   <a className="dropdown-item text-black" href="#">
                     Edit Profile
                   </a>
                 </Link>
-                <Link  href="/dashboard/bantuan" legacyBehavior>
+                <Link href="/dashboard/bantuan" legacyBehavior>
                   <a className="dropdown-item text-black" href="#">
                     Bantuan
                   </a>
                 </Link>
                 <li>
-                  <div  className="divider"></div>
+                  <div className="divider"></div>
                 </li>
                 <li onClick={onLogout}>
                   <a className="dropdown-item text-black" href="#">
@@ -131,9 +133,9 @@ export default function Header({ toggleNavbar,imageProfile, filterBySearch, isFi
 
         </div>
       </nav>
-        <div className="">
-          {searchResponsive}
-        </div>
+      <div className="">
+        {searchResponsive}
+      </div>
     </>
   );
 }

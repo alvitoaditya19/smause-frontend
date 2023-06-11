@@ -369,8 +369,6 @@ export default function Kontrol(props: UserDataStateTypes) {
       data = await GetControl(user.id);
     }
 
-    console.log("statusControl2",statusControl)
-
 
     if (data.data.status == "ON") {
       setDisabled(true);
