@@ -12,7 +12,7 @@ import io from 'socket.io-client';
 import IcContBlend from "../../../public/Icon/Ic-Cont-Blend";
 import IcContLamp from "../../../public/Icon/Ic-Cont-Lamp";
 import IcContPump from "../../../public/Icon/Ic-Cont-Pump";
-import { GetControl, SetControl } from "../../../services/dashboard";
+import { GetControl, GetUserData, SetControl } from "../../../services/dashboard";
 
 interface UserDataStateTypes {
   user: UserStateTypes;
@@ -36,13 +36,23 @@ export default function Kontrol(props: UserDataStateTypes) {
   const [blend, setDataBlend] = useState(false);
 
   const [disabled, setDisabled] = useState(false);
+  const [inputValue, setInputValue] = useState('');
+  const [inputUserId, setInputUserId] = useState('');
+
+
+  const [filteredItems, setFilteredItems] = useState([]);
 
   const toggleNavbar = () => {
     setToggleViewMode(!toggleViewMode);
   };
 
-  const submitLamp1 = async () => {
-    const dataControl = await GetControl(user.id);
+  const submitLamp1 = async (userId?: String) => {
+    let dataControl;
+    if (user.status === "admin") {
+      dataControl = await GetControl(userId === undefined ? user.id : userId);
+    } else {
+      dataControl = await GetControl(user.id);
+    }
 
     const data = {
       lamp1: lamp1,
@@ -50,10 +60,15 @@ export default function Kontrol(props: UserDataStateTypes) {
 
     const dataValue = {
       lamp1: data.lamp1 === true ? "OFF" : "ON",
-      status: dataControl.data.status
+      status: dataControl.data.status,
     };
 
-    const response = await SetControl(dataValue, user.id);
+    let response;
+    if (user.status === "admin") {
+      response = await SetControl(dataValue, userId === undefined ? user.id : userId);
+    } else {
+      response = await SetControl(dataValue, user.id);
+    }
 
     if (response.error) {
       toast.error(response.message);
@@ -61,8 +76,14 @@ export default function Kontrol(props: UserDataStateTypes) {
       setDataLamp1(!lamp1);
     }
   };
-  const getStatusLamp1 = useCallback(async () => {
-    const data = await GetControl(user.id);
+
+  const getStatusLamp1 = useCallback(async (userId?: String) => {
+    let data
+    if (user.status == "admin") {
+      data = await GetControl(userId === undefined ? user.id : userId);
+    } else {
+      data = await GetControl(user.id);
+    }
 
     if (data.data.lamp1 == "ON") {
       setDataLamp1(true);
@@ -71,9 +92,13 @@ export default function Kontrol(props: UserDataStateTypes) {
     }
   }, [GetControl]);
 
-  const submitLamp2 = async () => {
-    const dataControl = await GetControl(user.id);
-
+  const submitLamp2 = async (userId?: String) => {
+    let dataControl;
+    if (user.status === "admin") {
+      dataControl = await GetControl(userId === undefined ? user.id : userId);
+    } else {
+      dataControl = await GetControl(user.id);
+    }
     const data = {
       lamp2: lamp2,
     };
@@ -83,8 +108,12 @@ export default function Kontrol(props: UserDataStateTypes) {
       status: dataControl.data.status
     };
 
-    const response = await SetControl(dataValue, user.id);
-
+    let response;
+    if (user.status === "admin") {
+      response = await SetControl(dataValue, userId === undefined ? user.id : userId);
+    } else {
+      response = await SetControl(dataValue, user.id);
+    }
     if (response.error) {
       toast.error(response.message);
     } else {
@@ -97,9 +126,13 @@ export default function Kontrol(props: UserDataStateTypes) {
       setDataLamp2(!lamp2);
     }
   };
-  const getStatusLamp2 = useCallback(async () => {
-    const data = await GetControl(user.id);
-
+  const getStatusLamp2 = useCallback(async (userId?: String) => {
+    let data
+    if (user.status == "admin") {
+      data = await GetControl(userId === undefined ? user.id : userId);
+    } else {
+      data = await GetControl(user.id);
+    }
     if (data.data.lamp2 == "ON") {
       setDataLamp2(true);
     } else {
@@ -107,9 +140,13 @@ export default function Kontrol(props: UserDataStateTypes) {
     }
   }, [GetControl]);
 
-  const submitPump1 = async () => {
-    const dataControl = await GetControl(user.id);
-
+  const submitPump1 = async (userId?: String) => {
+    let dataControl;
+    if (user.status === "admin") {
+      dataControl = await GetControl(userId === undefined ? user.id : userId);
+    } else {
+      dataControl = await GetControl(user.id);
+    }
     const data = {
       pump1: pump1,
     };
@@ -120,7 +157,12 @@ export default function Kontrol(props: UserDataStateTypes) {
 
     };
 
-    const response = await SetControl(dataValue, user.id);
+    let response;
+    if (user.status === "admin") {
+      response = await SetControl(dataValue, userId === undefined ? user.id : userId);
+    } else {
+      response = await SetControl(dataValue, user.id);
+    }
 
     if (response.error) {
       toast.error(response.message);
@@ -128,8 +170,13 @@ export default function Kontrol(props: UserDataStateTypes) {
       setDataPump1(!pump1);
     }
   };
-  const getStatusPump1 = useCallback(async () => {
-    const data = await GetControl(user.id);
+  const getStatusPump1 = useCallback(async (userId?: String) => {
+    let data
+    if (user.status == "admin") {
+      data = await GetControl(userId === undefined ? user.id : userId);
+    } else {
+      data = await GetControl(user.id);
+    }
 
     if (data.data.pump1 == "ON") {
       setDataPump1(true);
@@ -138,8 +185,13 @@ export default function Kontrol(props: UserDataStateTypes) {
     }
   }, [GetControl]);
 
-  const submitPump2 = async () => {
-    const dataControl = await GetControl(user.id);
+  const submitPump2 = async (userId?: String) => {
+    let dataControl;
+    if (user.status === "admin") {
+      dataControl = await GetControl(userId === undefined ? user.id : userId);
+    } else {
+      dataControl = await GetControl(user.id);
+    }
 
     const data = {
       pump2: pump2,
@@ -151,7 +203,12 @@ export default function Kontrol(props: UserDataStateTypes) {
 
     };
 
-    const response = await SetControl(dataValue, user.id);
+    let response;
+    if (user.status === "admin") {
+      response = await SetControl(dataValue, userId === undefined ? user.id : userId);
+    } else {
+      response = await SetControl(dataValue, user.id);
+    }
 
     if (response.error) {
       toast.error(response.message);
@@ -159,8 +216,13 @@ export default function Kontrol(props: UserDataStateTypes) {
       setDataPump2(!pump2);
     }
   };
-  const getStatusPump2 = useCallback(async () => {
-    const data = await GetControl(user.id);
+  const getStatusPump2 = useCallback(async (userId?: String) => {
+    let data
+    if (user.status == "admin") {
+      data = await GetControl(userId === undefined ? user.id : userId);
+    } else {
+      data = await GetControl(user.id);
+    }
 
     if (data.data.pump2 == "ON") {
       setDataPump2(true);
@@ -168,11 +230,17 @@ export default function Kontrol(props: UserDataStateTypes) {
       setDataPump2(false);
     }
   }, [GetControl]);
-  const submitValve = async () => {
-    const dataControl = await GetControl(user.id);
+  const submitValve = async (userId?: String) => {
+    let dataControl;
+    if (user.status === "admin") {
+      dataControl = await GetControl(userId === undefined ? user.id : userId);
+    } else {
+      dataControl = await GetControl(user.id);
+    }
+    // console.log("valve", valve)
 
     const data = {
-      valve: valve,
+      valve: valve === true ? true : false,
     };
 
     const dataValue = {
@@ -181,7 +249,12 @@ export default function Kontrol(props: UserDataStateTypes) {
 
     };
 
-    const response = await SetControl(dataValue, user.id);
+    let response;
+    if (user.status === "admin") {
+      response = await SetControl(dataValue, userId === undefined ? user.id : userId);
+    } else {
+      response = await SetControl(dataValue, user.id);
+    }
 
     if (response.error) {
       toast.error(response.message);
@@ -189,9 +262,13 @@ export default function Kontrol(props: UserDataStateTypes) {
       setDataValve(!valve);
     }
   };
-  const getStatusValve = useCallback(async () => {
-    const data = await GetControl(user.id);
-
+  const getStatusValve = useCallback(async (userId?: String) => {
+    let data
+    if (user.status == "admin") {
+      data = await GetControl(userId === undefined ? user.id : userId);
+    } else {
+      data = await GetControl(user.id);
+    }
     if (data.data.valve == "ON") {
       setDataValve(true);
     } else {
@@ -199,8 +276,13 @@ export default function Kontrol(props: UserDataStateTypes) {
     }
   }, [GetControl]);
 
-  const submitBlend = async () => {
-    const dataControl = await GetControl(user.id);
+  const submitBlend = async (userId?: String) => {
+    let dataControl;
+    if (user.status === "admin") {
+      dataControl = await GetControl(userId === undefined ? user.id : userId);
+    } else {
+      dataControl = await GetControl(user.id);
+    }
 
     const data = {
       blend: blend,
@@ -212,7 +294,12 @@ export default function Kontrol(props: UserDataStateTypes) {
 
     };
 
-    const response = await SetControl(dataValue, user.id);
+    let response;
+    if (user.status === "admin") {
+      response = await SetControl(dataValue, userId === undefined ? user.id : userId);
+    } else {
+      response = await SetControl(dataValue, user.id);
+    }
 
     if (response.error) {
       toast.error(response.message);
@@ -221,8 +308,19 @@ export default function Kontrol(props: UserDataStateTypes) {
     }
   };
 
-  const getStatusBlend = useCallback(async () => {
-    const data = await GetControl(user.id);
+  const getStatusBlend = useCallback(async (userId?: String) => {
+    let data
+    if (user.status == "admin") {
+      data = await GetControl(userId === undefined ? user.id : userId);
+    } else {
+      data = await GetControl(user.id);
+    }
+
+    if (user.status == "admin") {
+      data = await GetControl(userId === undefined ? user.id : userId);
+    } else {
+      data = await GetControl(user.id);
+    }
 
     if (data.data.blend == "ON") {
       setDataBlend(true);
@@ -231,35 +329,50 @@ export default function Kontrol(props: UserDataStateTypes) {
     }
   }, [GetControl]);
 
-  const submitStatus = async () => {
+  const submitStatus = async (userId?: String) => {
     const data = {
       statusControl: statusControl,
     };
 
     const dataValue = {
-      statusControl: data.statusControl === true ? "OFF" : "ON",
+      status: data.statusControl === true ? "OFF" : "ON",
     };
 
-    const response = await SetControl(dataValue, user.id);
+    let response;
+
+    if (user.status == "admin") {
+      response = await SetControl(dataValue, userId === undefined ? user.id : userId);
+    } else {
+      response = await SetControl(dataValue, user.id);
+    }
 
     if (response.error) {
       toast.error(response.message);
     } else {
       setStatusControl(!statusControl);
 
-      if (dataValue.statusControl == "ON") {
+      if (dataValue.status == "ON") {
         setDisabled(true);
 
-      } else if (dataValue.statusControl == "OFF") {
+      } else if (dataValue.status == "OFF") {
         setDisabled(false);
 
       }
-      
+
     }
   };
-  const getStatusStatus = useCallback(async () => {
-    const data = await GetControl(user.id);
-    if (data.data.statusControl == "ON") {
+  const getStatusStatus = useCallback(async (userId?: String) => {
+    let data
+    if (user.status == "admin") {
+      data = await GetControl(userId === undefined ? user.id : userId);
+    } else {
+      data = await GetControl(user.id);
+    }
+
+    console.log("statusControl2",statusControl)
+
+
+    if (data.data.status == "ON") {
       setDisabled(true);
 
       setStatusControl(true);
@@ -300,6 +413,40 @@ export default function Kontrol(props: UserDataStateTypes) {
   //     console.log("status lampu", !lampu1)
   //   }
   // };
+  const handleInputChange = (event: any) => {
+    const value = event.target.value;
+    setInputValue(value);
+    filterItems(value);
+  };
+
+  const handleItemClick = async (item: any) => {
+    setInputUserId(item.id)
+
+    getStatusLamp1(item.id)
+    getStatusLamp2(item.id)
+    getStatusPump1(item.id)
+    getStatusPump2(item.id)
+    getStatusBlend(item.id)
+    getStatusValve(item.id)
+    getStatusStatus(item.id)
+    setInputValue(item.name);
+    setFilteredItems([]);
+  };
+
+  const filterItems = async (value: any) => {
+    const data = await GetUserData(1, Infinity);
+    const dataUsers = data.data.data.map((userItem: any) => {
+      return {
+        id: userItem._id,
+        name: userItem.name,
+      };
+    });
+
+    const filtered = dataUsers.filter((item: any) =>
+      item.name.toLowerCase().includes(String(value).toLowerCase())
+    );
+    setFilteredItems(filtered);
+  };
   const notifyAllert = () => toast.error("Tombol Nonaktif, Ubah Status dalam keadaan OFF");
 
   useEffect(() => {
@@ -310,6 +457,7 @@ export default function Kontrol(props: UserDataStateTypes) {
         });
       }
     });
+    setInputUserId(user.id)
     getStatusLamp1()
     getStatusLamp2()
     getStatusPump1()
@@ -338,11 +486,41 @@ export default function Kontrol(props: UserDataStateTypes) {
 
         {/* Main Content */}
         <div className="content">
-          <Header toggleNavbar={toggleNavbar} isFilter={false} name={user.name}  imageProfile = {user.avatar} />
+          <Header toggleNavbar={toggleNavbar} isFilter={false} name={user.name} imageProfile={user.avatar} />
           <section className="p-3">
             <div className="header">
-              <h3 className="text-3xl text-black font-bold">Kontrol Tanamanmu</h3>
-              <p className=" text-base text-grey2 mt-1">Kelola data tanaman sebaik mungkin</p>
+              <div className="flex flex-wrap justify-between items-center">
+                <div className="">
+                  <h3 className="text-3xl text-black font-bold">Kontrol Tanamanmu</h3>
+                  <p className=" text-base text-grey2 mt-1">Kelola data tanaman sebaik mungkin</p>
+                </div>
+                {
+                  user.status === "admin" ? <div className="">
+                    <h3 className="mb-2 text-xl text-black font-bold">Pencarian Data Petani</h3>
+                    <div className="relative">
+                      <input
+                        type="search"
+                        className="block w-full min-w-0 flex-auto rounded border border-solid border-neutral-300 bg-transparent bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3] focus:border-primary focus:text-neutral-700 focus:shadow-[inset_0_0_0_1px_rgb(59,113,202)] focus:outline-none dark:border-neutral-600 dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:focus:border-primary"
+                        id="exampleSearch"
+                        placeholder="Ketikan nama petani"
+                        value={inputValue}
+                        onChange={handleInputChange}
+                      />
+
+                      {inputValue.trim() !== '' && filteredItems.length > 0 && (
+                        <ul className="mt-2 absolute bg-white rounded-xl w-full px-2 py-1">
+                          {filteredItems.map((item: any, index) => (
+                            <li key={item.id} onClick={() => handleItemClick(item)} style={{ cursor: 'pointer' }} className='pb-1'>
+                              {item.name}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  </div> : <div></div>
+                }
+              </div>
+
               <div className="flex flex-wrap justify-start items-center -mx-2 lg:pt-4 pt-2">
                 <div className="w-full md:w-0 px-2 lg:mb-0 mb-4 mt-4 lg:hidden inline">
                   <Image src="/images/img-control.png" height={360} width={502} className="img-fluid" alt='img-iot' />
@@ -371,7 +549,7 @@ export default function Kontrol(props: UserDataStateTypes) {
                           />
                           <div
                             onClick={() => {
-                              submitStatus();
+                              submitStatus(inputUserId);
                             }}
                             className="w-20 h-10 bg-grey3 rounded-full peer  peer-focus:ring-primary1  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-grey3 after:border after:rounded-full after:h-9 after:w-9 after:transition-all peer-checked:bg-primary1"
                           ></div>
@@ -407,7 +585,7 @@ export default function Kontrol(props: UserDataStateTypes) {
                           />
                           <div
                             onClick={() => {
-                              disabled !== true ? submitLamp1() : notifyAllert();
+                              disabled !== true ? submitLamp1(inputUserId) : notifyAllert();
                             }}
 
                             className="w-20 h-10 bg-grey3 rounded-full peer  peer-focus:ring-primary1  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-grey3 after:border after:rounded-full after:h-9 after:w-9 after:transition-all peer-checked:bg-primary1"
@@ -438,7 +616,7 @@ export default function Kontrol(props: UserDataStateTypes) {
                           />
                           <div
                             onClick={() => {
-                              disabled !== true ? submitLamp2() : notifyAllert();
+                              disabled !== true ? submitLamp2(inputUserId) : notifyAllert();
                             }}
                             className="w-20 h-10 bg-grey3 rounded-full peer  peer-focus:ring-primary1  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-grey3 after:border after:rounded-full after:h-9 after:w-9 after:transition-all peer-checked:bg-primary1"
                           ></div>
@@ -470,7 +648,7 @@ export default function Kontrol(props: UserDataStateTypes) {
                           />
                           <div
                             onClick={() => {
-                              disabled !== true ? submitPump1() : notifyAllert();
+                              disabled !== true ? submitPump1(inputUserId) : notifyAllert();
                             }}
                             className="w-20 h-10 bg-grey3 rounded-full peer  peer-focus:ring-primary1  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-grey3 after:border after:rounded-full after:h-9 after:w-9 after:transition-all peer-checked:bg-primary1"
                           ></div>
@@ -500,7 +678,7 @@ export default function Kontrol(props: UserDataStateTypes) {
                           />
                           <div
                             onClick={() => {
-                              disabled !== true ? submitPump2() : notifyAllert();
+                              disabled !== true ? submitPump2(inputUserId) : notifyAllert();
                             }}
                             className="w-20 h-10 bg-grey3 rounded-full peer  peer-focus:ring-primary1  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-grey3 after:border after:rounded-full after:h-9 after:w-9 after:transition-all peer-checked:bg-primary1"
                           ></div>
@@ -534,7 +712,7 @@ export default function Kontrol(props: UserDataStateTypes) {
                           />
                           <div
                             onClick={() => {
-                              disabled !== true ? submitValve() : notifyAllert();
+                              disabled !== true ? submitValve(inputUserId) : notifyAllert();
                             }}
                             className="w-20 h-10 bg-grey3 rounded-full peer  peer-focus:ring-primary1  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-grey3 after:border after:rounded-full after:h-9 after:w-9 after:transition-all peer-checked:bg-primary1"
                           ></div>
@@ -564,7 +742,7 @@ export default function Kontrol(props: UserDataStateTypes) {
                           />
                           <div
                             onClick={() => {
-                              disabled !== true ? submitBlend() : notifyAllert();
+                              disabled !== true ? submitBlend(inputUserId) : notifyAllert();
                             }}
                             className="w-20 h-10 bg-grey3 rounded-full peer  peer-focus:ring-primary1  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-grey3 after:border after:rounded-full after:h-9 after:w-9 after:transition-all peer-checked:bg-primary1"
                           ></div>

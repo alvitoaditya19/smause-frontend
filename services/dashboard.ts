@@ -73,7 +73,7 @@ export async function SetEditUser(data:Partial<UserStateTypes>, id:string | stri
   });
 }
 
-export async function GetControl(userId:Partial<String>) {
+export async function GetControl(userId:String | undefined) {
   const url = `${ROOT_API}/${API_VERSION}/controls/${userId}`;
 
   return callAPI({
@@ -83,7 +83,7 @@ export async function GetControl(userId:Partial<String>) {
   });
 }
 
-export async function SetControl(data :Partial<ControlTypes>,userId:Partial<String>) {
+export async function SetControl(data :Partial<ControlTypes>,userId:Partial<String> | undefined) {
   const url = `${ROOT_API}/${API_VERSION}/controls/${userId}`;
 
   return callAPI({
